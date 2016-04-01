@@ -1,0 +1,61 @@
+Started by user [8mha:AAAAlh+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzOEgYu/dLi1CL9vNKcHACFIKlWvwAAAA==[0manonymous
+ln builds/lastSuccessfulBuild /var/jenkins_home/jobs/backup-all-jobs/lastSuccessful failed
+java.nio.file.FileSystemException: /var/jenkins_home/jobs/backup-all-jobs/lastSuccessful: Read-only file system
+	at sun.nio.fs.UnixException.translateToIOException(UnixException.java:91)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:102)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:107)
+	at sun.nio.fs.UnixFileSystemProvider.createSymbolicLink(UnixFileSystemProvider.java:457)
+	at java.nio.file.Files.createSymbolicLink(Files.java:1043)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at hudson.Util.createSymlinkJava7(Util.java:1235)
+	at hudson.Util.createSymlink(Util.java:1151)
+	at hudson.model.Run.createSymlink(Run.java:1840)
+	at hudson.model.Run.updateSymlinks(Run.java:1821)
+	at hudson.model.Run.execute(Run.java:1736)
+	at hudson.model.FreeStyleBuild.run(FreeStyleBuild.java:43)
+	at hudson.model.ResourceController.execute(ResourceController.java:98)
+	at hudson.model.Executor.run(Executor.java:410)
+ln builds/lastStableBuild /var/jenkins_home/jobs/backup-all-jobs/lastStable failed
+java.nio.file.FileSystemException: /var/jenkins_home/jobs/backup-all-jobs/lastStable: Read-only file system
+	at sun.nio.fs.UnixException.translateToIOException(UnixException.java:91)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:102)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:107)
+	at sun.nio.fs.UnixFileSystemProvider.createSymbolicLink(UnixFileSystemProvider.java:457)
+	at java.nio.file.Files.createSymbolicLink(Files.java:1043)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at hudson.Util.createSymlinkJava7(Util.java:1235)
+	at hudson.Util.createSymlink(Util.java:1151)
+	at hudson.model.Run.createSymlink(Run.java:1840)
+	at hudson.model.Run.updateSymlinks(Run.java:1822)
+	at hudson.model.Run.execute(Run.java:1736)
+	at hudson.model.FreeStyleBuild.run(FreeStyleBuild.java:43)
+	at hudson.model.ResourceController.execute(ResourceController.java:98)
+	at hudson.model.Executor.run(Executor.java:410)
+Building in workspace /var/jenkins_home/workspace/backup-all-jobs
+[backup-all-jobs] $ /bin/sh -xe /tmp/hudson7786559550541343994.sh
++ cd /var/jenkins_home/jobs
++ ssh-agent -s
++ eval SSH_AUTH_SOCK=/tmp/ssh-xgHy7qujJTMc/agent.212; export SSH_AUTH_SOCK; SSH_AGENT_PID=214; export SSH_AGENT_PID; echo Agent pid 214;
++ SSH_AUTH_SOCK=/tmp/ssh-xgHy7qujJTMc/agent.212
++ export SSH_AUTH_SOCK
++ SSH_AGENT_PID=214
++ export SSH_AGENT_PID
++ echo Agent pid 214
+Agent pid 214
++ ssh-add /usr/share/jenkins/ref/github_id_jenkins_rsa
+Identity added: /usr/share/jenkins/ref/github_id_jenkins_rsa (rsa w/o comment)
++ [ ! -d .git ]
++ git init
+Initialized empty Git repository in /var/jenkins_home/jobs/.git/
++ git config user.email jenkins@bu.edu
++ git config user.name jenkins
++ git remote add github git@github.com:whennemuth/kc-jenkins-jobs.git
+/tmp/hudson7786559550541343994.sh: 28: /tmp/hudson7786559550541343994.sh: Syntax error: end of file unexpected (expecting "fi")
+Build step 'Execute shell' marked build as failure
+Finished: FAILURE
