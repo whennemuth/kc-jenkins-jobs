@@ -8,7 +8,7 @@
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>git@github.com:whennemuth/kc-jenkins-jobs</url>
+        <url>git@github.com:whennemuth/hello-world</url>
         <credentialsId>ca8a3c5b-6245-4b07-985b-3c88ccca1f0b</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
@@ -27,6 +27,10 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
+  <rootModule>
+    <groupId>com.bu.ist.hello.world</groupId>
+    <artifactId>hello-world</artifactId>
+  </rootModule>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
@@ -47,7 +51,11 @@
   <prebuilders/>
   <postbuilders>
     <hudson.tasks.Shell>
-      <command></command>
+      <command>scp \
+   -C \
+   -i /usr/share/jenkins/ref/jenkins_vm_id_rsa \
+   /var/jenkins_home/workspace/deploy-war-file/target/hello-world-0.0.1-SNAPSHOT.war \
+   warren@192.168.56.102:/media/sf_share/helloworld_catalina_webapps</command>
     </hudson.tasks.Shell>
   </postbuilders>
   <runPostStepsIfResult>
