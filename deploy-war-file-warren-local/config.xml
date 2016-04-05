@@ -25,7 +25,12 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers/>
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>* * * * *</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
   <concurrentBuild>false</concurrentBuild>
   <rootModule>
     <groupId>com.bu.ist.hello.world</groupId>
@@ -55,10 +60,10 @@
    -C \
    -i /var/jenkins_ssh/jenkins_vm_id_rsa \
    /var/jenkins_home/workspace/deploy-war-file/target/hello-world-0.0.1-SNAPSHOT.war \
-   centos@ec2-52-37-253-82.us-west-2.compute.amazonaws.com:/media/sf_share/helloworld_catalina_webapps
+   warren@192.168.56.102:/media/sf_share/helloworld_catalina_webapps
    
 ssh \
-   centos@ec2-52-37-253-82.us-west-2.compute.amazonaws.com \
+   warren@192.168.56.102 \
    -i /var/jenkins_ssh/jenkins_vm_id_rsa \
    docker exec -d helloworldcontainer mv -f /usr/local/tomcat/webapp_arrivals/hello-world-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/hello-world.war</command>
     </hudson.tasks.Shell>
