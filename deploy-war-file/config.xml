@@ -58,13 +58,13 @@
     <hudson.tasks.Shell>
       <command>scp \
    -C \
-   -i /usr/share/jenkins/ref/jenkins_vm_id_rsa \
+   -i /var/jenkins_ssh/jenkins_vm_id_rsa \
    /var/jenkins_home/workspace/deploy-war-file/target/hello-world-0.0.1-SNAPSHOT.war \
    warren@192.168.56.102:/media/sf_share/helloworld_catalina_webapps
    
 ssh \
    warren@192.168.56.102 \
-   -i /usr/share/jenkins/ref/jenkins_vm_id_rsa \
+   -i /var/jenkins_ssh/jenkins_vm_id_rsa \
    docker exec -d helloworldcontainer mv -f /usr/local/tomcat/webapp_arrivals/hello-world-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/hello-world.war</command>
     </hudson.tasks.Shell>
   </postbuilders>
