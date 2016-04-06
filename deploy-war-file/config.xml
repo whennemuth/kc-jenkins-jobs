@@ -60,7 +60,7 @@ scp \
    -C \
    -i /var/jenkins_ssh/ec2_rsa \
    /var/jenkins_home/workspace/deploy-war-file/target/hello-world-0.0.1-SNAPSHOT.war \
-   centos@ec2-52-37-253-82.us-west-2.compute.amazonaws.com:/media/sf_share/helloworld_catalina_webapps
+   centos@ec2-52-37-253-82.us-west-2.compute.amazonaws.com:/media/sf_share/helloworld/catalina/webapps
    
 ssh \
    centos@ec2-52-37-253-82.us-west-2.compute.amazonaws.com \
