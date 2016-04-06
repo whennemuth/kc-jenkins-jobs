@@ -56,7 +56,12 @@
   <prebuilders/>
   <postbuilders>
     <hudson.tasks.Shell>
-      <command>scp \
+      <command># Copy jenkins vm key to new dir so we can reduce its permissions so that ssh agent does not complain about it being &quot;too open&quot;.
+if [! -f /var/jenkins_ssh/jenkins_vm_id_rsa ] ; then
+    cp /var/jenkins_ssh_mount/jenkins_vm_id_rsa /var/jenkins_ssh
+    chmod 600 /var/jenkins_ssh/jenkins_vm_id_rsa
+fi
+scp \
    -C \
    -i /var/jenkins_ssh/jenkins_vm_id_rsa \
    /var/jenkins_home/workspace/deploy-war-file/target/hello-world-0.0.1-SNAPSHOT.war \
@@ -65,7 +70,7 @@
 ssh \
    warren@192.168.56.102 \
    -i /var/jenkins_ssh/jenkins_vm_id_rsa \
-   docker exec -d helloworldcontainer mv -f /usr/local/tomcat/webapp_arrivals/hello-world-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/hello-world.war</command>
+   docker exec -d helloworldcontainer mv -f /usr/local/tomcat/webapp_mount/hello-world-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/hello-world.war</command>
     </hudson.tasks.Shell>
   </postbuilders>
   <runPostStepsIfResult>

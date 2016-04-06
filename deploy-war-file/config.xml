@@ -51,7 +51,12 @@
   <prebuilders/>
   <postbuilders>
     <hudson.tasks.Shell>
-      <command>scp \
+      <command># Copy ec2 key to new dir so we can reduce its permissions so that ssh agent does not complain about it being &quot;too open&quot;.
+if [! -f /var/jenkins_ssh/ec2_rsa ] ; then
+    cp /var/jenkins_ssh_mount/ec2_rsa /var/jenkins_ssh
+    chmod 600 /var/jenkins_ssh/ec2_rsa
+fi
+scp \
    -C \
    -i /var/jenkins_ssh/ec2_rsa \
    /var/jenkins_home/workspace/deploy-war-file/target/hello-world-0.0.1-SNAPSHOT.war \
@@ -60,7 +65,7 @@
 ssh \
    centos@ec2-52-37-253-82.us-west-2.compute.amazonaws.com \
    -i /var/jenkins_ssh/ec2_rsa \
-   docker exec -d helloworldcontainer mv -f /usr/local/tomcat/webapp_arrivals/hello-world-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/hello-world.war</command>
+   docker exec -d helloworldcontainer mv -f /usr/local/tomcat/webapp_mount/hello-world-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/hello-world.war</command>
     </hudson.tasks.Shell>
   </postbuilders>
   <runPostStepsIfResult>
