@@ -59,7 +59,7 @@
       <command>scp \
    -C \
    -i /var/jenkins_ssh/jenkins_vm_id_rsa \
-   /var/jenkins_home/workspace/deploy-war-file/target/hello-world-0.0.1-SNAPSHOT.war \
+   /var/jenkins_home/workspace/deploy-war-file-warren-local/target/hello-world-0.0.1-SNAPSHOT.war \
    warren@192.168.56.102:/media/sf_share/helloworld/catalina/webapps
    
 ssh \
