@@ -56,12 +56,7 @@
   <prebuilders/>
   <postbuilders>
     <hudson.tasks.Shell>
-      <command># Copy jenkins vm key to new dir so we can reduce its permissions so that ssh agent does not complain about it being &quot;too open&quot;.
-if [ ! -f /var/jenkins_ssh/jenkins_vm_id_rsa ] ; then
-    cp /var/jenkins_ssh_mount/jenkins_vm_id_rsa /var/jenkins_ssh
-    chmod 600 /var/jenkins_ssh/jenkins_vm_id_rsa
-fi
-scp \
+      <command>scp \
    -C \
    -i /var/jenkins_ssh/jenkins_vm_id_rsa \
    /var/jenkins_home/workspace/deploy-war-file/target/hello-world-0.0.1-SNAPSHOT.war \
