@@ -65,7 +65,7 @@
 ssh \
    warren@192.168.56.102 \
    -i /var/jenkins_ssh/jenkins_vm_id_rsa \
-   docker exec -d helloworldcontainer mv -f /usr/local/tomcat/webapp_mount/hello-world-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/hello-world.war</command>
+   docker exec -d helloworldcontainer cp -f /usr/local/tomcat/webapp_mount/hello-world-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/hello-world.war</command>
     </hudson.tasks.Shell>
   </postbuilders>
   <runPostStepsIfResult>
