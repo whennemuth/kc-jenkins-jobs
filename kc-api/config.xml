@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<maven2-moduleset plugin="maven-plugin@2.7.1">
+  <actions/>
+  <description>Builds the kc-api war.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>version</name>
+          <description>Git tag to build from</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>coeus-api-1504.1</string>
+              <string>coeus-api-1504.2</string>
+              <string>coeus-api-1504.3</string>
+              <string>coeus-api-1504.4</string>
+              <string>coeus-api-1504.5</string>
+              <string>coeus-api-1504.6</string>
+              <string>coeus-api-1504.7</string>
+              <string>coeus-api-1505.1</string>
+              <string>coeus-api-1505.2</string>
+              <string>coeus-api-1505.3</string>
+              <string>coeus-api-1507.1</string>
+              <string>coeus-api-1507.2</string>
+              <string>coeus-api-1507.3</string>
+              <string>coeus-api-1508.0004</string>
+              <string>coeus-api-1508.0005</string>
+              <string>coeus-api-1508.0006</string>
+              <string>coeus-api-1508.0007</string>
+              <string>coeus-api-1508.0010</string>
+              <string>coeus-api-1508.0012</string>
+              <string>coeus-api-1508.0013</string>
+              <string>coeus-api-1508.0014</string>
+              <string>coeus-api-1508.0015</string>
+              <string>coeus-api-1508.0016</string>
+              <string>coeus-api-1508.0017</string>
+              <string>coeus-api-1508.0018</string>
+              <string>coeus-api-1508.0019</string>
+              <string>coeus-api-1509.0001</string>
+              <string>coeus-api-1509.0002</string>
+              <string>coeus-api-1509.0003</string>
+              <string>coeus-api-1602.0001</string>
+              <string>coeus-api-6.0.0-s10</string>
+              <string>coeus-api-6.0.0-s11</string>
+              <string>coeus-api-6.0.0-s12</string>
+              <string>coeus-api-6.0.0-s13</string>
+              <string>coeus-api-6.0.0-s14</string>
+              <string>coeus-api-6.0.0-s8</string>
+              <string>coeus-api-6.0.0-s9</string>
+              <string>coeus-api-6.0.0.1</string>
+              <string>coeus-api-6.0.0.2</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.4">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/kuali/kc-api</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>tags/$version</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <rootModule>
+    <groupId>org.kuali.coeus</groupId>
+    <artifactId>coeus-api</artifactId>
+  </rootModule>
+  <goals>clean -e -X compile install -Dgrm.off=true</goals>
+  <aggregatorStyleBuild>true</aggregatorStyleBuild>
+  <incrementalBuild>false</incrementalBuild>
+  <ignoreUpstremChanges>true</ignoreUpstremChanges>
+  <archivingDisabled>false</archivingDisabled>
+  <siteArchivingDisabled>false</siteArchivingDisabled>
+  <fingerprintingDisabled>false</fingerprintingDisabled>
+  <resolveDependencies>false</resolveDependencies>
+  <processPlugins>false</processPlugins>
+  <mavenValidationLevel>-1</mavenValidationLevel>
+  <runHeadless>false</runHeadless>
+  <disableTriggerDownstreamProjects>false</disableTriggerDownstreamProjects>
+  <blockTriggerWhenBuilding>true</blockTriggerWhenBuilding>
+  <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+  <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+  <reporters/>
+  <publishers/>
+  <buildWrappers/>
+  <prebuilders/>
+  <postbuilders/>
+  <runPostStepsIfResult>
+    <name>FAILURE</name>
+    <ordinal>2</ordinal>
+    <color>RED</color>
+    <completeBuild>true</completeBuild>
+  </runPostStepsIfResult>
+</maven2-moduleset>

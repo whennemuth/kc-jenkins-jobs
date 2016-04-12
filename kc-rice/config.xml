@@ -219,7 +219,15 @@
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
     <submoduleCfg class="list"/>
-    <extensions/>
+    <extensions>
+      <hudson.plugins.git.extensions.impl.CloneOption>
+        <shallow>false</shallow>
+        <noTags>false</noTags>
+        <reference></reference>
+        <timeout>45</timeout>
+        <depth>0</depth>
+      </hudson.plugins.git.extensions.impl.CloneOption>
+    </extensions>
   </scm>
   <canRoam>true</canRoam>
   <disabled>false</disabled>
@@ -231,7 +239,7 @@
     <groupId>org.kuali.rice</groupId>
     <artifactId>rice</artifactId>
   </rootModule>
-  <goals>clean -e compile install -Dgrm.off=true</goals>
+  <goals>clean -e -X compile install -Dgrm.off=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
