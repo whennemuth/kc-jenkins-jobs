@@ -239,7 +239,7 @@
     <groupId>org.kuali.rice</groupId>
     <artifactId>rice</artifactId>
   </rootModule>
-  <goals>clean -e -X compile install -Dgrm.off=true</goals>
+  <goals>clean -e -X compile install -Dgrm.off=true -Dproject.augment.phase=none -Dproject.metainf.phase=none -Dmaven.test.skip=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
