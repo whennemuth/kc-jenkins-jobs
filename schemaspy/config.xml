@@ -220,6 +220,7 @@
     <groupId>co.kuali.schemaspy</groupId>
     <artifactId>schemaspy</artifactId>
   </rootModule>
+  <goals>clean compile install -Dgrm.off=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>

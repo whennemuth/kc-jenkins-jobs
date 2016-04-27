@@ -82,7 +82,7 @@
     <groupId>org.kuali.coeus</groupId>
     <artifactId>coeus-api</artifactId>
   </rootModule>
-  <goals>clean -e -X compile install -Dgrm.off=true</goals>
+  <goals>clean compile install -Dgrm.off=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
