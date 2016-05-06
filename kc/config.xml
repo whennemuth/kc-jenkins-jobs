@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<maven2-moduleset plugin="maven-plugin@2.7.1">
+  <actions/>
+  <description>Builds the kc war.&#xd;
+&#xd;
+This build is for our test environment and will reference the following in the git repository:&#xd;
+&#xd;
+    +refs/tags/release/*:refs/remotes/origin/tags/release/*&#xd;
+&#xd;
+This means that jenkins will fetch from the tagged revisions of the &quot;origin&quot; remote for &quot;release/*&quot;.&#xd;
+&quot;release/*&quot; means &quot;get me the latest revision tagged where the tag name starts with &quot;release&quot;&quot;&#xd;
+The developer will have to tag the revision he/she pushes to GIT that is intended for a build to the test environment.&#xd;
+The build will only be triggered if this tag is applied to the revision being pushed according to the naming convention specified above.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>VERSION</name>
+          <description>Git tag to build from</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>coeus-1603.49</string>
+              <string>coeus-1602.9</string>
+              <string>coeus-1602.7</string>
+              <string>coeus-1602.69</string>
+              <string>etc...</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SSH_KEY</name>
+          <description>File path of the ssh key to use for scp</description>
+          <defaultValue>/var/jenkins_ssh/ec2_rsa</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SCP_URL</name>
+          <description>This is the target base url to which the built war file will be transferred via scp.</description>
+          <defaultValue>ec2-52-37-253-82.us-west-2.compute.amazonaws.com</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>EC2_USER</name>
+          <description>Name of the user that is accessing the kuali-research aws ec2 instance via scp</description>
+          <defaultValue>jenkins</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SRC_DIR</name>
+          <description>File path of the war to transfer</description>
+          <defaultValue>/var/jenkins_home/workspace/kc/coeus-webapp/target</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>SRC_WAR</name>
+          <description>The name of the war file to scp.</description>
+          <defaultValue>coeus-webapp-1603.49.war</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>TARGET_WAR</name>
+          <description>Target directory for the war on the target server.</description>
+          <defaultValue>/var/jenkins/kc/war/kc.war</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DOCKER_TARGET_DIR</name>
+          <description>Same directory as TARGET_DIR, but as known inside the docker container (mounted directory).</description>
+          <defaultValue>/usr/local/tomcat/webapp_mount</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DOCKER_CONTAINER_WAR</name>
+          <description>The name and location inside the docker container where the war file is to be copied to once it has been scp&apos;d into the mounted folder.</description>
+          <defaultValue>/usr/local/tomcat/webapps/kc.war </defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>CONTAINER_NAME</name>
+          <description>The name of the docker container that runs the kuali-research app.</description>
+          <defaultValue>kuali-research-container</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>REFSPEC</name>
+          <description>Specifies references to pull must be tagged and the tag value must start with &quot;release/&quot;
+To instead pull the latest from the master branch use:
++refs/heads/master:refs/remotes/origin/master</description>
+          <defaultValue>+refs/tags/release/*:refs/remotes/origin/tags/release/*</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>BRANCH</name>
+          <description>This value specifies any branch that has a ref matching the pattern specified here.
+To simply specify the master branch use:
+refs/heads/master</description>
+          <defaultValue>*/tags/release/*</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.4">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <refspec>$REFSPEC</refspec>
+        <url>https://github.com/whennemuth/kc</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>$BRANCH</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions>
+      <hudson.plugins.git.extensions.impl.CloneOption>
+        <shallow>false</shallow>
+        <noTags>false</noTags>
+        <reference></reference>
+        <timeout>45</timeout>
+        <depth>0</depth>
+      </hudson.plugins.git.extensions.impl.CloneOption>
+    </extensions>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>* * * * *</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <rootModule>
+    <groupId>org.kuali.coeus</groupId>
+    <artifactId>coeus</artifactId>
+  </rootModule>
+  <goals>clean compile install -Dgrm.off=true</goals>
+  <aggregatorStyleBuild>true</aggregatorStyleBuild>
+  <incrementalBuild>false</incrementalBuild>
+  <ignoreUpstremChanges>true</ignoreUpstremChanges>
+  <archivingDisabled>false</archivingDisabled>
+  <siteArchivingDisabled>false</siteArchivingDisabled>
+  <fingerprintingDisabled>false</fingerprintingDisabled>
+  <resolveDependencies>false</resolveDependencies>
+  <processPlugins>false</processPlugins>
+  <mavenValidationLevel>-1</mavenValidationLevel>
+  <runHeadless>false</runHeadless>
+  <disableTriggerDownstreamProjects>false</disableTriggerDownstreamProjects>
+  <blockTriggerWhenBuilding>true</blockTriggerWhenBuilding>
+  <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+  <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+  <reporters/>
+  <publishers/>
+  <buildWrappers>
+    <org.jenkinsci.plugins.preSCMbuildstep.PreSCMBuildStepsWrapper plugin="preSCMbuildstep@0.3">
+      <buildSteps>
+        <hudson.tasks.Shell>
+          <command>set +x
+echo &quot; &quot;
+echo &quot;----------------------------------------------------------------------------&quot;
+echo &quot;             Ping test for $SCP_URL&quot;
+echo &quot;----------------------------------------------------------------------------&quot;
+set -x
+# if ping returns an exit value. If non-zero (ping failed), the job will stop here
+ping -c 1 $SCP_URL;
+echo &quot; &quot;
+</command>
+        </hudson.tasks.Shell>
+      </buildSteps>
+      <failOnError>true</failOnError>
+    </org.jenkinsci.plugins.preSCMbuildstep.PreSCMBuildStepsWrapper>
+  </buildWrappers>
+  <prebuilders/>
+  <postbuilders>
+    <hudson.tasks.Shell>
+      <command>scp \
+   -C \
+   -i $SSH_KEY \
+   $SRC_DIR/$SRC_WAR \
+   $EC2_USER@$SCP_URL:$TARGET_WAR
+   
+ssh \
+   $EC2_USER@$SCP_URL \
+   -i $SSH_KEY \
+   docker exec -d $CONTAINER_NAME cp -f $DOCKER_TARGET_WAR/$SRC_WAR $DOCKER_CONTAINER_WAR</command>
+    </hudson.tasks.Shell>
+  </postbuilders>
+  <runPostStepsIfResult>
+    <name>SUCCESS</name>
+    <ordinal>0</ordinal>
+    <color>BLUE</color>
+    <completeBuild>true</completeBuild>
+  </runPostStepsIfResult>
+</maven2-moduleset>
