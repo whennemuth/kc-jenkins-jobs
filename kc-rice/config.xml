@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<maven2-moduleset plugin="maven-plugin@2.7.1">
+<maven2-moduleset plugin="maven-plugin@2.12.1">
   <actions/>
   <description>Builds the rice war.</description>
   <keepDependencies>false</keepDependencies>
@@ -192,6 +192,7 @@
               <string>rice-2.5.3.1601.0001-kualico</string>
               <string>rice-2.5.3.1601.0002-kualico</string>
               <string>rice-2.5.3.1603.0001-kualico</string>
+              <string>rice-2.5.3.1603.0003-kualico</string>
               <string>rice-2.5.4.0-kckualico</string>
               <string>rice-2.5.4.1-kckualico</string>
               <string>rice-2.5.4.2-kckualico</string>
@@ -239,7 +240,7 @@
     <groupId>org.kuali.rice</groupId>
     <artifactId>rice</artifactId>
   </rootModule>
-  <goals>clean -e -X compile install -Dgrm.off=true -Dproject.augment.phase=none -Dproject.metainf.phase=none -Dmaven.test.skip=true</goals>
+  <goals>clean compile install -Dgrm.off=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
