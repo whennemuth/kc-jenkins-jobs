@@ -55,7 +55,27 @@
   <prebuilders/>
   <postbuilders>
     <hudson.tasks.Shell>
-      <command># Build the app image (the image will curl the jenkins war artifact into itself while it is building).
+      <command># Remove any dangling items
+if [ -n &quot;$(docker images --filter dangling=true -q)&quot; ] ; then 
+   docker rmi -f $(docker images --filter dangling=true -q); 
+   echo &quot;Removed dangling image(s)&quot;;
+else
+   echo &quot;No dangling images to remove&quot;;
+fi
+if [ -n &quot;$(docker ps --filter dangling=true -q)&quot; ] ; then 
+   docker rm $(docker ps --filter dangling=true -q); 
+   echo &quot;Removed dangling container(s)&quot;;
+else
+   echo &quot;No dangling containers to remove&quot;;
+fi
+if [ -n &quot;$(docker volume ls -qf dangling=true)&quot; ] ; then 
+   docker volume rm $(docker volume ls -qf dangling=true); 
+   echo &quot;Removed dangling volume(s)&quot;;
+else 
+   echo &quot;No dangling volumes to remove&quot;;
+fi
+
+# Build the app image (the image will curl the jenkins war artifact into itself while it is building).
 docker build \
    -f hello_world_dind_docker_file \
    -t ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0 \
@@ -65,13 +85,9 @@ docker build \
 docker push ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0
 
 # Execute a docker command over ssh on the application host to run a container against the new image in the registry
-# (NOTE: It is important to clean out dangling volumes because dind keeps growing it on each build as long as the jenkinsdindcontainer exists.
-#        Use the following to determine how much space is taken up by volumes:    sudo du -x -d1 -h /var/lib/docker/volumes | sort -h -r)
 ssh \
    jenkins@ec2-52-37-253-82.us-west-2.compute.amazonaws.com \
    -i /var/jenkins_ssh/ec2_rsa \
-   docker rm -f helloworlddindcontainer &amp;&amp; \
-   docker volume rm $(docker volume ls -qf dangling=true) &amp;&amp; \
    docker run \
       -d \
       -u root \
