@@ -1,7 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <maven2-moduleset plugin="maven-plugin@2.12.1">
   <actions/>
-  <description>This build creates the application war file from the HEAD reference of the git master branch and deposits it in the directory that is bind mounted to the tomcat webapps folder inside the running docker container that hosts the application.</description>
+  <description>This build:&#xd;
+   1) Creates the application war file from the HEAD reference of the git master branch.&#xd;
+   2) Wraps the war file into the image during its creation&#xd;
+   3) Uploads the new image to a docker registry&#xd;
+   4) Issues a command over SSH to docker on the application host to remove any existing container that is running and run a new one based on the new image.</description>
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.4">
@@ -51,16 +55,33 @@
   <prebuilders/>
   <postbuilders>
     <hudson.tasks.Shell>
-      <command>scp \
-   -C \
-   -i /var/jenkins_ssh/ec2_rsa \
-   /var/jenkins_home/workspace/deploy-war-file/target/hello-world-0.0.1-SNAPSHOT.war \
-   jenkins@ec2-52-37-253-82.us-west-2.compute.amazonaws.com:/var/jenkins/helloworld/war
+      <command># Copy the war file to the context root of the docker build.
+cp /var/jenkins_home/workspace/deploy-war-file-dind/target/hello-world-0.0.1-SNAPSHOT.war helloworld.war
+
+# Build the app image (the build will look in its context for the war file and copy it into the image).
+docker build \
+   -f hello_world_dind_docker_file \
+   -t ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0 \
+   https://github.com/whennemuth/hello-world.git#master:docker/build.context/helloworld-dind
    
+# Push the newly created image to the registry (Assumes the directory containing the sa.crt file is mounted into this jenkins container).
+docker push ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0
+
+# Execute a docker command over ssh on the application host to run a container against the new image in the registry
 ssh \
    jenkins@ec2-52-37-253-82.us-west-2.compute.amazonaws.com \
    -i /var/jenkins_ssh/ec2_rsa \
-   docker exec -d helloworldcontainer cp -f /usr/local/tomcat/webapp_mount/hello-world-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/hello-world.war</command>
+   docker rm -f helloworlddindcontainer &amp;&amp; \
+   docker run \
+      -d \
+      -u root \
+      -p 80:8080 \
+      -p 3306:3306 \
+      --name helloworlddindcontainer \
+      -v /var/jenkins/helloworld/logs:/usr/local/tomcat/logs \
+      ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0
+   
+</command>
     </hudson.tasks.Shell>
   </postbuilders>
   <runPostStepsIfResult>
