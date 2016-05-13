@@ -79,6 +79,7 @@ fi
 docker build \
    -f hello_world_dind_docker_file \
    -t ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0 \
+   --build-arg JENKINS_URL=ec2-52-37-165-82.us-west-2.compute.amazonaws.com:8080/jenkinsdind \
    https://github.com/whennemuth/hello-world.git#master:docker/build.context/helloworld-dind
    
 # Push the newly created image to the registry (Assumes the directory containing the sa.crt file is mounted into this jenkins container).
@@ -88,6 +89,8 @@ docker push ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/hellowo
 ssh \
    jenkins@ec2-52-37-253-82.us-west-2.compute.amazonaws.com \
    -i /var/jenkins_ssh/ec2_rsa \
+   docker rm -f helloworlddindcontainer || echo &quot;No container to remove.&quot; &amp;&amp; \
+   docker pull ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0 &amp;&amp; \
    docker run \
       -d \
       -u root \
