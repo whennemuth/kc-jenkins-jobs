@@ -88,18 +88,18 @@ docker push ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/hellowo
 # Execute a docker command over ssh on the application host to run a container against the new image in the registry
 ssh \
    jenkins@ec2-52-37-253-82.us-west-2.compute.amazonaws.com \
-   -i /var/jenkins_ssh/ec2_rsa \
-   docker rm -f helloworlddindcontainer || echo &quot;No container to remove.&quot; &amp;&amp; \
-   docker pull ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0 &amp;&amp; \
-   docker run \
-      -d \
-      -u root \
-      -p 80:8080 \
-      -p 3306:3306 \
-      --name helloworlddindcontainer \
-      -v /var/jenkins/helloworld/logs:/usr/local/tomcat/logs \
-      ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0
-   
+   -i /var/jenkins_ssh/ec2_rsa &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
+   &quot;docker rm -f helloworlddindcontainer || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
+   &quot;docker pull ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0 &amp;&amp; &quot; \
+   &quot;docker run&quot; \
+   &quot; -d&quot; \
+   &quot; -u root&quot; \
+   &quot; -p 80:8080&quot; \
+   &quot; -p 3306:3306&quot; \
+   &quot; --name helloworlddindcontainer&quot; \
+   &quot; -v /var/jenkins/helloworld/logs:/usr/local/tomcat/logs &quot; \
+   &quot;ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/helloworlddind:v1.0 &amp;&amp; &quot; \
+   &quot;docker ps&quot;
 </command>
     </hudson.tasks.Shell>
   </postbuilders>
