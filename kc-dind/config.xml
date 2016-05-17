@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<maven2-moduleset plugin="maven-plugin@2.12.1">
+  <actions/>
+  <description>This build:&#xd;
+   1) Creates the application war file from the HEAD reference of the git master branch.&#xd;
+   2) Wraps the war file into the image during its creation&#xd;
+   3) Uploads the new image to a docker registry&#xd;
+   4) Issues a command over SSH to docker on the application host to remove any existing container that is running and run a new one based on the new image.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>BRANCH</name>
+          <description>This value specifies any branch that has a ref matching the pattern specified here.
+For example, if you tagged a ref as follows: 
+     &quot;git tag release/2015.3.1.R a2d8a71&quot;
+Then this job would build kuali-research from ref &quot;a2d8a71&quot;
+To simply specify the HEAD ref of the master branch use:
+     refs/heads/master</description>
+          <defaultValue>*/tags/release/*</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>REFSPEC</name>
+          <description>Specifies references to pull must be tagged and the tag value must start with &quot;release/&quot;
+To instead pull the latest from the master branch use:
+     +refs/heads/master:refs/remotes/origin/master
+
+Tag the codebase accordingly. For example:
+     git tag release/coeus-1603.49 tags/coeus-1603.49
+     git tag release/coeus-1603.49 HEAD
+     git tag release/coeus-1603.49 a2d8a71
+     etc.</description>
+          <defaultValue>+refs/tags/release/*:refs/remotes/origin/tags/release/*</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.4">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <refspec>$REFSPEC</refspec>
+        <url>git@github.com:whennemuth/kc</url>
+        <credentialsId>ca8a3c5b-6245-4b07-985b-3c88ccca1f0b</credentialsId>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>$BRANCH</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <rootModule>
+    <groupId>org.kuali.coeus</groupId>
+    <artifactId>coeus</artifactId>
+  </rootModule>
+  <goals>clean compile install -Dgrm.off=true</goals>
+  <aggregatorStyleBuild>true</aggregatorStyleBuild>
+  <incrementalBuild>false</incrementalBuild>
+  <ignoreUpstremChanges>true</ignoreUpstremChanges>
+  <archivingDisabled>false</archivingDisabled>
+  <siteArchivingDisabled>false</siteArchivingDisabled>
+  <fingerprintingDisabled>false</fingerprintingDisabled>
+  <resolveDependencies>false</resolveDependencies>
+  <processPlugins>false</processPlugins>
+  <mavenValidationLevel>-1</mavenValidationLevel>
+  <runHeadless>false</runHeadless>
+  <disableTriggerDownstreamProjects>false</disableTriggerDownstreamProjects>
+  <blockTriggerWhenBuilding>true</blockTriggerWhenBuilding>
+  <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+  <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+  <reporters/>
+  <publishers/>
+  <buildWrappers/>
+  <prebuilders/>
+  <postbuilders>
+    <hudson.tasks.Shell>
+      <command># Remove any dangling items
+if [ -n &quot;$(docker images --filter dangling=true -q)&quot; ] ; then 
+   docker rmi -f $(docker images --filter dangling=true -q); 
+   echo &quot;Removed dangling image(s)&quot;;
+else
+   echo &quot;No dangling images to remove&quot;;
+fi
+if [ -n &quot;$(docker ps --filter dangling=true -q)&quot; ] ; then 
+   docker rm $(docker ps --filter dangling=true -q); 
+   echo &quot;Removed dangling container(s)&quot;;
+else
+   echo &quot;No dangling containers to remove&quot;;
+fi
+if [ -n &quot;$(docker volume ls -qf dangling=true)&quot; ] ; then 
+   docker volume rm $(docker volume ls -qf dangling=true); 
+   echo &quot;Removed dangling volume(s)&quot;;
+else 
+   echo &quot;No dangling volumes to remove&quot;;
+fi
+
+# Build the app image (the image will curl the jenkins war artifact into itself while it is building).
+docker build \
+   -f kuali_research_docker_file_bundlewar \
+   -t ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/kuali-research-dind:v1.0 \
+   --build-arg JENKINS_URL=ec2-52-37-165-82.us-west-2.compute.amazonaws.com:8080/kc-dind \
+   https://github.com/whennemuth/hello-world.git#master:docker/build.context/kuali-research
+   
+# Push the newly created image to the registry (Assumes the directory containing the sa.crt file is mounted into this jenkins container).
+docker push ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/kuali-research-dind:v1.0
+
+# Execute a docker command over ssh on the application host to run a container against the new image in the registry
+ssh \
+   jenkins@ec2-52-37-253-82.us-west-2.compute.amazonaws.com \
+   -i /var/jenkins_ssh/ec2_rsa &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
+   &quot;docker rm -f kcdindcontainer || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
+   &quot;docker pull ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/kuali-research-dind:v1.0 &amp;&amp; &quot; \
+   &quot;docker run&quot; \
+   &quot; -d&quot; \
+   &quot; -u root&quot; \
+   &quot; -p 80:8080&quot; \
+   &quot; -p 3306:3306&quot; \
+   &quot; --name kcdindcontainer&quot; \
+   &quot; -v /var/jenkins/kc/logs:/usr/local/tomcat/logs &quot; \
+   &quot;ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/kuali-research-dind:v1.0 &amp;&amp; &quot; \
+   &quot;docker ps&quot;
+</command>
+    </hudson.tasks.Shell>
+  </postbuilders>
+  <runPostStepsIfResult>
+    <name>SUCCESS</name>
+    <ordinal>0</ordinal>
+    <color>BLUE</color>
+    <completeBuild>true</completeBuild>
+  </runPostStepsIfResult>
+</maven2-moduleset>
