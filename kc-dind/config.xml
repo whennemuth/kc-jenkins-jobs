@@ -16,7 +16,12 @@ Running the build again usually goes successfully.&#xd;
 TODO:&#xd;
 Have a pre-build step build the other dependencies if they are not in the local .m2 repo.&#xd;
 For example, if rice or s2sgen versions indicated in the pom file are not present, this could be detected by the following command:&#xd;
-mvn dependency:get -Dartifact=g:a:v -o -DrepoUrl=file://path/to/your/repo</description>
+mvn dependency:get -Dartifact=g:a:v -o -DrepoUrl=file://path/to/your/repo&#xd;
+See also:&#xd;
+https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI&#xd;
+https://wiki.jenkins-ci.org/display/JENKINS/Conditional+BuildStep+Plugin&#xd;
+https://wiki.jenkins-ci.org/display/JENKINS/Run+Condition+Plugin&#xd;
+https://www.cloudbees.com/blog/how-use-jenkins-job-chaining-and-visualizations</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
