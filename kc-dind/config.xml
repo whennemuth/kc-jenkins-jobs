@@ -5,7 +5,13 @@
    1) Creates the application war file from the HEAD reference of the git master branch.&#xd;
    2) Wraps the war file into the image during its creation&#xd;
    3) Uploads the new image to a docker registry&#xd;
-   4) Issues a command over SSH to docker on the application host to remove any existing container that is running and run a new one based on the new image.</description>
+   4) Issues a command over SSH to docker on the application host to remove any existing container that is running and run a new one based on the new image.&#xd;
+&#xd;
+ISSUE:&#xd;
+If you see any node errors that mention &quot;ECONNRESET or EPIPE&quot;, this is probably due to the following known bug:&#xd;
+https://github.com/npm/npm/issues/7945&#xd;
+This issue is intermittent and not actually related to proxy configuration.&#xd;
+Running the build again usually goes successfully.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
