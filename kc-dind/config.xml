@@ -11,7 +11,12 @@ ISSUE:&#xd;
 If you see any node errors that mention &quot;ECONNRESET or EPIPE&quot;, this is probably due to the following known bug:&#xd;
 https://github.com/npm/npm/issues/7945&#xd;
 This issue is intermittent and not actually related to proxy configuration.&#xd;
-Running the build again usually goes successfully.</description>
+Running the build again usually goes successfully.&#xd;
+&#xd;
+TODO:&#xd;
+Have a pre-build step build the other dependencies if they are not in the local .m2 repo.&#xd;
+For example, if rice or s2sgen versions indicated in the pom file are not present, this could be detected by the following command:&#xd;
+mvn dependency:get -Dartifact=g:a:v -o -DrepoUrl=file://path/to/your/repo</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
