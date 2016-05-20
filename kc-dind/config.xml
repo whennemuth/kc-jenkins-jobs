@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<maven2-moduleset plugin="maven-plugin@2.12.1">
+<maven2-moduleset plugin="maven-plugin@2.13">
   <actions/>
   <description>This build:&#xd;
    1) Creates the application war file from the HEAD reference of the git master branch.&#xd;
@@ -57,8 +57,7 @@ Tag the codebase accordingly. For example:
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
         <refspec>$REFSPEC</refspec>
-        <url>git@github.com:whennemuth/kc</url>
-        <credentialsId>ca8a3c5b-6245-4b07-985b-3c88ccca1f0b</credentialsId>
+        <url>https://github.com/whennemuth/kc</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -84,6 +83,7 @@ Tag the codebase accordingly. For example:
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
+  <ignoreUnsuccessfulUpstreams>false</ignoreUnsuccessfulUpstreams>
   <archivingDisabled>false</archivingDisabled>
   <siteArchivingDisabled>false</siteArchivingDisabled>
   <fingerprintingDisabled>false</fingerprintingDisabled>
@@ -131,7 +131,7 @@ docker build \
 # Push the newly created image to the registry (Assumes the directory containing the sa.crt file is mounted into this jenkins container).
 docker push ec2-52-25-226-38.us-west-2.compute.amazonaws.com:5000/bu-ist/kuali-research-dind:v1.0
 
-# Execute a docker command over ssh on the application host to run a container against the new image in the registry
+## Execute a docker command over ssh on the application host to run a container against the new image in the registry
 ssh \
    jenkins@ec2-52-37-253-82.us-west-2.compute.amazonaws.com \
    -i /var/jenkins_ssh/ec2_rsa &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
