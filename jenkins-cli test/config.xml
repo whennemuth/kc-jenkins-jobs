@@ -11,29 +11,6 @@
           <description>version of artifact to build</description>
           <defaultValue>coeus-1603.49</defaultValue>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>BRANCH</name>
-          <description>This value specifies any branch that has a ref matching the pattern specified here.
-For example, if you tagged a ref as follows: 
-     &quot;git tag release/2015.3.1.R a2d8a71&quot;
-Then this job would build kuali-research from ref &quot;a2d8a71&quot;
-To simply specify the HEAD ref of the master branch use:
-     refs/heads/master</description>
-          <defaultValue>*/tags/release/*</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>REFSPEC</name>
-          <description>Specifies references to pull must be tagged and the tag value must start with &quot;release/&quot;
-To instead pull the latest from the master branch use:
-     +refs/heads/master:refs/remotes/origin/master
-
-Tag the codebase accordingly. For example:
-     git tag release/coeus-1603.49 tags/coeus-1603.49
-     git tag release/coeus-1603.49 HEAD
-     git tag release/coeus-1603.49 a2d8a71
-     etc.</description>
-          <defaultValue>+refs/tags/release/*:refs/remotes/origin/tags/release/*</defaultValue>
-        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -41,13 +18,12 @@ Tag the codebase accordingly. For example:
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <refspec>$REFSPEC</refspec>
         <url>https://github.com/whennemuth/kc</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>$BRANCH</name>
+        <name>tags/$VERSION</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
@@ -116,40 +92,41 @@ echo &quot;2) Searching .m2 directory for dependencies installed for above versi
 
 repo=&quot;/home/jenkins/.m2/repository&quot;
 
-# file extension, group, version, artifactid, shortname
+# file extension, group, version, artifactid, parent_artifactid, job
 m2_items=(
-   &quot;jar,co/kuali/schemaspy,${schemaspy_version},schemaspy,schemaspy&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-archetype-quickstart,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-core-api,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-db-config,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-deploy,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-development-tools,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-impex-client-bootstrap,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-impex-master,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-impex-server-bootstrap,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-impl,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-it-config,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-ken-api,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-kew-api,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-kim-api,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-kns,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-krad-app-framework,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-krms-api,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-ksb-api,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-legacy-web,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-location-api,rice&quot;
-   &quot;war,org/kuali/rice,${rice_version},rice-serviceregistry,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-sql,rice&quot;
-   &quot;war,org/kuali/rice,${rice_version},rice-standalone,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-tools-test,rice&quot;
-   &quot;war,org/kuali/rice,${rice_version},rice-web,rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-xml,rice&quot;
-   &quot;jar,org/kuali/coeus,${api_version},coeus-api-all,coeus-api&quot;
-   &quot;jar,org/kuali/coeus,${s2sgen_version},coeus-s2sgen-api,coeus-s2sgen&quot;
-   &quot;jar,org/kuali/coeus,${s2sgen_version},coeus-s2sgen-impl,coeus-s2sgen&quot;
+   &quot;jar,co/kuali/schemaspy,${schemaspy_version},schemaspy,schemaspy,schemaspy&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-archetype-quickstart,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-core-api,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-db-config,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-deploy,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-development-tools,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-impex-client-bootstrap,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-impex-master,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-impex-server-bootstrap,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-impl,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-it-config,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-ken-api,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-kew-api,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-kim-api,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-kns,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-krad-app-framework,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-krms-api,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-ksb-api,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-legacy-web,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-location-api,rice,kc-rice&quot;
+   &quot;war,org/kuali/rice,${rice_version},rice-serviceregistry,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-sql,rice,kc-rice&quot;
+   &quot;war,org/kuali/rice,${rice_version},rice-standalone,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-tools-test,rice,kc-rice&quot;
+   &quot;war,org/kuali/rice,${rice_version},rice-web,rice,kc-rice&quot;
+   &quot;jar,org/kuali/rice,${rice_version},rice-xml,rice,kc-rice&quot;
+   &quot;jar,org/kuali/coeus,${api_version},coeus-api-all,coeus-api,kc-api&quot;
+   &quot;jar,org/kuali/coeus,${s2sgen_version},coeus-s2sgen-api,coeus-s2sgen,kc-s2sgen&quot;
+   &quot;jar,org/kuali/coeus,${s2sgen_version},coeus-s2sgen-impl,coeus-s2sgen,kc-s2sgen&quot;
 )
 
-m2_missing=()
+jobs_to_run=()
+git_tags=()
 
 for i in ${m2_items[@]}; do
 
@@ -159,25 +136,34 @@ for i in ${m2_items[@]}; do
    group=${parts[1]}
    version=${parts[2]}
    artifactid=${parts[3]}
-   shortname=${parts[4]}
+   parentartifactid=${parts[4]}
+   job=${parts[5]}
 
    artifact=&quot;${repo}/${group}/${artifactid}/${version}/${artifactid}-${version}.${ext}&quot;
    if [ -f $artifact ] ; then
       echo &quot;found: ${artifact}&quot;;
    else
       echo &quot;MISSING: ${artifact}&quot;;
-      if [ -z &quot;$(echo ${m2_missing[*]} | grep ${shortname})&quot; ] ; then
-         m2_missing+=(${shortname});
+      if [ -z &quot;$(echo $jobs_to_run[*]} | grep ${job})&quot; ] ; then
+         jobs_to_run+=(${job});
+         git_tags+=(&quot;${parentartifactid}-${version}&quot;);
       fi
    fi
 done
 
 echo &quot; &quot;
 
-if [ ${#m2_missing[@]} -eq 0 ] ; then
+if [ ${#jobs_to_run[@]} -eq 0 ] ; then
    echo &quot;All dependencies accounted for&quot;;
 else
-   echo &quot;DEPENDENCIES MISSING. Must build the following: ${m2_missing[*]}&quot;;
+   echo &quot;DEPENDENCIES MISSING. Must build the following: ${jobs_to_run[*]}&quot;;
+   echo &quot; &quot;
+   for ((i=0; i&lt;${#jobs_to_run[*]}; i++));
+   do
+      # java -jar /home/jenkins/jenkins-cli.jar -s http://localhost:8080/ build &apos;jenkins-cli test2&apos; -v -f -p PARM1=hello --username=warren --password=password
+      # java -jar /home/jenkins/jenkins-cli.jar -s http://localhost:8080/ build ${jobs_to_run[i]} -v -f -p VERSION=${git_tags[i]}
+      echo &quot;java -jar /home/jenkins/jenkins-cli.jar -s http://localhost:8080/ build ${jobs_to_run[i]} -v -f -p VERSION=${git_tags[i]}&quot;
+   done
 fi
 
 echo &quot; &quot;
@@ -186,7 +172,6 @@ echo &quot;                      FINISHED M2 DEPENDENCY CHECK&quot;
 echo &quot;----------------------------------------------------------------------------&quot;
 echo &quot; &quot;
 
-java -jar /home/jenkins/jenkins-cli.jar -s http://localhost:8080/ build &apos;jenkins-cli test2&apos; -v -f -p PARM1=hello --username=warren --password=password
 
 set -x
 
