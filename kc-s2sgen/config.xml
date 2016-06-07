@@ -14,101 +14,11 @@
     </jenkins.model.BuildDiscarderProperty>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <hudson.model.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
           <name>version</name>
-          <description>Git tag to build from</description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              <string>coeus-s2sgen-1504.1</string>
-              <string>coeus-s2sgen-1504.2</string>
-              <string>coeus-s2sgen-1504.3</string>
-              <string>coeus-s2sgen-1504.4</string>
-              <string>coeus-s2sgen-1504.5</string>
-              <string>coeus-s2sgen-1504.6</string>
-              <string>coeus-s2sgen-1504.7</string>
-              <string>coeus-s2sgen-1505.1</string>
-              <string>coeus-s2sgen-1505.2</string>
-              <string>coeus-s2sgen-1505.3</string>
-              <string>coeus-s2sgen-1505.4</string>
-              <string>coeus-s2sgen-1505.5</string>
-              <string>coeus-s2sgen-1505.6</string>
-              <string>coeus-s2sgen-1505.7</string>
-              <string>coeus-s2sgen-1506.1</string>
-              <string>coeus-s2sgen-1506.2</string>
-              <string>coeus-s2sgen-1507.1</string>
-              <string>coeus-s2sgen-1507.2</string>
-              <string>coeus-s2sgen-1508.0001</string>
-              <string>coeus-s2sgen-1508.0002</string>
-              <string>coeus-s2sgen-1508.0003</string>
-              <string>coeus-s2sgen-1508.0004</string>
-              <string>coeus-s2sgen-1509.0001</string>
-              <string>coeus-s2sgen-1509.0002</string>
-              <string>coeus-s2sgen-1509.0003</string>
-              <string>coeus-s2sgen-1509.0004</string>
-              <string>coeus-s2sgen-1509.0005</string>
-              <string>coeus-s2sgen-1509.0006</string>
-              <string>coeus-s2sgen-1509.0007</string>
-              <string>coeus-s2sgen-1509.0008</string>
-              <string>coeus-s2sgen-1509.0009</string>
-              <string>coeus-s2sgen-1509.0010</string>
-              <string>coeus-s2sgen-1509.0011</string>
-              <string>coeus-s2sgen-1509.0012</string>
-              <string>coeus-s2sgen-1509.0013</string>
-              <string>coeus-s2sgen-1509.0014</string>
-              <string>coeus-s2sgen-1510.0001</string>
-              <string>coeus-s2sgen-1510.0002</string>
-              <string>coeus-s2sgen-1510.0003</string>
-              <string>coeus-s2sgen-1511.0001</string>
-              <string>coeus-s2sgen-1511.0002</string>
-              <string>coeus-s2sgen-1511.0003</string>
-              <string>coeus-s2sgen-1511.0004</string>
-              <string>coeus-s2sgen-1511.0005</string>
-              <string>coeus-s2sgen-1511.0006</string>
-              <string>coeus-s2sgen-1512.0001</string>
-              <string>coeus-s2sgen-1512.0002</string>
-              <string>coeus-s2sgen-1512.0003</string>
-              <string>coeus-s2sgen-1512.0004</string>
-              <string>coeus-s2sgen-1512.0005</string>
-              <string>coeus-s2sgen-1512.0006</string>
-              <string>coeus-s2sgen-1512.0007</string>
-              <string>coeus-s2sgen-1512.0008</string>
-              <string>coeus-s2sgen-1512.0009</string>
-              <string>coeus-s2sgen-1512.0010</string>
-              <string>coeus-s2sgen-1512.0011</string>
-              <string>coeus-s2sgen-1512.0012</string>
-              <string>coeus-s2sgen-1512.0013</string>
-              <string>coeus-s2sgen-1512.0014</string>
-              <string>coeus-s2sgen-1601.0001</string>
-              <string>coeus-s2sgen-1601.0002</string>
-              <string>coeus-s2sgen-1601.0003</string>
-              <string>coeus-s2sgen-1601.0004</string>
-              <string>coeus-s2sgen-1601.0007</string>
-              <string>coeus-s2sgen-1602.0001</string>
-              <string>coeus-s2sgen-1602.0002</string>
-              <string>coeus-s2sgen-1603.0001</string>
-              <string>coeus-s2sgen-1603.0002</string>
-              <string>coeus-s2sgen-1603.0003</string>
-              <string>coeus-s2sgen-1603.0004</string>
-              <string>coeus-s2sgen-1603.0005</string>
-              <string>coeus-s2sgen-1603.0006</string>
-              <string>coeus-s2sgen-1603.0007</string>
-              <string>coeus-s2sgen-1603.0008</string>
-              <string>coeus-s2sgen-1603.0009</string>
-              <string>coeus-s2sgen-6.0.0</string>
-              <string>coeus-s2sgen-6.0.0-s10</string>
-              <string>coeus-s2sgen-6.0.0-s11</string>
-              <string>coeus-s2sgen-6.0.0-s12</string>
-              <string>coeus-s2sgen-6.0.0-s13</string>
-              <string>coeus-s2sgen-6.0.0-s14</string>
-              <string>coeus-s2sgen-6.0.0-s8</string>
-              <string>coeus-s2sgen-6.0.0-s9</string>
-              <string>coeus-s2sgen-6.0.1</string>
-              <string>coeus-s2sgen-6.0.2</string>
-              <string>coeus-s2sgen-6.0.3</string>
-              <string>coeus-s2sgen-6.0.3.1</string>
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
+          <description>Example: coeus-s2sgen-1604.0006</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>

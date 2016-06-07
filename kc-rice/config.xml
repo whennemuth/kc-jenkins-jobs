@@ -56,7 +56,7 @@
     <groupId>org.kuali.rice</groupId>
     <artifactId>rice</artifactId>
   </rootModule>
-  <goals>clean compile install -e -X -Dgrm.off=true</goals>
+  <goals>clean compile install -e -Dgrm.off=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
