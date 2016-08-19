@@ -14,11 +14,11 @@
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.4">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.5.3">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>https://github.com/whennemuth/kc</url>
+        <url>https://github.com/bu-ist/kuali-research</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -90,7 +90,7 @@ echo &quot;s2sgen version: ${s2sgen_version}&quot;
 echo &quot; &quot;
 echo &quot;2) Searching .m2 directory for dependencies installed for above versions...&quot;
 
-repo=&quot;/home/jenkins/.m2/repository&quot;
+repo=&quot;/var/lib/jenkins/.m2/repository&quot;
 
 # file extension, group, version, artifactid, parent_artifactid, job
 m2_items=(
@@ -160,9 +160,9 @@ else
    echo &quot; &quot;
    for ((i=0; i&lt;${#jobs_to_run[*]}; i++));
    do
-      # java -jar /home/jenkins/jenkins-cli.jar -s http://localhost:8080/ build &apos;jenkins-cli test2&apos; -v -f -p PARM1=hello --username=warren --password=password
-      # java -jar /home/jenkins/jenkins-cli.jar -s http://localhost:8080/ build ${jobs_to_run[i]} -v -f -p VERSION=${git_tags[i]}
-      echo &quot;java -jar /home/jenkins/jenkins-cli.jar -s http://localhost:8080/ build ${jobs_to_run[i]} -v -f -p VERSION=${git_tags[i]}&quot;
+      # java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build &apos;jenkins-cli test2&apos; -v -f -p PARM1=hello --username=warren --password=password
+      # java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build ${jobs_to_run[i]} -v -f -p VERSION=${git_tags[i]}
+      echo &quot;java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build ${jobs_to_run[i]} -v -f -p VERSION=${git_tags[i]}&quot;
    done
 fi
 
