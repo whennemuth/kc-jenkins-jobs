@@ -251,7 +251,9 @@ else
 fi
 
 # Login to the registry
-aws ecr get-login --region us-east-1
+# NOTE: info on how to store credentials can be found at: 
+#       http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
+aws ecr get-login --profile sandbox
 
 # Build the app image (the image will curl the jenkins war artifact into itself while it is building).
 docker build \
