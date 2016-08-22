@@ -21,11 +21,8 @@
         <hudson.model.StringParameterDefinition>
           <name>BRANCH</name>
           <description>This value specifies any branch that has a ref matching the pattern specified here.
-For example, if you tagged a ref as follows: 
-     &quot;git tag release/2015.3.1.R a2d8a71&quot;
-Then this job would build kuali-research from ref &quot;a2d8a71&quot;
-To simply specify the HEAD ref of the master branch use:
-     refs/heads/master</description>
+To simply specify the master branch use:
+refs/heads/master</description>
           <defaultValue>*/tags/release/*</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -35,7 +32,7 @@ To instead pull the latest from the master branch use:
      +refs/heads/master:refs/remotes/origin/master
 
 Tag the codebase accordingly. For example:
-     git tag release/hello-world-1603.49 tags/hello-world-1603.49
+     git tag release/hello-world-1603.49 tags/coeus-1603.49
      git tag release/hello-world-1603.49 HEAD
      git tag release/hello-world-1603.49 a2d8a71
      etc.</description>
@@ -48,13 +45,13 @@ Tag the codebase accordingly. For example:
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <refspec>+refs/tags/release/*:refs/remotes/origin/tags/release/*</refspec>
+        <refspec>$REFSPEC</refspec>
         <url>https://github.com/whennemuth/hello-world</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>*/tags/release/*</name>
+        <name>$BRANCH</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
@@ -65,15 +62,11 @@ Tag the codebase accordingly. For example:
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <triggers>
-    <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.21.0">
-      <spec></spec>
-    </com.cloudbees.jenkins.GitHubPushTrigger>
-  </triggers>
+  <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <rootModule>
-    <groupId>org.kuali.coeus</groupId>
-    <artifactId>coeus</artifactId>
+    <groupId>com.bu.ist.hello.world</groupId>
+    <artifactId>hello-world</artifactId>
   </rootModule>
   <goals>clean compile install -Dgrm.off=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
@@ -97,54 +90,43 @@ Tag the codebase accordingly. For example:
   <prebuilders/>
   <postbuilders>
     <hudson.tasks.Shell>
-      <command># Remove any dangling items
-if [ -n &quot;$(docker images --filter dangling=true -q)&quot; ] ; then 
-   docker rmi -f $(docker images --filter dangling=true -q); 
-   echo &quot;Removed dangling image(s)&quot;;
-else
-   echo &quot;No dangling images to remove&quot;;
-fi
-if [ -n &quot;$(docker ps --filter dangling=true -q)&quot; ] ; then 
-   docker rm $(docker ps --filter dangling=true -q); 
-   echo &quot;Removed dangling container(s)&quot;;
-else
-   echo &quot;No dangling containers to remove&quot;;
-fi
-if [ -n &quot;$(docker volume ls -qf dangling=true)&quot; ] ; then 
-   docker volume rm $(docker volume ls -qf dangling=true); 
-   echo &quot;Removed dangling volume(s)&quot;;
-else 
-   echo &quot;No dangling volumes to remove&quot;;
-fi
+      <command>echo &quot;BRANCH_NAME = ${BRANCH_NAME}&quot;
+# For a multibranch project, this will be set to the name of the branch being built, for example in case you wish to deploy to production from master but not from feature branches.
 
-# Login to the registry
-# NOTE: info on how to store credentials can be found at: 
-#       http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
-#       requires ~/.aws/config
-eval $(aws ecr get-login --profile sandbox)
+echo &quot;BUILD_NUMBER = ${BUILD_NUMBER}&quot;
+# The current build number, such as &quot;153&quot;
 
-# Build the app image (the image will curl the jenkins war artifact into itself while it is building).
-docker build \
-   -t docker tag hello-world:${POM_VERSION} 730096353738.dkr.ecr.us-east-1.amazonaws.com/hello-world:${POM_VERSION} \
-   --build-arg SOURCE_WAR=10.57.236.6:8080/job/hello-world/ws/hellow-world/target/hello-world-${POM_VERSION}.war \
-   https://github.com/bu-ist/kuali-research-docker.git#master:hello-world/build.context
-   
-# Push the newly created image to the registry (Assumes the directory containing the sa.crt file is mounted into this jenkins container).
-docker push 730096353738.dkr.ecr.us-east-1.amazonaws.com/hello-world:${POM_VERSION}
+echo &quot;BUILD_ID = ${BUILD_ID}&quot;
+# The current build ID, identical to BUILD_NUMBER for builds created in 1.597+, but a YYYY-MM-DD_hh-mm-ss timestamp for older builds
 
-## Execute a docker command over ssh on the application host to run a container against the new image in the registry
-ssh \
-   jenkins@10.57.237.84 \
-   -i /var/lib/jenkins/.ssh/bu_kuali_id_jenkins_rsa &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
-   &quot;docker rm -f hwcontainer || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
-   &quot;docker 730096353738.dkr.ecr.us-east-1.amazonaws.com/hello-world:${POM_VERSION} &amp;&amp; &quot; \
-   &quot;docker run&quot; \
-   &quot; -d&quot; \
-   &quot; -p 8080:8080&quot; \
-   &quot; --restart unless-stopped&quot; \
-   &quot; --name hwcontainer&quot; \
-   &quot;730096353738.dkr.ecr.us-east-1.amazonaws.com/hello-world:${POM_VERSION} &amp;&amp; &quot; \
-   &quot;docker ps&quot;
+echo &quot;BUILD_DISPLAY_NAME = ${BUILD_DISPLAY_NAME}&quot;
+# The display name of the current build, which is something like &quot;#153&quot; by default.
+
+echo &quot;JOB_NAME = ${JOB_NAME}&quot;
+# Name of the project of this build, such as &quot;foo&quot; or &quot;foo/bar&quot;.
+
+echo &quot;JOB_BASE_NAME = ${JOB_BASE_NAME}&quot;
+# Short Name of the project of this build stripping off folder paths, such as &quot;foo&quot; for &quot;bar/foo&quot;.
+
+echo &quot;BUILD_TAG = ${BUILD_TAG}&quot;
+# String of &quot;jenkins-${JOB_NAME}-${BUILD_NUMBER}&quot;. Convenient to put into a resource file, a jar file, etc for easier identification. starts from 0, not 1.
+
+echo &quot;WORKSPACE = ${WORKSPACE}&quot;
+# The absolute path of the directory assigned to the build as a workspace.
+
+echo &quot;JENKINS_HOME = ${JENKINS_HOME}&quot;
+# The absolute path of the directory assigned on the master node for Jenkins to store data.
+
+echo &quot;JENKINS_URL = ${JENKINS_URL}&quot;
+# Full URL of Jenkins, like http://server:port/jenkins/ (note: only available if Jenkins URL set in system configuration)
+
+echo &quot;BUILD_URL = ${BUILD_URL}&quot;
+# Full URL of this build, like http://server:port/jenkins/job/foo/15/ (Jenkins URL must be set)
+
+echo &quot;JOB_URL = ${JOB_URL}&quot;
+# Full URL of this job, like http://server:port/jenkins/job/foo/ (Jenkins URL must be set)
+
+java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-deploy -v -f -p version=${POM_VERSION}
 </command>
     </hudson.tasks.Shell>
   </postbuilders>
