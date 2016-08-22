@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<maven2-moduleset plugin="maven-plugin@2.13">
+  <actions/>
+  <description>This build:&#xd;
+   1) Creates the application war file from the HEAD reference of the git master branch.&#xd;
+   2) Wraps the war file into the image during its creation&#xd;
+   3) Uploads the new image to a docker registry&#xd;
+   4) Issues a command over SSH to docker on the application host to remove any existing container that is running and run a new one based on the new image.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>BRANCH</name>
+          <description>This value specifies any branch that has a ref matching the pattern specified here.
+To simply specify the master branch use:
+refs/heads/master</description>
+          <defaultValue>*/tags/release/*</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>REFSPEC</name>
+          <description>Specifies references to pull must be tagged and the tag value must start with &quot;release/&quot;
+To instead pull the latest from the master branch use:
+     +refs/heads/master:refs/remotes/origin/master
+
+Tag the codebase accordingly. For example:
+     git tag release/hello-world-1603.49 tags/coeus-1603.49
+     git tag release/hello-world-1603.49 HEAD
+     git tag release/hello-world-1603.49 a2d8a71
+     etc.</description>
+          <defaultValue>+refs/tags/release/*:refs/remotes/origin/tags/release/*</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.5.3">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <refspec>$REFSPEC</refspec>
+        <url>https://github.com/whennemuth/hello-world</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>$BRANCH</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <rootModule>
+    <groupId>com.bu.ist.hello.world</groupId>
+    <artifactId>hello-world</artifactId>
+  </rootModule>
+  <goals>clean compile install -Dgrm.off=true</goals>
+  <aggregatorStyleBuild>true</aggregatorStyleBuild>
+  <incrementalBuild>false</incrementalBuild>
+  <ignoreUpstremChanges>true</ignoreUpstremChanges>
+  <ignoreUnsuccessfulUpstreams>false</ignoreUnsuccessfulUpstreams>
+  <archivingDisabled>false</archivingDisabled>
+  <siteArchivingDisabled>false</siteArchivingDisabled>
+  <fingerprintingDisabled>false</fingerprintingDisabled>
+  <resolveDependencies>false</resolveDependencies>
+  <processPlugins>false</processPlugins>
+  <mavenValidationLevel>-1</mavenValidationLevel>
+  <runHeadless>false</runHeadless>
+  <disableTriggerDownstreamProjects>false</disableTriggerDownstreamProjects>
+  <blockTriggerWhenBuilding>true</blockTriggerWhenBuilding>
+  <settings class="jenkins.mvn.DefaultSettingsProvider"/>
+  <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
+  <reporters/>
+  <publishers/>
+  <buildWrappers/>
+  <prebuilders/>
+  <postbuilders>
+    <hudson.tasks.Shell>
+      <command>set +x
+
+echo &quot;BRANCH_NAME = ${BRANCH_NAME}&quot;
+# For a multibranch project, this will be set to the name of the branch being built, for example in case you wish to deploy to production from master but not from feature branches.
+
+echo &quot;BUILD_NUMBER = ${BUILD_NUMBER}&quot;
+# The current build number, such as &quot;153&quot;
+
+echo &quot;BUILD_ID = ${BUILD_ID}&quot;
+# The current build ID, identical to BUILD_NUMBER for builds created in 1.597+, but a YYYY-MM-DD_hh-mm-ss timestamp for older builds
+
+echo &quot;BUILD_DISPLAY_NAME = ${BUILD_DISPLAY_NAME}&quot;
+# The display name of the current build, which is something like &quot;#153&quot; by default.
+
+echo &quot;JOB_NAME = ${JOB_NAME}&quot;
+# Name of the project of this build, such as &quot;foo&quot; or &quot;foo/bar&quot;.
+
+echo &quot;JOB_BASE_NAME = ${JOB_BASE_NAME}&quot;
+# Short Name of the project of this build stripping off folder paths, such as &quot;foo&quot; for &quot;bar/foo&quot;.
+
+echo &quot;BUILD_TAG = ${BUILD_TAG}&quot;
+# String of &quot;jenkins-${JOB_NAME}-${BUILD_NUMBER}&quot;. Convenient to put into a resource file, a jar file, etc for easier identification. starts from 0, not 1.
+
+echo &quot;WORKSPACE = ${WORKSPACE}&quot;
+# The absolute path of the directory assigned to the build as a workspace.
+
+echo &quot;JENKINS_HOME = ${JENKINS_HOME}&quot;
+# The absolute path of the directory assigned on the master node for Jenkins to store data.
+
+echo &quot;JENKINS_URL = ${JENKINS_URL}&quot;
+# Full URL of Jenkins, like http://server:port/jenkins/ (note: only available if Jenkins URL set in system configuration)
+
+echo &quot;BUILD_URL = ${BUILD_URL}&quot;
+# Full URL of this build, like http://server:port/jenkins/job/foo/15/ (Jenkins URL must be set)
+
+echo &quot;JOB_URL = ${JOB_URL}&quot;
+# Full URL of this job, like http://server:port/jenkins/job/foo/ (Jenkins URL must be set)
+
+# These should all come from the maven project plugin
+echo &quot;POM_DISPLAYNAME = ${POM_DISPLAYNAME}&quot;
+echo &quot;POM_VERSION = ${POM_VERSION}&quot;
+echo &quot;POM_GROUPID = ${POM_GROUPID}&quot;
+echo &quot;POM_ARTIFACTID = ${POM_ARTIFACTID}&quot;
+echo &quot;POM_PACKAGING = ${POM_PACKAGING}&quot;
+
+# java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-deploy -v -f \
+#     -p POM_VERSION=${POM_VERSION} REMOTE_DOCKER_HOST=10.57.237.84 ECR_URL=730096353738.dkr.ecr.us-east-1.amazonaws.com/hello-world
+
+set +x
+     
+java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-deploy -v -f -p POM_VERSION=${POM_VERSION}
+</command>
+    </hudson.tasks.Shell>
+  </postbuilders>
+  <runPostStepsIfResult>
+    <name>SUCCESS</name>
+    <ordinal>0</ordinal>
+    <color>BLUE</color>
+    <completeBuild>true</completeBuild>
+  </runPostStepsIfResult>
+</maven2-moduleset>
