@@ -9,7 +9,7 @@
         <hudson.model.StringParameterDefinition>
           <name>POM_VERSION</name>
           <description>The maven version number for the build</description>
-          <defaultValue>[NO DEFAULT VALUE!]</defaultValue>
+          <defaultValue>0.0.1-SNAPSHOT</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>REMOTE_DOCKER_HOST</name>
