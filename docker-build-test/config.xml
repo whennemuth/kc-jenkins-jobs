@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>POM_VERSION</name>
+          <description></description>
+          <defaultValue>0.0.1-SNAPSHOT</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>REMOTE_DOCKER_HOST</name>
+          <description></description>
+          <defaultValue>10.57.237.84</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ECR_URL</name>
+          <description></description>
+          <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com/hello-world</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>eval `ssh-agent -s`
+ssh-add ~/.ssh/bu_github_id_jenkins_rsa
+
+docker build \
+   -t ${ECR_URL}:${POM_VERSION} \
+   --build-arg SOURCE_WAR=localhost:8080/job/hello-world-build/ws/target/hello-world-${POM_VERSION}.war \
+   git@github.com:bu-ist/kuali-research-docker.git#master:hello-world/build.context
+
+eval `ssh-agent -k`</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
