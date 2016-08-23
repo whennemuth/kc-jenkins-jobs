@@ -59,10 +59,14 @@ echo ${POM_VERSION}
 eval $(/usr/local/aws/bin/aws ecr get-login --profile sandbox)
 
 # Build the app image (the image will curl the jenkins war artifact into itself while it is building).
+eval `ssh-agent -s`
+ssh-add ~/.ssh/bu_github_id_docker_rsa
 docker build \
    -t ${ECR_URL}:${POM_VERSION} \
    --build-arg SOURCE_WAR=localhost:8080/job/hello-world-build/ws/target/hello-world-${POM_VERSION}.war \
-   https://github.com/bu-ist/kuali-research-docker.git#master:hello-world/build.context
+   git@github.com:bu-ist/kuali-research-docker.git#master:hello-world/build.context
+   # https://github.com/bu-ist/kuali-research-docker.git#master:hello-world/build.context   
+eval `ssh-agent -k
 
 # Push the newly created image to the registry
 docker push ${ECR_URL}:${POM_VERSION}
