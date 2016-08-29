@@ -4,6 +4,14 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
@@ -12,10 +20,28 @@
           <defaultValue>0.0.1-SNAPSHOT</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
+          <name>POM_ARTIFACTID</name>
+          <description>The maven artifact id</description>
+          <defaultValue>hello-world</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
           <name>ECR_URL</name>
           <description></description>
           <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com/hello-world</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>PROFILE</name>
+          <description>Determines which environment/landscape the deployment is for</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>sandbox</string>
+              <string>test</string>
+              <string>staging</string>
+              <string>qa</string>
+              <string>prod</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -28,15 +54,20 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>eval `ssh-agent -s`
+      <command>set +x
+
+JENKINS_WAR_URL=&quot;${JENKINS_URL}/job/${JOB_BASE_NAME}/ws/target/${POM_ARTIFACTID}-${POM_VERSION}.war&quot;
+DOCKER_TAG=&quot;${ECR_URL}:${POM_VERSION}&quot;
+DOCKER_BUILD_CONTEXT=&quot;git@github.com:bu-ist/kuali-research-docker.git#master:${POM_ARTIFACTID}/build.context&quot;
+
+# Build the app image (the image will curl the jenkins war artifact into itself while it is building).
+eval `ssh-agent -s`
 ssh-add ~/.ssh/bu_github_id_docker_rsa
+docker build -t ${DOCKER_TAG} --build-arg JENKINS_WAR_URL=${JENKINS_WAR_URL} ${DOCKER_BUILD_CONTEXT}
+eval `ssh-agent -k`
 
-docker build \
-   -t ${ECR_URL}:${POM_VERSION} \
-   --build-arg SOURCE_WAR=localhost:8080/job/hello-world-build/ws/target/hello-world-${POM_VERSION}.war \
-   git@github.com:bu-ist/kuali-research-docker.git#master:hello-world/build.context
-
-eval `ssh-agent -k`</command>
+set -x
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
