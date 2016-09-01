@@ -25,10 +25,10 @@
           <defaultValue>hello-world</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>REMOTE_DOCKER_HOST</name>
-          <description>The url of the EC2 instance that will be running the container based on the docker image wrapping the newly built war file.
-Example: 10.57.237.84</description>
-          <defaultValue>10.57.237.84</defaultValue>
+          <name>EC2_INSTANCE_ID</name>
+          <description>The id of the EC2 instance that will be running the container based on the docker image wrapping the newly built war file.
+Example: i-099de1c5407493f9b</description>
+          <defaultValue>i-099de1c5407493f9b</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>ECR_URL</name>
@@ -97,20 +97,28 @@ eval `ssh-agent -k`
 # Push the newly created image to the registry
 docker push ${ECR_URL}:${POM_VERSION}
 
-## Execute a docker command over ssh on the application host to run a container against the new image in the registry
-ssh \
-   jenkins@${REMOTE_DOCKER_HOST} \
-   -i /var/lib/jenkins/.ssh/bu_kuali_id_jenkins_rsa &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
-   &quot;docker rm -f hwcontainer || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
-   &quot;eval $(/usr/local/aws/bin/aws ecr get-login --profile ${PROFILE}) &amp;&amp; &quot; \
-   &quot;docker run&quot; \
-   &quot; -d&quot; \
-   &quot; -p 8081:8080&quot; \
-   &quot; --restart unless-stopped&quot; \
-   &quot; --name hwcontainer&quot; \
-   &quot; ${ECR_URL}:${POM_VERSION} &amp;&amp; &quot; \
-   &quot;docker ps&quot;
-
+# Execute a docker command over ssh on the application host to run a container against the new image in the registry
+# DOCUMENTATION: 
+#     http://docs.aws.amazon.com/cli/latest/reference/ssm/send-command.html
+#     http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/walkthrough-cli.html
+run_command_id=$(aws ssm send-command \
+   --instance-ids &quot;${EC2_INSTANCE_ID}&quot; \
+   --document-name &quot;AWS-RunShellScript&quot; \
+   --comment &quot;Running shell script to pull and run container against a new docker image for hello-world&quot; \
+   --parameters commands=&apos;
+      docker rm -f hwcontainer || echo &quot;No container to remove.&quot; &amp;&amp; 
+      eval $(/usr/local/aws/bin/aws ecr get-login --profile ${PROFILE}) &amp;&amp;
+      docker run
+         -d
+         -p 8081:8080
+         --restart unless-stopped
+         --name hwcontainer
+         ${ECR_URL}:${POM_VERSION} &amp;&amp;
+      docker ps&apos;
+   --profile ${PROFILE} \
+   --output text \
+   --query &quot;Command.CommandId&quot;)
+   
 set -x</command>
     </hudson.tasks.Shell>
   </builders>
