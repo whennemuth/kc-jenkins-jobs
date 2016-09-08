@@ -3,6 +3,7 @@
   <actions/>
   <description>This build:&#xd;
    1) Creates the application war file from the HEAD reference of the git master branch.&#xd;
+       (NOTE: this will be the only thing done if DEPLOY is not checked)&#xd;
    2) Wraps the war file into the image during its creation&#xd;
    3) Uploads the new image to a docker registry&#xd;
    4) Issues a command over SSH to docker on the application host to remove any existing container that is running and run a new one based on the new image.</description>
@@ -38,6 +39,34 @@ Tag the codebase accordingly. For example:
      etc.</description>
           <defaultValue>+refs/tags/release/*:refs/remotes/origin/tags/release/*</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>DEPLOY</name>
+          <description>When the build has finished, trigger the next 3 jobs which 
+   1) Build the docker image around the war file created here
+   2) Push the docker image it to the docker registry
+   3) Execute commands on the application server to pull the image from the registry and run a container from it. </description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ECR_REGISTRY_URL</name>
+          <description>The url of the elastic container registry (ECR) where the docker image that wraps the war file built in this job is to reside.
+(Only used if DEPLOY is checked).</description>
+          <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>PROFILE</name>
+          <description>Determines which environment/landscape the deployment is for
+(Only used if DEPLOY is checked).</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>sandbox</string>
+              <string>test</string>
+              <string>staging</string>
+              <string>qa</string>
+              <string>prod</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -135,12 +164,33 @@ echo &quot;POM_GROUPID = ${POM_GROUPID}&quot;
 echo &quot;POM_ARTIFACTID = ${POM_ARTIFACTID}&quot;
 echo &quot;POM_PACKAGING = ${POM_PACKAGING}&quot;
 
-# java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-deploy -v -f \
-#     -p POM_VERSION=${POM_VERSION} REMOTE_DOCKER_HOST=10.57.237.84 ECR_URL=730096353738.dkr.ecr.us-east-1.amazonaws.com/hello-world
+if $DEPLOY ; then
 
-set +x
-     
-java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-deploy -v -f -p POM_VERSION=${POM_VERSION}
+   # 2nd step) Build the docker image locally 
+   java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-2-docker-build-image -v -f \
+      -p POM_VERSION=${POM_VERSION} \
+         POM_ARTIFACT_ID=${POM_ARTIFACTID} \
+         MAVEN_TARGET_DIR=http://localhost:8080/job/${JOB_BASE_NAME}/ws/target \
+         ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
+         PROFILE=${PROFILE};
+         
+   # 3rd step) Push the docker image to the registry
+   java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-3-docker-push-image -v -f \
+      -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
+         POM_VERSION=${POM_VERSION} \
+         PROFILE=${PROFILE};
+
+   # 4th step) Pull the docker image from the registry to the application instance and start a container there from it.
+   java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-4-docker-run-container -v -f \
+      -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
+         POM_VERSION=${POM_VERSION} \
+         PROFILE=${PROFILE};
+         
+else
+   echo &quot;FINISHED!!!&quot;;
+fi
+
+set -x
 </command>
     </hudson.tasks.Shell>
   </postbuilders>

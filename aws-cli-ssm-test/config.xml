@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
+   --instance-ids &quot;i-099de1c5407493f9b&quot; \
+   --document-name &quot;AWS-RunShellScript&quot; \
+   --comment &quot;Testing...&quot; \
+   --parameters commands=&quot;
+      echo \$(aws ecr get-login --profile sandbox) &gt;&gt; /tmp/testing &amp;&amp;
+      echo &quot;&quot;testing...&quot;&quot; &gt;&gt; /tmp/testing&quot; \
+   --profile sandbox \
+   --output text \
+   --query &quot;Command.CommandId&quot;)</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
