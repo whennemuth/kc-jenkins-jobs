@@ -64,6 +64,31 @@ Example: i-099de1c5407493f9b</description>
     <hudson.tasks.Shell>
       <command>DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
 
+# Have to encode the command being sent to ssm agent because of quote escaping restrictions.
+# (jenkins removes double quotes and escapes single quotes and wraps command args with more single
+#  quotes if they contain spaces, making it impossible to provide a string that is acceptable to send-command commands arg)
+BASE64=$(\
+   echo \
+      &quot;if [ -n \&quot;\$(docker ps --filter name=hwcontainer -q)\&quot; ]; then \
+         docker rm -f hwcontainer; \
+      fi &amp;&amp; \
+      EXISTING_IMAGE_ID=\$(docker images \
+            | grep -P \&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}\s+${POM_VERSION}\&quot; \
+            | sed -r -n &apos;s/[[:blank:]]+/ /gp&apos; \
+            | cut -d &apos; &apos; -f 3) &amp;&amp; \
+      if [ -n \&quot;\${EXISTING_IMAGE_ID}\&quot; ]; then \
+         docker rmi \${EXISTING_IMAGE_ID}; \
+      fi &amp;&amp; \
+      \
+      eval \$(aws ecr get-login --profile ${PROFILE}) &amp;&amp; \
+      docker run \
+         -d \
+         -p 8181:8080 \
+         --restart unless-stopped \
+         --name hwcontainer \
+         ${DOCKER_TAG}&quot; | base64 -w 0 \
+)
+
 # Execute a docker command using the aws cli on the application host to run a container against the new image in the registry
 # DOCUMENTATION: 
 #     http://docs.aws.amazon.com/cli/latest/reference/ssm/send-command.html
@@ -72,34 +97,18 @@ run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
    --instance-ids &quot;${EC2_INSTANCE_ID}&quot; \
    --document-name &quot;AWS-RunShellScript&quot; \
    --comment &quot;Running shell script to pull and run container against a new docker image for hello-world&quot; \
-   --parameters commands=&quot;
-      if [ -n &apos;\$(docker ps --filter name=hwcontainer -q)&apos; ]; then 
-         docker rm -f hwcontainer;
-      fi &amp;&amp;
-      EXISTING_IMAGE_ID=
-         docker images 
-            | grep -P &apos;${ECR_REGISTRY_URL}/${POM_ARTIFACT_ID}\s+${POM_VERSION}&apos; 
-            | sed -r -n &apos;s/[[:blank:]]+/ /gp&apos; 
-            | cut -d &apos; &apos; -f 3 &amp;&amp; 
-      if [ -n &apos;\${EXISTING_IMAGE_ID}&apos; ]; then 
-         docker rmi ${EXISTING_IMAGE_ID};
-      fi &amp;&amp; 
-      
-      eval \$(aws ecr get-login --profile ${PROFILE}) &amp;&amp;
-      docker run 
-         -d 
-         -p 8181:8080 
-         --restart unless-stopped 
-         --name hwcontainer 
-         ${DOCKER_TAG}&quot; \
-   --profile ${PROFILE} \
+   --parameters \
+        commands=&quot;echo ${BASE64} | base64 --decode &gt; /tmp/ssm-received &amp;&amp; \
+                  echo ${BASE64} | base64 --decode | sh&quot; \
+   --profile &quot;${PROFILE}&quot; \
    --output text \
-   --query &quot;Command.CommandId&quot;)
-
+   --query &quot;Command.CommandId&quot;) 
+   
 ## Execute a docker command over ssh on the application host to run a container against the new image in the registry
 # ssh \
 #   jenkins@${REMOTE_DOCKER_HOST} \
-#   -i /var/lib/jenkins/.ssh/bu_kuali_id_jenkins_rsa &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
+#   -i /var/lib/jenkins/.ssh/bu_kuali_id_jenkins_rsa \
+#   &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
 #   &quot;docker rm -f hwcontainer || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
 #   &quot;eval $(/usr/local/aws/bin/aws ecr get-login --profile ${PROFILE}) &amp;&amp; &quot; \
 #   &quot;docker run&quot; \

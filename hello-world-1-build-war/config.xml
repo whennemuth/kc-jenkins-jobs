@@ -121,41 +121,30 @@ Tag the codebase accordingly. For example:
     <hudson.tasks.Shell>
       <command>set +x
 
-echo &quot;BRANCH_NAME = ${BRANCH_NAME}&quot;
 # For a multibranch project, this will be set to the name of the branch being built, for example in case you wish to deploy to production from master but not from feature branches.
-
-echo &quot;BUILD_NUMBER = ${BUILD_NUMBER}&quot;
+echo &quot;BRANCH_NAME = ${BRANCH_NAME}&quot;
 # The current build number, such as &quot;153&quot;
-
-echo &quot;BUILD_ID = ${BUILD_ID}&quot;
+echo &quot;BUILD_NUMBER = ${BUILD_NUMBER}&quot;
 # The current build ID, identical to BUILD_NUMBER for builds created in 1.597+, but a YYYY-MM-DD_hh-mm-ss timestamp for older builds
-
-echo &quot;BUILD_DISPLAY_NAME = ${BUILD_DISPLAY_NAME}&quot;
+echo &quot;BUILD_ID = ${BUILD_ID}&quot;
 # The display name of the current build, which is something like &quot;#153&quot; by default.
-
-echo &quot;JOB_NAME = ${JOB_NAME}&quot;
+echo &quot;BUILD_DISPLAY_NAME = ${BUILD_DISPLAY_NAME}&quot;
 # Name of the project of this build, such as &quot;foo&quot; or &quot;foo/bar&quot;.
-
-echo &quot;JOB_BASE_NAME = ${JOB_BASE_NAME}&quot;
+echo &quot;JOB_NAME = ${JOB_NAME}&quot;
 # Short Name of the project of this build stripping off folder paths, such as &quot;foo&quot; for &quot;bar/foo&quot;.
-
-echo &quot;BUILD_TAG = ${BUILD_TAG}&quot;
+echo &quot;JOB_BASE_NAME = ${JOB_BASE_NAME}&quot;
 # String of &quot;jenkins-${JOB_NAME}-${BUILD_NUMBER}&quot;. Convenient to put into a resource file, a jar file, etc for easier identification. starts from 0, not 1.
-
-echo &quot;WORKSPACE = ${WORKSPACE}&quot;
+echo &quot;BUILD_TAG = ${BUILD_TAG}&quot;
 # The absolute path of the directory assigned to the build as a workspace.
-
-echo &quot;JENKINS_HOME = ${JENKINS_HOME}&quot;
+echo &quot;WORKSPACE = ${WORKSPACE}&quot;
 # The absolute path of the directory assigned on the master node for Jenkins to store data.
-
-echo &quot;JENKINS_URL = ${JENKINS_URL}&quot;
+echo &quot;JENKINS_HOME = ${JENKINS_HOME}&quot;
 # Full URL of Jenkins, like http://server:port/jenkins/ (note: only available if Jenkins URL set in system configuration)
-
-echo &quot;BUILD_URL = ${BUILD_URL}&quot;
+echo &quot;JENKINS_URL = ${JENKINS_URL}&quot;
 # Full URL of this build, like http://server:port/jenkins/job/foo/15/ (Jenkins URL must be set)
-
-echo &quot;JOB_URL = ${JOB_URL}&quot;
+echo &quot;BUILD_URL = ${BUILD_URL}&quot;
 # Full URL of this job, like http://server:port/jenkins/job/foo/ (Jenkins URL must be set)
+echo &quot;JOB_URL = ${JOB_URL}&quot;
 
 # These should all come from the maven project plugin
 echo &quot;POM_DISPLAYNAME = ${POM_DISPLAYNAME}&quot;
@@ -186,8 +175,9 @@ if $DEPLOY ; then
          POM_VERSION=${POM_VERSION} \
          PROFILE=${PROFILE};
          
+   echo &quot;FINISHED BUILD! (NO DEPLOYMENT)&quot;;
 else
-   echo &quot;FINISHED!!!&quot;;
+   echo &quot;FINISHED BUILD AND DEPLOYMENT!&quot;;
 fi
 
 set -x

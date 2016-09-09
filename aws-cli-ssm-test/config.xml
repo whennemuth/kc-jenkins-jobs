@@ -28,15 +28,27 @@ POM_ARTIFACT_ID=hello-world
 POM_VERSION=0.0.1-SNAPSHOT
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
 PROFILE=sandbox
+BASE64=$(\
+   echo &quot;EXISTING_IMAGE_ID=\$(docker images \
+            | grep -P \&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}\s+${POM_VERSION}\&quot; \
+            | sed -r -n &apos;s/[[:blank:]]+/ /gp&apos; \
+            | cut -d &apos; &apos; -f 3) &amp;&amp; \
+      echo \&quot;1. \${EXISTING_IMAGE_ID}\&quot; &gt;&gt; /tmp/testing &amp;&amp; \
+      if [ -n \&quot;\${EXISTING_IMAGE_ID}\&quot; ]; then \
+         echo \&quot;2. \${EXISTING_IMAGE_ID}\&quot; &gt;&gt; /tmp/testing; \
+      fi&quot; | base64 -w 0 \
+) 
+
+# BASE64=$(echo &quot;HELLO=\&quot;hello and\&quot; &amp;&amp; echo \$HELLO &gt;&gt; /tmp/testing &amp;&amp; echo goodbye &gt;&gt; /tmp/testing&quot; | base64 -w 0)
 
 run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
    --instance-ids &quot;${EC2_INSTANCE_ID}&quot; \
    --document-name &quot;AWS-RunShellScript&quot; \
    --comment &quot;Running shell script to pull and run container against a new docker image for hello-world&quot; \
-   --parameters commands=&quot;echo &apos;${ECR_REGISTRY_URL}&apos;&quot; \
-   --profile ${PROFILE} \
+   --parameters commands=&quot;echo ${BASE64} | base64 --decode | sh&quot; \
+   --profile &quot;${PROFILE}&quot; \
    --output text \
-   --query &quot;Command.CommandId&quot;)</command>
+   --query &quot;Command.CommandId&quot;) </command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
