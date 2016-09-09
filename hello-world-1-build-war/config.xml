@@ -53,6 +53,12 @@ Tag the codebase accordingly. For example:
 (Only used if DEPLOY is checked).</description>
           <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>EC2_INSTANCE_ID</name>
+          <description>The id of the EC2 instance that will be running the container based on the docker image wrapping the newly built war file.
+Example: i-099de1c5407493f9b</description>
+          <defaultValue>i-099de1c5407493f9b</defaultValue>
+        </hudson.model.StringParameterDefinition>
         <hudson.model.ChoiceParameterDefinition>
           <name>PROFILE</name>
           <description>Determines which environment/landscape the deployment is for
@@ -155,29 +161,35 @@ echo &quot;POM_PACKAGING = ${POM_PACKAGING}&quot;
 
 if $DEPLOY ; then
 
+   JAR=/var/lib/jenkins/jenkins-cli.jar
+   HOST=http://localhost:8080/
+
    # 2nd step) Build the docker image locally 
-   java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-2-docker-build-image -v -f \
+   java -jar ${JAR} -s ${HOST} build &apos;hello-world-2-docker-build-image&apos; -v -f \
       -p POM_VERSION=${POM_VERSION} \
-         POM_ARTIFACT_ID=${POM_ARTIFACTID} \
-         MAVEN_TARGET_DIR=http://localhost:8080/job/${JOB_BASE_NAME}/ws/target \
-         ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
-         PROFILE=${PROFILE};
+      -p POM_ARTIFACTID=${POM_ARTIFACTID} \
+      -p MAVEN_TARGET_DIR=http://localhost:8080/job/${JOB_BASE_NAME}/ws/target \
+      -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
+      -p PROFILE=${PROFILE};
          
    # 3rd step) Push the docker image to the registry
-   java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-3-docker-push-image -v -f \
+   java -jar ${JAR} -s ${HOST} build &apos;hello-world-3-docker-push-image&apos; -v -f \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
-         POM_VERSION=${POM_VERSION} \
-         PROFILE=${PROFILE};
+      -p POM_VERSION=${POM_VERSION} \
+      -p POM_ARTIFACTID=${POM_ARTIFACTID} \
+      -p PROFILE=${PROFILE};
 
    # 4th step) Pull the docker image from the registry to the application instance and start a container there from it.
-   java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-4-docker-run-container -v -f \
+   java -jar ${JAR} -s ${HOST} build &apos;hello-world-4-docker-run-container&apos; -v -f \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
-         POM_VERSION=${POM_VERSION} \
-         PROFILE=${PROFILE};
+      -p EC2_INSTANCE_ID=${EC2_INSTANCE_ID} \
+      -p POM_VERSION=${POM_VERSION} \
+      -p POM_ARTIFACTID=${POM_ARTIFACTID} \
+      -p PROFILE=${PROFILE};
          
-   echo &quot;FINISHED BUILD! (NO DEPLOYMENT)&quot;;
-else
    echo &quot;FINISHED BUILD AND DEPLOYMENT!&quot;;
+else
+   echo &quot;FINISHED BUILD! (NO DEPLOYMENT)&quot;;
 fi
 
 set -x

@@ -9,7 +9,12 @@
         <hudson.model.StringParameterDefinition>
           <name>PARM1</name>
           <description></description>
-          <defaultValue>mydefault</defaultValue>
+          <defaultValue>mydefault1</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>PARM2</name>
+          <description></description>
+          <defaultValue>mydefault2</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -24,7 +29,7 @@
   <builders>
     <hudson.tasks.Shell>
       <command>echo &quot;Success!!!&quot;
-echo &quot;You have triggered jenkins-cli test2 with parameter PARM1=$PARM1&quot;</command>
+echo &quot;You have triggered jenkins-cli test2 with parameter PARM1=${PARM1} and PARM2=${PARM2}&quot;</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
