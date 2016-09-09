@@ -62,9 +62,7 @@ Example: i-099de1c5407493f9b</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>set +x
-
-DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
+      <command>DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
 
 # Execute a docker command using the aws cli on the application host to run a container against the new image in the registry
 # DOCUMENTATION: 
@@ -75,13 +73,24 @@ run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
    --document-name &quot;AWS-RunShellScript&quot; \
    --comment &quot;Running shell script to pull and run container against a new docker image for hello-world&quot; \
    --parameters commands=&quot;
-      docker rm -f hwcontainer &amp;&amp; 
+      if [ -n &apos;\$(docker ps --filter name=hwcontainer -q)&apos; ]; then 
+         docker rm -f hwcontainer;
+      fi &amp;&amp;
+      EXISTING_IMAGE_ID=
+         docker images 
+            | grep -P &apos;${ECR_REGISTRY_URL}/${POM_ARTIFACT_ID}\s+${POM_VERSION}&apos; 
+            | sed -r -n &apos;s/[[:blank:]]+/ /gp&apos; 
+            | cut -d &apos; &apos; -f 3 &amp;&amp; 
+      if [ -n &apos;\${EXISTING_IMAGE_ID}&apos; ]; then 
+         docker rmi ${EXISTING_IMAGE_ID};
+      fi &amp;&amp; 
+      
       eval \$(aws ecr get-login --profile ${PROFILE}) &amp;&amp;
-      docker run \
-         -d \
-         -p 8081:8080 \
-         --restart unless-stopped \
-         --name hwcontainer \
+      docker run 
+         -d 
+         -p 8181:8080 
+         --restart unless-stopped 
+         --name hwcontainer 
          ${DOCKER_TAG}&quot; \
    --profile ${PROFILE} \
    --output text \
@@ -95,13 +104,12 @@ run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
 #   &quot;eval $(/usr/local/aws/bin/aws ecr get-login --profile ${PROFILE}) &amp;&amp; &quot; \
 #   &quot;docker run&quot; \
 #   &quot; -d&quot; \
-#   &quot; -p 8081:8080&quot; \
+#   &quot; -p 8181:8080&quot; \
 #   &quot; --restart unless-stopped&quot; \
 #   &quot; --name hwcontainer&quot; \
 #   &quot; ${DOCKER_TAG} &amp;&amp; &quot; \
 #   &quot;docker ps&quot;
-
-set -x</command>
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

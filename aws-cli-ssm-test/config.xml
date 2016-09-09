@@ -22,14 +22,19 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
-   --instance-ids &quot;i-099de1c5407493f9b&quot; \
+      <command>ECR_REGISTRY_URL=730096353738.dkr.ecr.us-east-1.amazonaws.com
+EC2_INSTANCE_ID=i-099de1c5407493f9b
+POM_ARTIFACT_ID=hello-world
+POM_VERSION=0.0.1-SNAPSHOT
+DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
+PROFILE=sandbox
+
+run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
+   --instance-ids &quot;${EC2_INSTANCE_ID}&quot; \
    --document-name &quot;AWS-RunShellScript&quot; \
-   --comment &quot;Testing...&quot; \
-   --parameters commands=&quot;
-      echo \$(aws ecr get-login --profile sandbox) &gt;&gt; /tmp/testing &amp;&amp;
-      echo &quot;&quot;testing...&quot;&quot; &gt;&gt; /tmp/testing&quot; \
-   --profile sandbox \
+   --comment &quot;Running shell script to pull and run container against a new docker image for hello-world&quot; \
+   --parameters commands=&quot;echo &apos;${ECR_REGISTRY_URL}&apos;&quot; \
+   --profile ${PROFILE} \
    --output text \
    --query &quot;Command.CommandId&quot;)</command>
     </hudson.tasks.Shell>
