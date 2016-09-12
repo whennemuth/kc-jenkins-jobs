@@ -23,20 +23,20 @@
           <name>POM_VERSION</name>
           <description>The maven version number for the war file the docker image being pushed is based on.
 Combined with ECR_URL, this value serves to identify the docker image as it will have been already tagged accordingly.</description>
-          <defaultValue>0.0.1-SNAPSHOT</defaultValue>
+          <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>POM_ARTIFACTID</name>
           <description>The maven artifact id</description>
-          <defaultValue>hello-world</defaultValue>
+          <defaultValue>coeus</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.ChoiceParameterDefinition>
           <name>PROFILE</name>
           <description>Determines which environment/landscape the deployment is for</description>
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
-              <string>sandbox</string>
               <string>ci</string>
+              <string>sandbox</string>
               <string>staging</string>
               <string>qa</string>
               <string>prod</string>

@@ -6,7 +6,23 @@
        (NOTE: this will be the only thing done if DEPLOY is not checked)&#xd;
    2) Wraps the war file into the image during its creation&#xd;
    3) Uploads the new image to a docker registry&#xd;
-   4) Issues a command over SSH to docker on the application host to remove any existing container that is running and run a new one based on the new image.</description>
+   4) Issues a command over SSH to docker on the application host to remove any existing container that is running and run a new one based on the new image.&#xd;
+&#xd;
+ISSUE:&#xd;
+If you see any node errors that mention &quot;ECONNRESET or EPIPE&quot;, this is probably due to the following known bug:&#xd;
+https://github.com/npm/npm/issues/7945&#xd;
+This issue is intermittent and not actually related to proxy configuration.&#xd;
+Running the build again usually goes successfully.&#xd;
+&#xd;
+TODO:&#xd;
+Is there an alternative to the pre-build step for building the other dependencies if they are not in the local .m2 repo?&#xd;
+Tried to detect if rice or s2sgen versions indicated in the pom file are not present by the following command (but did not work):&#xd;
+mvn dependency:get -Dartifact=g:a:v -o -DrepoUrl=file://path/to/your/repo&#xd;
+See also:&#xd;
+https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+CLI&#xd;
+https://wiki.jenkins-ci.org/display/JENKINS/Conditional+BuildStep+Plugin&#xd;
+https://wiki.jenkins-ci.org/display/JENKINS/Run+Condition+Plugin&#xd;
+https://www.cloudbees.com/blog/how-use-jenkins-job-chaining-and-visualizations</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>
@@ -21,24 +37,31 @@
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
           <name>BRANCH</name>
-          <description>This value specifies any branch that has a ref matching the pattern specified here.
-To simply specify the master branch use:
-refs/heads/master</description>
-          <defaultValue>*/tags/release/*</defaultValue>
+          <description>This value specifies a particular branch to be monitored for changes.
+To specify any branch that has a reference tagged with a value that can be matched against a pattern use:
+example: any tag starting with &quot;release/&quot;
+*/tags/release/*</description>
+          <defaultValue>refs/heads/bu-master</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>REFSPEC</name>
-          <description>Specifies references to pull must be tagged and the tag value must start with &quot;release/&quot;
-To instead pull the latest from the master branch use:
-     +refs/heads/master:refs/remotes/origin/master
+          <description>A refspec controls the remote refs to be retrieved and how they map to local refs. If left blank, it will default to the normal behaviour of git fetch, which retrieves all the branch heads as remotes/REPOSITORYNAME/BRANCHNAME. This default behaviour is OK for most cases.
+In other words, the default refspec is &quot;+refs/heads/*:refs/remotes/REPOSITORYNAME/*&quot; where REPOSITORYNAME is the value you specify in the above &quot;name of repository&quot; textbox.
 
-Tag the codebase accordingly. For example:
-     git tag release/hello-world-1603.49 tags/coeus-1603.49
-     git tag release/hello-world-1603.49 HEAD
-     git tag release/hello-world-1603.49 a2d8a71
+When do you want to modify this value? A good example is when you want to just retrieve one branch. For example, +refs/heads/master:refs/remotes/origin/master would only retrieve the master branch and nothing else.
+Or you can also specify a specific tag pattern instead of a branch. For example, any tag starting with &quot;release/&quot; use: 
+     git tag release/coeus-1603.49 tags/coeus-1603.49
+     git tag release/coeus-1603.49 HEAD
+     git tag release/coeus-1603.49 a2d8a71
      etc.</description>
-          <defaultValue>+refs/tags/release/*:refs/remotes/origin/tags/release/*</defaultValue>
+          <defaultValue>+refs/heads/bu-master:refs/remotes/origin/bu-master</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>CHECK_DEPENDENCIES</name>
+          <description>Build any kuali modules that are out of date (rice, s2sgen, api, schemaspy).
+This is determined by analyzing the pom file for this build.</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>DEPLOY</name>
           <description>When the build has finished, trigger the next 3 jobs which 
@@ -57,7 +80,7 @@ Tag the codebase accordingly. For example:
           <name>EC2_INSTANCE_ID</name>
           <description>The id of the EC2 instance that will be running the container based on the docker image wrapping the newly built war file.
 Example: i-099de1c5407493f9b</description>
-          <defaultValue>i-099de1c5407493f9b</defaultValue>
+          <defaultValue>i-0258a5f2a87ba7972</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.ChoiceParameterDefinition>
           <name>PROFILE</name>
@@ -65,8 +88,8 @@ Example: i-099de1c5407493f9b</description>
 (Only used if DEPLOY is checked).</description>
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
-              <string>sandbox</string>
               <string>ci</string>
+              <string>sandbox</string>
               <string>staging</string>
               <string>qa</string>
               <string>prod</string>
@@ -81,7 +104,7 @@ Example: i-099de1c5407493f9b</description>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
         <refspec>$REFSPEC</refspec>
-        <url>https://github.com/whennemuth/hello-world</url>
+        <url>https://github.com/bu-ist/kuali-research</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
@@ -122,7 +145,20 @@ Example: i-099de1c5407493f9b</description>
   <reporters/>
   <publishers/>
   <buildWrappers/>
-  <prebuilders/>
+  <prebuilders>
+    <hudson.tasks.Shell>
+      <command>
+if $CHECK_DEPENDENCIES ; then 
+
+  CLI=/var/lib/jenkins/jenkins-cli.jar
+  HOST=http://localhost:8080/
+  POM=${WORKSPACE}/pom.xml
+  
+  java -jar ${JAR} -s ${HOST} build &apos;kc-dependency-check&apos; -v -f -p POM=${POM};
+  
+fi</command>
+    </hudson.tasks.Shell>
+  </prebuilders>
   <postbuilders>
     <hudson.tasks.Shell>
       <command>set +x
@@ -161,11 +197,11 @@ echo &quot;POM_PACKAGING = ${POM_PACKAGING}&quot;
 
 if $DEPLOY ; then
 
-   JAR=/var/lib/jenkins/jenkins-cli.jar
+   CLI=/var/lib/jenkins/jenkins-cli.jar
    HOST=http://localhost:8080/
 
    # 2nd step) Build the docker image locally 
-   java -jar ${JAR} -s ${HOST} build &apos;hello-world-2-docker-build-image&apos; -v -f \
+   java -jar ${CLI} -s ${HOST} build &apos;kuali-research-2-docker-build-image&apos; -v -f \
       -p POM_VERSION=${POM_VERSION} \
       -p POM_ARTIFACTID=${POM_ARTIFACTID} \
       -p MAVEN_TARGET_DIR=http://localhost:8080/job/${JOB_BASE_NAME}/ws/target \
@@ -173,14 +209,14 @@ if $DEPLOY ; then
       -p PROFILE=${PROFILE};
          
    # 3rd step) Push the docker image to the registry
-   java -jar ${JAR} -s ${HOST} build &apos;hello-world-3-docker-push-image&apos; -v -f \
+   java -jar ${CLI} -s ${HOST} build &apos;kuali-research-3-docker-push-image&apos; -v -f \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
       -p POM_VERSION=${POM_VERSION} \
       -p POM_ARTIFACTID=${POM_ARTIFACTID} \
       -p PROFILE=${PROFILE};
 
    # 4th step) Pull the docker image from the registry to the application instance and start a container there from it.
-   java -jar ${JAR} -s ${HOST} build &apos;hello-world-4-docker-run-container&apos; -v -f \
+   java -jar ${CLI} -s ${HOST} build &apos;kuali-research-4-docker-run-container&apos; -v -f \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
       -p EC2_INSTANCE_ID=${EC2_INSTANCE_ID} \
       -p POM_VERSION=${POM_VERSION} \
