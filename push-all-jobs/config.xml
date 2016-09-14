@@ -1,7 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Backs up all jobs to a github repository</description>
+  <description>Backs up all jobs to a github repository&#xd;
+&#xd;
+NOTE: If you receive the following error:&#xd;
+   &quot;error: insufficient permission for adding an object to repository database .git/objects&quot;&#xd;
+Somehow a one or more files have shown up in the git object directory with different permissions.&#xd;
+To remedy:&#xd;
+   cd /var/lib/jenkins/jobs&#xd;
+   sudo chmod -R g+ws *&#xd;
+   sudo chgrp -R jenkins *</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>
