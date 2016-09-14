@@ -63,14 +63,15 @@ Example: i-099de1c5407493f9b</description>
   <builders>
     <hudson.tasks.Shell>
       <command>DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
+CONTAINER_NAME=&quot;kuali-research&quot;
 
 # Have to encode the command being sent to ssm agent because of quote escaping restrictions.
 # (jenkins removes double quotes and escapes single quotes and wraps command args with more single
 #  quotes if they contain spaces, making it impossible to provide a string that is acceptable to send-command commands arg)
 BASE64=$(\
    echo \
-      &quot;if [ -n \&quot;\$(docker ps --filter name=hwcontainer -q)\&quot; ]; then \
-         docker rm -f hwcontainer; \
+      &quot;if [ -n \&quot;\$(docker ps --filter name=${CONTAINER_NAME} -q)\&quot; ]; then \
+         docker rm -f ${CONTAINER_NAME}; \
       fi &amp;&amp; \
       EXISTING_IMAGE_ID=\$(docker images \
             | grep -P \&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}\s+${POM_VERSION}\&quot; \
@@ -85,7 +86,7 @@ BASE64=$(\
          -d \
          -p 8181:8080 \
          --restart unless-stopped \
-         --name hwcontainer \
+         --name ${CONTAINER_NAME} \
          ${DOCKER_TAG}&quot; | base64 -w 0 \
 )
 
@@ -110,13 +111,13 @@ run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
 #   jenkins@${REMOTE_DOCKER_HOST} \
 #   -i /var/lib/jenkins/.ssh/bu_kuali_id_jenkins_rsa \
 #   &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
-#   &quot;docker rm -f hwcontainer || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
+#   &quot;docker rm -f ${CONTAINER_NAME} || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
 #   &quot;eval $(/usr/local/aws/bin/aws ecr get-login --profile ${PROFILE}) &amp;&amp; &quot; \
 #   &quot;docker run&quot; \
 #   &quot; -d&quot; \
 #   &quot; -p 8181:8080&quot; \
 #   &quot; --restart unless-stopped&quot; \
-#   &quot; --name hwcontainer&quot; \
+#   &quot; --name ${CONTAINER_NAME}&quot; \
 #   &quot; ${DOCKER_TAG} &amp;&amp; &quot; \
 #   &quot;docker ps&quot;
 </command>
