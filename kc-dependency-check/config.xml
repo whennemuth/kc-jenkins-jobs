@@ -63,7 +63,10 @@ echo &quot;s2sgen version: ${s2sgen_version}&quot;
 echo &quot; &quot;
 echo &quot;2) Searching .m2 directory for dependencies installed for above versions...&quot;
 
-repo=&quot;${JENKINS_HOME}/.m2/repository&quot;
+# repo=&quot;${JENKINS_HOME}/.m2/repository&quot;
+# If the local repo location has been customized in settings.xml, then we need to parse it from maven help plugin output.
+repo=$(echo $(mvn help:effective-settings | grep &apos;localRepository&apos;) | cut -d &apos;&gt;&apos; -f 2 | cut -d &apos;&lt;&apos; -f 1)
+echo &quot;.m2 repository: ${repo}&quot;
 
 # file extension, group, version, artifactid, parent_artifactid, job
 m2_items=(
@@ -134,7 +137,9 @@ else
    for ((i=0; i&lt;${#jobs_to_run[*]}; i++));
    do
       # java -jar ${JENKINS_HOME}/jenkins-cli.jar -s http://localhost:8080/ build &apos;jenkins-cli test2&apos; -v -f -p PARM1=hello --username=warren --password=password
+      set -x
       java -jar ${JENKINS_HOME}/jenkins-cli.jar -s http://localhost:8080/ build ${jobs_to_run[i]} -v -f -p version=${git_tags[i]}
+      set +x
       # echo &quot;java -jar ${JENKINS_HOME}/jenkins-cli.jar -s http://localhost:8080/ build ${jobs_to_run[i]} -v -f -p version=${git_tags[i]}&quot;
    done
 fi

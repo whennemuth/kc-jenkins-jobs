@@ -79,7 +79,8 @@ This is determined by analyzing the pom file for this build.</description>
         <hudson.model.StringParameterDefinition>
           <name>EC2_INSTANCE_ID</name>
           <description>The id of the EC2 instance that will be running the container based on the docker image wrapping the newly built war file.
-Example: i-099de1c5407493f9b</description>
+Example: i-099de1c5407493f9b
+(Only used if DEPLOY is checked).</description>
           <defaultValue>i-0258a5f2a87ba7972</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.ChoiceParameterDefinition>
@@ -123,10 +124,10 @@ Example: i-099de1c5407493f9b</description>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <rootModule>
-    <groupId>com.bu.ist.hello.world</groupId>
-    <artifactId>hello-world</artifactId>
+    <groupId>org.kuali.coeus</groupId>
+    <artifactId>coeus</artifactId>
   </rootModule>
-  <goals>clean compile install -Dgrm.off=true</goals>
+  <goals>clean compile install -Dgrm.off=true -Dmaven.test.skip=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
@@ -147,14 +148,19 @@ Example: i-099de1c5407493f9b</description>
   <buildWrappers/>
   <prebuilders>
     <hudson.tasks.Shell>
-      <command>
+      <command>WAR_FILE=$(ls -1 ${WORKSPACE}/coeus-webapp/target | grep -P &quot;^.*war$&quot;)
+echo $WAR_FILE
+
+exit 1;
+
+
 if $CHECK_DEPENDENCIES ; then 
 
   CLI=/var/lib/jenkins/jenkins-cli.jar
   HOST=http://localhost:8080/
   POM=${WORKSPACE}/pom.xml
   
-  java -jar ${JAR} -s ${HOST} build &apos;kc-dependency-check&apos; -v -f -p POM=${POM};
+  java -jar ${CLI} -s ${HOST} build &apos;kc-dependency-check&apos; -v -f -p POM=${POM};
   
 fi</command>
     </hudson.tasks.Shell>
@@ -199,12 +205,23 @@ if $DEPLOY ; then
 
    CLI=/var/lib/jenkins/jenkins-cli.jar
    HOST=http://localhost:8080/
+   WAR_FILE=$(ls -1 ${WORKSPACE}/coeus-webapp/target | grep -P &quot;^.*war$&quot;)
+   SOURCE_WAR=http://localhost:8080/job/${JOB_BASE_NAME}/ws/target/${WAR_FILE}
+   
+   # Confirm the war file was found
+   if [ -z &quot;${WARFILE}&quot; ]; then
+      echo &quot;Found war file: ${WAR_FILE}&quot;;
+   else
+      echo &quot;CANNOT FIND WAR FILE!!!&quot;;
+      echo &quot;EXITING BUILD.&quot;;
+      exit 1;
+   fi      
 
    # 2nd step) Build the docker image locally 
    java -jar ${CLI} -s ${HOST} build &apos;kuali-research-2-docker-build-image&apos; -v -f \
       -p POM_VERSION=${POM_VERSION} \
       -p POM_ARTIFACTID=${POM_ARTIFACTID} \
-      -p MAVEN_TARGET_DIR=http://localhost:8080/job/${JOB_BASE_NAME}/ws/target \
+      -p SOURCE_WAR=${SOURCE_WAR} \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
       -p PROFILE=${PROFILE};
          

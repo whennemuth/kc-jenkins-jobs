@@ -56,7 +56,8 @@ Tag the codebase accordingly. For example:
         <hudson.model.StringParameterDefinition>
           <name>EC2_INSTANCE_ID</name>
           <description>The id of the EC2 instance that will be running the container based on the docker image wrapping the newly built war file.
-Example: i-099de1c5407493f9b</description>
+Example: i-099de1c5407493f9b
+(Only used if DEPLOY is checked).</description>
           <defaultValue>i-099de1c5407493f9b</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.ChoiceParameterDefinition>
