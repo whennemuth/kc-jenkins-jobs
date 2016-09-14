@@ -46,9 +46,9 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>cd /var/lib/jenkins/jobs
+      <command>cd ${JENKINS_HOME}/jobs
 eval `ssh-agent -s`
-ssh-add /var/lib/jenkins/.ssh/bu_github_id_jenkins_rsa
+ssh-add ${JENKINS_HOME}/.ssh/bu_github_id_jenkins_rsa
 # ssh -T git@github.com
 if [ ! -d .git ] ; then
 	git init	
