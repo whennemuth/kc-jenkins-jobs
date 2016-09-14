@@ -208,7 +208,7 @@ if $DEPLOY ; then
    WAR_FILE=$(ls -1 ${WORKSPACE}/coeus-webapp/target | grep -P &quot;^.*war$&quot;)
    SOURCE_WAR=http://localhost:8080/job/${JOB_BASE_NAME}/ws/target/${WAR_FILE}
    
-   # Confirm the war file was found
+   # Confirm the war file has been found
    if [ -z &quot;${WARFILE}&quot; ]; then
       echo &quot;Found war file: ${WAR_FILE}&quot;;
    else
