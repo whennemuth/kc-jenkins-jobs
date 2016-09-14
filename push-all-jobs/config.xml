@@ -25,6 +25,11 @@
           <defaultValue>git@github.com:bu-ist/kuali-research-jenkins.git</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
+          <name>BRANCH</name>
+          <description>The branch being pushed to.</description>
+          <defaultValue>master</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
           <name>COMMENT</name>
           <description>What comment do you want for the commit that will be pushed to git?</description>
           <defaultValue>Jenkins jobs backup</defaultValue>
@@ -64,7 +69,7 @@ if [ -n &quot;$(git status -s -z)&quot; ] ; then
    echo &quot;Found changes to push.&quot;
    git add --all
    git commit -m &quot;$COMMENT&quot;
-   git push github master
+   git push github $BRANCH
 else
    echo &quot;No changes! Nothing to commit! Push cancelled!&quot;
 fi

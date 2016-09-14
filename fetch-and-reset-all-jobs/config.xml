@@ -27,6 +27,11 @@ If you have made any changes to any jobs, push those first before running this j
           <description>What is the url of the git repo where the jenkins jobs are stored?</description>
           <defaultValue>git@github.com:bu-ist/kuali-research-jenkins.git</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>BRANCH</name>
+          <description>The branch being fetched.</description>
+          <defaultValue>master</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -62,7 +67,7 @@ if [ -n &quot;$(git status -s -z)&quot; ] ; then
     echo &quot;FOUND LOCAL CHANGES! SORRY, YOUR ARE GOING TO LOSE THESE.&quot;
 fi
 echo &quot;Fetching from upstream and performing hard reset&quot;
-git fetch github master
+git fetch github $BRANCH
 git reset --hard FETCH_HEAD
 eval `ssh-agent -k`</command>
     </hudson.tasks.Shell>
