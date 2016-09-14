@@ -35,31 +35,30 @@ https://www.cloudbees.com/blog/how-use-jenkins-job-chaining-and-visualizations</
     </jenkins.model.BuildDiscarderProperty>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>GITFLOW_BRANCH</name>
+          <description>The standard gitflow branch in the github repository to be pulled for the maven build.
+(Unless overridden by the BRANCH parameter).</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>bu-master</string>
+              <string>master</string>
+              <string>develop</string>
+              <string>hotfix</string>
+              <string>support</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>BRANCH</name>
-          <description>This value specifies a particular branch to be monitored for changes.
-To specify any branch that has a reference tagged with a value that can be matched against a pattern use:
-example: any tag starting with &quot;release/&quot;
-*/tags/release/*</description>
-          <defaultValue>refs/heads/bu-master</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>REFSPEC</name>
-          <description>A refspec controls the remote refs to be retrieved and how they map to local refs. If left blank, it will default to the normal behaviour of git fetch, which retrieves all the branch heads as remotes/REPOSITORYNAME/BRANCHNAME. This default behaviour is OK for most cases.
-In other words, the default refspec is &quot;+refs/heads/*:refs/remotes/REPOSITORYNAME/*&quot; where REPOSITORYNAME is the value you specify in the above &quot;name of repository&quot; textbox.
-
-When do you want to modify this value? A good example is when you want to just retrieve one branch. For example, +refs/heads/master:refs/remotes/origin/master would only retrieve the master branch and nothing else.
-Or you can also specify a specific tag pattern instead of a branch. For example, any tag starting with &quot;release/&quot; use: 
-     git tag release/coeus-1603.49 tags/coeus-1603.49
-     git tag release/coeus-1603.49 HEAD
-     git tag release/coeus-1603.49 a2d8a71
-     etc.</description>
-          <defaultValue>+refs/heads/bu-master:refs/remotes/origin/bu-master</defaultValue>
+          <description>The branch in the github repository to be pulled for the maven build.
+(Change the default value to build against a custom branch). </description>
+          <defaultValue>${GITFLOW_BRANCH}</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>CHECK_DEPENDENCIES</name>
           <description>Build any kuali modules that are out of date (rice, s2sgen, api, schemaspy).
-This is determined by analyzing the pom file for this build.</description>
+This is determined by analyzing the pom file for this build and the local .m2 repository.</description>
           <defaultValue>true</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
@@ -67,7 +66,7 @@ This is determined by analyzing the pom file for this build.</description>
           <description>When the build has finished, trigger the next 3 jobs which 
    1) Build the docker image around the war file created here
    2) Push the docker image it to the docker registry
-   3) Execute commands on the application server to pull the image from the registry and run a container from it. </description>
+   3) Execute commands on the application server to pull the docker image from the registry and run a container from it. </description>
           <defaultValue>true</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -104,13 +103,13 @@ Example: i-099de1c5407493f9b
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <refspec>$REFSPEC</refspec>
+        <refspec>+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}</refspec>
         <url>https://github.com/bu-ist/kuali-research</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>$BRANCH</name>
+        <name>refs/heads/${BRANCH}</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
@@ -148,12 +147,7 @@ Example: i-099de1c5407493f9b
   <buildWrappers/>
   <prebuilders>
     <hudson.tasks.Shell>
-      <command>WAR_FILE=$(ls -1 ${WORKSPACE}/coeus-webapp/target | grep -P &quot;^.*war$&quot;)
-echo $WAR_FILE
-
-exit 1;
-
-
+      <command>
 if $CHECK_DEPENDENCIES ; then 
 
   CLI=/var/lib/jenkins/jenkins-cli.jar
@@ -206,7 +200,7 @@ if $DEPLOY ; then
    CLI=/var/lib/jenkins/jenkins-cli.jar
    HOST=http://localhost:8080/
    WAR_FILE=$(ls -1 ${WORKSPACE}/coeus-webapp/target | grep -P &quot;^.*war$&quot;)
-   SOURCE_WAR=http://localhost:8080/job/${JOB_BASE_NAME}/ws/target/${WAR_FILE}
+   WAR_URL=http://localhost:8080/job/${JOB_BASE_NAME}/ws/coeus-webapp/target/${WAR_FILE}
    
    # Confirm the war file has been found
    if [ -z &quot;${WARFILE}&quot; ]; then
@@ -221,7 +215,7 @@ if $DEPLOY ; then
    java -jar ${CLI} -s ${HOST} build &apos;kuali-research-2-docker-build-image&apos; -v -f \
       -p POM_VERSION=${POM_VERSION} \
       -p POM_ARTIFACTID=${POM_ARTIFACTID} \
-      -p SOURCE_WAR=${SOURCE_WAR} \
+      -p JENKINS_WAR_URL=${WAR_URL} \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
       -p PROFILE=${PROFILE};
          

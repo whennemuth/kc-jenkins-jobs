@@ -15,14 +15,16 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>MAVEN_TARGET_DIR</name>
+          <name>JENKINS_WAR_URL</name>
           <description>The location of the war file within the jenkins website.
+Example: http://localhost:8080/job/kuali-research-1-build-war/ws/coeus-webapp/target/coeus-webapp-1603.50-SNAPSHOT.war	
 (NOTE: This must start with http:// to indicate the protocol being used to the ADD instruction in the docker file.</description>
-          <defaultValue>http://localhost:8080/job/kuali-research-1-build-war/ws/target</defaultValue>
+          <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>POM_VERSION</name>
-          <description>The maven version number for the war file the docker image being built is based on.</description>
+          <description>The maven version number for the war file the docker image being built is based on.
+Example: 1603.50-SNAPSHOT</description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -92,7 +94,6 @@ fi
 # 3) Define variables.
 # NOTE: JENKINS_URL is the full URL of Jenkins, like http://server:port/jenkins/ 
 #       Only available if Jenkins URL is set in system configuration
-JENKINS_WAR_URL=&quot;${MAVEN_TARGET_DIR}/${POM_ARTIFACTID}-${POM_VERSION}.war&quot;
 ECR_REPO_URL=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}&quot;
 DOCKER_TAG=&quot;${ECR_REPO_URL}:${POM_VERSION}&quot;
 DOCKER_BUILD_CONTEXT=&quot;git@github.com:bu-ist/kuali-research-docker.git#master:${POM_ARTIFACTID}/build.context&quot;
