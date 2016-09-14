@@ -22,7 +22,7 @@
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.4">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.5.3">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -43,6 +43,7 @@
         <reference></reference>
         <timeout>45</timeout>
         <depth>0</depth>
+        <honorRefspec>false</honorRefspec>
       </hudson.plugins.git.extensions.impl.CloneOption>
     </extensions>
   </scm>
@@ -56,7 +57,7 @@
     <groupId>org.kuali.rice</groupId>
     <artifactId>rice</artifactId>
   </rootModule>
-  <goals>clean compile install -e -Dgrm.off=true</goals>
+  <goals>clean compile install -e -Dgrm.off=true -Dmaven.test.skip=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
