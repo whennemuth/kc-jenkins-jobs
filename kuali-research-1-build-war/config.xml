@@ -84,7 +84,7 @@ Example: i-099de1c5407493f9b
         </hudson.model.StringParameterDefinition>
         <hudson.model.ChoiceParameterDefinition>
           <name>PROFILE</name>
-          <description>Determines which environment/landscape the deployment is for
+          <description>Determines which environment/landscape the deployment is for and ultimately indicates the credentials to use for communicating to the app server in that landscape through the aws cli.
 (Only used if DEPLOY is checked).</description>
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
