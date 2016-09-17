@@ -101,6 +101,7 @@ run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
    --parameters \
         commands=&quot;echo &gt;&gt; /tmp/ssm-received &amp;&amp; date &gt;&gt; /tmp/ssm-received &amp;&amp; \
                   echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-received &amp;&amp; \
+                  echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-last.sh &amp;&amp; \
                   echo ${BASE64} | base64 --decode | sh&quot; \
    --profile &quot;${PROFILE}&quot; \
    --output text \

@@ -16,11 +16,18 @@
       <parameterDefinitions>
         <hudson.model.ChoiceParameterDefinition>
           <name>LANDSCAPE</name>
-          <description>Indicates 2 values (separated by a colons):
-   1) The profile to use in contacting other EC2 instances.
-      The profile carries the required credentials for communicating with these EC2 instances using the aws cli.
-   2) The EC2 Instance id(s), separated by commas, that indicate the application servers running in the landscape.
-      These EC2 instances will re-run docker containers for kuali-research based on a new docker image.</description>
+          <description>
+LANDSCAPE - [PROFILE : EC2 Instance IDs]
+
+   1) PROFILE:
+       -------------
+       Used in contacting other EC2 instances.
+       The profile identifies stored credentials for communicating with these EC2 instances using the aws cli.
+
+   2) EC2 Instance IDs: 
+       -----------------------
+       The EC2 Instance id(s), separated by commas if multiple, that indicate the application server(s) running in the landscape.
+       These EC2 instances are each running a docker container for kuali-research which will be restarted based on a new docker image.</description>
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
               <string>ci : i-0258a5f2a87ba7972</string>
@@ -28,6 +35,37 @@
               <string>qa : i-011ccd29dec6c6d10</string>
               <string>stage : i-090d188ea237c8bcf, i-0cb479180574b4ba2</string>
               <string>prod : ??? : ???</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>LANDSCAPE2</name>
+          <description>A landscape indicates a PROFILE and one or more EC2 Instance IDs
+
+   1) PROFILE:
+       -------------
+       Used in contacting other EC2 instances.
+       The profile identifies stored credentials for communicating with these EC2 instances using the aws cli.
+
+   2) EC2 Instance IDs: 
+       -----------------------
+       The EC2 Instance id(s), separated by commas if multiple, that indicate the application server(s) running in the landscape.
+       These EC2 instances are each running a docker container for kuali-research which will be restarted based on a new docker image.
+
+The current landscape mappings are:
+
+   ci : i-0258a5f2a87ba7972
+   sandbox : i-099de1c5407493f9b
+   qa : i-011ccd29dec6c6d10
+   stage : i-090d188ea237c8bcf, i-0cb479180574b4ba2
+   prod : ??? : ???</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>ci</string>
+              <string>sandbox</string>
+              <string>qa</string>
+              <string>stage</string>
+              <string>prod</string>
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
@@ -43,7 +81,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>set +x
+      <command># set +x
 
 CLI=/var/lib/jenkins/jenkins-cli.jar
 HOST=http://localhost:8080/
@@ -66,13 +104,13 @@ do
    
    if ([ &quot;$PROFILE&quot; == &quot;ci&quot; ] || [ &quot;$PROFILE&quot; == &quot;sandbox&quot; ]) ; then
    
-      if ([ &quot;$PROFILE&quot; == &quot;ci&quot; ]) ; then BRANCH=&quot;bu-master&quot;; else BRANCH=&quot;master&quot;; fi
+      if ([ &quot;$PROFILE&quot; == &quot;ci&quot; ]) ; then BRANCH=&quot;bu-mastercopy&quot;; else BRANCH=&quot;mastercopy&quot;; fi
       
       # A) FULL BUILD AND DEPLOY (maven &amp; docker)
       # (NOTE: several parameters are ommitted to invoke their default values.)
       java -jar ${CLI} -s ${HOST} build &apos;kuali-research-1-build-war&apos; -v -f \
-         -p BRANCH=${BRANCH} \ 
-         -p EC2_INSTANCE_ID=${THIS_EC2_ID} \ 
+         -p BRANCH=${BRANCH} \
+         -p EC2_INSTANCE_ID=${THIS_EC2_ID} \
          -p PROFILE=${PROFILE};      
    elif [ ! -f $DOCKER_PUSH_LOG_FILE ] ; then
       echo &quot;PROBLEM!!! Cannot determine registry image to reference.&quot;;
@@ -106,7 +144,7 @@ do
    fi
 done
 
-set -x</command>
+# set -x</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
