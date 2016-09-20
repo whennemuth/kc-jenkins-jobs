@@ -22,7 +22,7 @@ LANDSCAPE - [PROFILE : EC2 Instance IDs]
    1) PROFILE:
        -------------
        Used in contacting other EC2 instances.
-       The profile identifies stored credentials for communicating with these EC2 instances using the aws cli.
+       The profile identifies stored credentials for communicating with these EC2 instances using the aws cli and the ssm-agent.
 
    2) EC2 Instance IDs: 
        -----------------------
@@ -35,37 +35,6 @@ LANDSCAPE - [PROFILE : EC2 Instance IDs]
               <string>qa : i-011ccd29dec6c6d10</string>
               <string>stage : i-090d188ea237c8bcf, i-0cb479180574b4ba2</string>
               <string>prod : ??? : ???</string>
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
-        <hudson.model.ChoiceParameterDefinition>
-          <name>LANDSCAPE2</name>
-          <description>A landscape indicates a PROFILE and one or more EC2 Instance IDs
-
-   1) PROFILE:
-       -------------
-       Used in contacting other EC2 instances.
-       The profile identifies stored credentials for communicating with these EC2 instances using the aws cli.
-
-   2) EC2 Instance IDs: 
-       -----------------------
-       The EC2 Instance id(s), separated by commas if multiple, that indicate the application server(s) running in the landscape.
-       These EC2 instances are each running a docker container for kuali-research which will be restarted based on a new docker image.
-
-The current landscape mappings are:
-
-   ci : i-0258a5f2a87ba7972
-   sandbox : i-099de1c5407493f9b
-   qa : i-011ccd29dec6c6d10
-   stage : i-090d188ea237c8bcf, i-0cb479180574b4ba2
-   prod : ??? : ???</description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              <string>ci</string>
-              <string>sandbox</string>
-              <string>qa</string>
-              <string>stage</string>
-              <string>prod</string>
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
