@@ -160,7 +160,7 @@ echo &quot;POM_GROUPID = ${POM_GROUPID}&quot;
 echo &quot;POM_ARTIFACTID = ${POM_ARTIFACTID}&quot;
 echo &quot;POM_PACKAGING = ${POM_PACKAGING}&quot;
 
-if $DEPLOY ; then
+if [ &quot;$DEPLOY&quot; == true ] ; then
 
    JAR=/var/lib/jenkins/jenkins-cli.jar
    HOST=http://localhost:8080/
