@@ -96,6 +96,25 @@ Example: i-099de1c5407493f9b
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>GIT_REPO_URL</name>
+          <description>The git repository from which the build will pull source code.</description>
+          <defaultValue>https://github.com/bu-ist/kuali-research</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>GIT_REFSPEC</name>
+          <description>Controls the remote refs to be retrieved and how they map to local refs.
+The default ref narrows refs to retrieve to a specific branch.
+To narrow down to a specific tag or tags (will use the latest matching pattern used) use:
+
++refs/tags/[tag pattern]:refs/remotes/origin/tags/[tag pattern]</description>
+          <defaultValue>+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>GIT_BRANCHES_TO_BUILD</name>
+          <description>Specify the branches if you&apos;d like to track a specific branch in a repository. If left blank, all branches will be examined for changes and built.</description>
+          <defaultValue>refs/heads/${BRANCH}</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -103,13 +122,13 @@ Example: i-099de1c5407493f9b
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <refspec>+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}</refspec>
-        <url>https://github.com/bu-ist/kuali-research</url>
+        <refspec>${GIT_REFSPEC}</refspec>
+        <url>${GIT_REPO_URL}</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
       <hudson.plugins.git.BranchSpec>
-        <name>refs/heads/${BRANCH}</name>
+        <name>${GIT_BRANCHES_TO_BUILD}</name>
       </hudson.plugins.git.BranchSpec>
     </branches>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>

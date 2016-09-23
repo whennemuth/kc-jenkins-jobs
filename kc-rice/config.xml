@@ -1,7 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <maven2-moduleset plugin="maven-plugin@2.13">
   <actions/>
-  <description>Builds the rice war.</description>
+  <description>Builds the rice war.&#xd;
+&#xd;
+NOTE: If the local maven repo does not have the artifacts required to run tests, then you cannot skip tests in the build.&#xd;
+That is, &quot;-Dmaven.test.skip=true&quot; and &quot;-DskipTests=true&quot; have to be ommitted.&#xd;
+These switches skip the running of the tests but maven still complains about missing dependency file(s) because some of them cannot be downloaded from the nexus repo, and they are not in the local .m2 repo.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>
@@ -57,7 +61,7 @@
     <groupId>org.kuali.rice</groupId>
     <artifactId>rice</artifactId>
   </rootModule>
-  <goals>clean compile install -e -Dgrm.off=true -Dmaven.test.skip=true</goals>
+  <goals>clean compile install -e -Dgrm.off=true</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
