@@ -63,7 +63,7 @@ DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
 # NOTE: info on how to store credentials can be found at: 
 #       http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
 #       requires ~/.aws/config
-eval $(/usr/local/aws/bin/aws ecr get-login --profile ${PROFILE})
+eval $(aws ecr get-login --profile ${PROFILE})
 
 # Push the newly created image to the registry
 docker push ${DOCKER_TAG}

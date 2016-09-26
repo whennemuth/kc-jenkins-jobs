@@ -96,7 +96,7 @@ BASE64=$(\
 # DOCUMENTATION: 
 #     http://docs.aws.amazon.com/cli/latest/reference/ssm/send-command.html
 #     http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/walkthrough-cli.html
-run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
+run_command_id=$(aws ssm send-command \
    --instance-ids &quot;${EC2_INSTANCE_ID}&quot; \
    --document-name &quot;AWS-RunShellScript&quot; \
    --comment &quot;Running shell script to pull and run container against a new docker image for ${POM_ARTIFACTID}&quot; \
@@ -115,7 +115,7 @@ run_command_id=$(/usr/local/aws/bin/aws ssm send-command \
 #   -i /var/lib/jenkins/.ssh/bu_kuali_id_jenkins_rsa \
 #   &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
 #   &quot;docker rm -f ${CONTAINER_NAME} || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
-#   &quot;eval $(/usr/local/aws/bin/aws ecr get-login --profile ${PROFILE}) &amp;&amp; &quot; \
+#   &quot;eval $(aws ecr get-login --profile ${PROFILE}) &amp;&amp; &quot; \
 #   &quot;docker run&quot; \
 #   &quot; -d&quot; \
 #   &quot; -p 8181:8080&quot; \
