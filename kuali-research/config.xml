@@ -59,10 +59,10 @@ POM_ARTIFACTID_OVERRIDE=&quot;kuali-research&quot;
 
 case &quot;$PROFILE&quot; in
    &quot;sandbox&quot;)
-      BRANCH=&quot;mastercopy&quot;
+      BRANCH=&quot;master&quot;
       POM_ARTIFACTID_OVERRIDE=&quot;&quot; # Configures downstream jobs to push and pull from a repository in the
                                  # remote repo whose name matches the artifact id found in the pom file.
-      EC2_IDS=(&quot;i-099de1c5407493f9b&quot;);;
+      EC2_IDS=(&quot;i-099de1c5407493f9b&quot;, &quot;i-0c2d2ef87e98f2088&quot;);;
    &quot;ci&quot;)
       BRANCH=&quot;bu-master&quot;
       EC2_IDS=(&quot;i-0258a5f2a87ba7972&quot; &quot;i-0511b83a249cd9fb1&quot;);;      
@@ -84,7 +84,7 @@ for i in $(seq ${#EC2_IDS[@]}); do
          -p BRANCH=${BRANCH} \
          -p EC2_INSTANCE_ID=${EC2_ID} \
          -p PROFILE=${PROFILE}&quot;
-   elif [ ! -f $DOCKER_PUSH_LOG_FILE ] ; then
+   elif ( [ ! -f $DOCKER_PUSH_LOG_FILE ] &amp;&amp; [ &quot;$DEBUG&quot; == false ] ); then
       echo &quot;PROBLEM!!! Cannot determine registry image to reference.&quot;;
       echo &quot;Cannot find log for most recent docker push job:&quot;;
       echo &quot;       ${DOCKER_PUSH_LOG_FILE}&quot;;
