@@ -29,7 +29,7 @@
         </hudson.model.ChoiceParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>DEBUG</name>
-          <description>If true, prints out would be calls to other jobs, but does go through with them.</description>
+          <description>If true, prints out would be calls to other jobs, but does not go through with them.</description>
           <defaultValue>true</defaultValue>
         </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
