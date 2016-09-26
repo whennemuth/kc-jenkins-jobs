@@ -50,6 +50,11 @@ Example: 1603.50-SNAPSHOT</description>
             </a>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DOCKER_BUILD_CONTEXT_GIT_BRANCH</name>
+          <description>You can modify this value to pull a build context stored in a branch other than master.</description>
+          <defaultValue>master</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -96,7 +101,7 @@ fi
 #       Only available if Jenkins URL is set in system configuration
 ECR_REPO_URL=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}&quot;
 DOCKER_TAG=&quot;${ECR_REPO_URL}:${POM_VERSION}&quot;
-DOCKER_BUILD_CONTEXT=&quot;git@github.com:bu-ist/kuali-research-docker.git#master:${POM_ARTIFACTID}/build.context&quot;
+DOCKER_BUILD_CONTEXT=&quot;git@github.com:bu-ist/kuali-research-docker.git#${DOCKER_BUILD_CONTEXT_GIT_BRANCH}:kuali-research/build.context&quot;
 
 # 4) Build the app image (the image will curl the jenkins war artifact into itself while it is building).
 eval `ssh-agent -s`

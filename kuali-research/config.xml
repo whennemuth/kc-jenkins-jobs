@@ -52,14 +52,20 @@ DOCKER_PUSH_LOG_FILE=/var/lib/jenkins/jobs/kuali-research-3-docker-push-image/la
 PROFILE=$(echo $LANDSCAPE | tr &apos;[:upper:]&apos; &apos;[:lower:]&apos;)
 BRANCH=&quot;&quot;
 EC2_IDS=()
+# By convention, we are calling the repository name within the registry the same as the artifactid of the pom file 
+# that the repository keeps images for. However if we want to break this rule and cause downstream jobs to push 
+# and pull from the registry referencing a different repository name, then set this value accordingly.
+POM_ARTIFACTID_OVERRIDE=&quot;kuali-research&quot;
 
 case &quot;$PROFILE&quot; in
    &quot;sandbox&quot;)
       BRANCH=&quot;mastercopy&quot;
+      POM_ARTIFACTID_OVERRIDE=&quot;&quot; # Configures downstream jobs to push and pull from a repository in the
+                                 # remote repo whose name matches the artifact id found in the pom file.
       EC2_IDS=(&quot;i-099de1c5407493f9b&quot;);;
    &quot;ci&quot;)
       BRANCH=&quot;bu-master&quot;
-      EC2_IDS=(&quot;i-0258a5f2a87ba7972&quot; &quot;i-0511b83a249cd9fb1&quot;);;
+      EC2_IDS=(&quot;i-0258a5f2a87ba7972&quot; &quot;i-0511b83a249cd9fb1&quot;);;      
    &quot;qa&quot;)
       EC2_IDS=(&quot;i-011ccd29dec6c6d10&quot;);;
    &quot;stage&quot;)
@@ -78,8 +84,6 @@ for i in $(seq ${#EC2_IDS[@]}); do
          -p BRANCH=${BRANCH} \
          -p EC2_INSTANCE_ID=${EC2_ID} \
          -p PROFILE=${PROFILE}&quot;
-
-      [ &quot;$DEBUG&quot; == true ] &amp;&amp; echo $CMD || eval $CMD
    elif [ ! -f $DOCKER_PUSH_LOG_FILE ] ; then
       echo &quot;PROBLEM!!! Cannot determine registry image to reference.&quot;;
       echo &quot;Cannot find log for most recent docker push job:&quot;;
@@ -97,10 +101,15 @@ for i in $(seq ${#EC2_IDS[@]}); do
       CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-4-docker-run-container&apos; -v -f \
          -p EC2_INSTANCE_ID=${EC2_ID} \
          -p POM_VERSION=${POM_VERSION} \
-         -p PROFILE=${PROFILE};&quot;
-
-      [ &quot;$DEBUG&quot; == true ] &amp;&amp; echo $CMD || eval $CMD
+         -p PROFILE=${PROFILE}&quot;
    fi
+   
+   if [ -n &quot;${POM_ARTIFACTID_OVERRIDE}&quot; ] ; then 
+      CMD=&quot;$CMD -p POM_ARTIFACTID=${POM_ARTIFACTID_OVERRIDE}&quot;;
+   fi
+   
+   [ &quot;$DEBUG&quot; == true ] &amp;&amp; echo $CMD || eval $CMD
+
 done
 
 set -x</command>
