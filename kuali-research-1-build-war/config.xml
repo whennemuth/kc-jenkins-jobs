@@ -145,7 +145,7 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
     <groupId>org.kuali.coeus</groupId>
     <artifactId>coeus</artifactId>
   </rootModule>
-  <goals>clean compile install -Dgrm.off=true -Dmaven.test.skip=true</goals>
+  <goals>clean compile install -Dgrm.off=true -Dmaven.test.skip=true -Dbuild.version=&apos;${POM_VERSION}/git:branch=${GIT_BRANCH},ref=${GIT_COMMIT}&apos;</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>

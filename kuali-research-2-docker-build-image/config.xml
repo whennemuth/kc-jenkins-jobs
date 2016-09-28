@@ -53,7 +53,7 @@ Example: 1603.50-SNAPSHOT</description>
         <hudson.model.StringParameterDefinition>
           <name>DOCKER_BUILD_CONTEXT_GIT_BRANCH</name>
           <description>You can modify this value to pull a build context stored in a branch other than master.</description>
-          <defaultValue>master</defaultValue>
+          <defaultValue>tomcat8</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
