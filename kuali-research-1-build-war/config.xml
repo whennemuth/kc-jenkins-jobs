@@ -82,20 +82,6 @@ Example: i-099de1c5407493f9b
 (Only used if DEPLOY is checked).</description>
           <defaultValue>i-0258a5f2a87ba7972</defaultValue>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.ChoiceParameterDefinition>
-          <name>PROFILE</name>
-          <description>Determines which environment/landscape the deployment is for and ultimately indicates the credentials to use for communicating to the app server in that landscape through the aws cli.
-(Only used if DEPLOY is checked).</description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              <string>ci</string>
-              <string>sandbox</string>
-              <string>staging</string>
-              <string>qa</string>
-              <string>prod</string>
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>GIT_REPO_URL</name>
           <description>The git repository from which the build will pull source code.</description>
@@ -235,23 +221,20 @@ if [ &quot;$DEPLOY&quot; == true ] ; then
       -p POM_VERSION=${POM_VERSION} \
       -p POM_ARTIFACTID=${POM_ARTIFACTID} \
       -p JENKINS_WAR_URL=${WAR_URL} \
-      -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
-      -p PROFILE=${PROFILE};
+      -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL};
          
    # 3rd step) Push the docker image to the registry
    java -jar ${CLI} -s ${HOST} build &apos;kuali-research-3-docker-push-image&apos; -v -f \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
       -p POM_VERSION=${POM_VERSION} \
-      -p POM_ARTIFACTID=${POM_ARTIFACTID} \
-      -p PROFILE=${PROFILE};
+      -p POM_ARTIFACTID=${POM_ARTIFACTID};
 
    # 4th step) Pull the docker image from the registry to the application instance and start a container there from it.
    java -jar ${CLI} -s ${HOST} build &apos;kuali-research-4-docker-run-container&apos; -v -f \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
       -p EC2_INSTANCE_ID=${EC2_INSTANCE_ID} \
       -p POM_VERSION=${POM_VERSION} \
-      -p POM_ARTIFACTID=${POM_ARTIFACTID} \
-      -p PROFILE=${PROFILE};
+      -p POM_ARTIFACTID=${POM_ARTIFACTID};
          
    echo &quot;FINISHED BUILD AND DEPLOYMENT!&quot;;
 else

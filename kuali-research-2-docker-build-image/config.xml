@@ -37,19 +37,6 @@ Example: 1603.50-SNAPSHOT</description>
           <description>The url of the elastic container registry (ECR) where the newly created image is to be pushed to from this server and pulled from by the target docker host for the image wrapping the newly built war file.</description>
           <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com</defaultValue>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.ChoiceParameterDefinition>
-          <name>PROFILE</name>
-          <description>Determines which environment/landscape the deployment is for</description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              <string>ci</string>
-              <string>sandbox</string>
-              <string>staging</string>
-              <string>qa</string>
-              <string>prod</string>
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>DOCKER_BUILD_CONTEXT_GIT_BRANCH</name>
           <description>You can modify this value to pull a build context stored in a branch other than master.</description>
@@ -89,7 +76,7 @@ if [ -z &quot;$(docker images -q ${TOMCAT_LOCAL_IMAGE})&quot; ]; then
    if [ -z &quot;$(docker images -q ${TOMCAT_REGISTRY_IMAGE})&quot; ]; then 
       echo &quot;CANNOT FIND DOCKER IMAGE: ${TOMCAT_REGISTRY_IMAGE}&quot;; 
       echo &quot;Pulling ${TOMCAT_REGISTRY_IMAGE} from registry...&quot;
-      eval $(aws ecr get-login --profile ${PROFILE})
+      eval $(aws ecr get-login --profile ecr.access)
       docker pull ${TOMCAT_REGISTRY_IMAGE}
    fi
    echo &quot;Tagging ${TOMCAT_REGISTRY_IMAGE}&quot;

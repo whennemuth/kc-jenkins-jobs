@@ -49,7 +49,7 @@
 CLI=/var/lib/jenkins/jenkins-cli.jar
 HOST=http://localhost:8080/
 DOCKER_PUSH_LOG_FILE=/var/lib/jenkins/jobs/kuali-research-3-docker-push-image/lastSuccessful/log
-PROFILE=$(echo $LANDSCAPE | tr &apos;[:upper:]&apos; &apos;[:lower:]&apos;)
+LANDSCAPE=$(echo $LANDSCAPE | tr &apos;[:upper:]&apos; &apos;[:lower:]&apos;)
 BRANCH=&quot;&quot;
 EC2_IDS=()
 # By convention, we are calling the repository name within the registry the same as the artifactid of the pom file 
@@ -57,7 +57,7 @@ EC2_IDS=()
 # and pull from the registry referencing a different repository name, then set this value accordingly.
 POM_ARTIFACTID_OVERRIDE=&quot;kuali-research&quot;
 
-case &quot;$PROFILE&quot; in
+case &quot;$LANDSCAPE&quot; in
    &quot;sandbox&quot;)
       BRANCH=&quot;master&quot;
       POM_ARTIFACTID_OVERRIDE=&quot;&quot; # Configures downstream jobs to push and pull from a repository in the
@@ -71,8 +71,7 @@ case &quot;$PROFILE&quot; in
    &quot;stage&quot;)
       EC2_IDS=(&quot;i-090d188ea237c8bcf&quot; &quot;i-0cb479180574b4ba2&quot;);;
    &quot;prod&quot;)
-      # Don&apos;t know the ec2 instance ids yet.
-      ;;
+      EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;);;
 esac
 
 for i in $(seq ${#EC2_IDS[@]}); do
@@ -82,8 +81,7 @@ for i in $(seq ${#EC2_IDS[@]}); do
       #    (NOTE: several parameters are ommitted to invoke their default values.)
       CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-1-build-war&apos; -v -f \
          -p BRANCH=${BRANCH} \
-         -p EC2_INSTANCE_ID=${EC2_ID} \
-         -p PROFILE=${PROFILE}&quot;
+         -p EC2_INSTANCE_ID=${EC2_ID}&quot;
    elif ( [ ! -f $DOCKER_PUSH_LOG_FILE ] &amp;&amp; [ &quot;$DEBUG&quot; == false ] ); then
       echo &quot;PROBLEM!!! Cannot determine registry image to reference.&quot;;
       echo &quot;Cannot find log for most recent docker push job:&quot;;
@@ -100,8 +98,7 @@ for i in $(seq ${#EC2_IDS[@]}); do
 
       CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-4-docker-run-container&apos; -v -f \
          -p EC2_INSTANCE_ID=${EC2_ID} \
-         -p POM_VERSION=${POM_VERSION} \
-         -p PROFILE=${PROFILE}&quot;
+         -p POM_VERSION=${POM_VERSION}&quot;
    fi
    
    if [ -n &quot;${POM_ARTIFACTID_OVERRIDE}&quot; ] ; then 

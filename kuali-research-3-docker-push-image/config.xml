@@ -30,19 +30,6 @@ Combined with ECR_URL, this value serves to identify the docker image as it will
           <description>The maven artifact id</description>
           <defaultValue>coeus</defaultValue>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.ChoiceParameterDefinition>
-          <name>PROFILE</name>
-          <description>Determines which environment/landscape the deployment is for</description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              <string>ci</string>
-              <string>sandbox</string>
-              <string>staging</string>
-              <string>qa</string>
-              <string>prod</string>
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -63,7 +50,7 @@ DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
 # NOTE: info on how to store credentials can be found at: 
 #       http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
 #       requires ~/.aws/config
-eval $(aws ecr get-login --profile ${PROFILE})
+eval $(aws ecr get-login --profile ecr.access)
 
 # Push the newly created image to the registry
 docker push ${DOCKER_TAG}

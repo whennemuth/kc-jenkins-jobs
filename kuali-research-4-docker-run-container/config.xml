@@ -39,19 +39,6 @@ Look in the pom file of what was built to determine what this should be.</descri
 Example: i-099de1c5407493f9b</description>
           <defaultValue>i-0258a5f2a87ba7972</defaultValue>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.ChoiceParameterDefinition>
-          <name>PROFILE</name>
-          <description>Determines which environment/landscape the deployment is for</description>
-          <choices class="java.util.Arrays$ArrayList">
-            <a class="string-array">
-              <string>ci</string>
-              <string>sandbox</string>
-              <string>staging</string>
-              <string>qa</string>
-              <string>prod</string>
-            </a>
-          </choices>
-        </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -83,7 +70,7 @@ BASE64=$(\
          docker rmi \${EXISTING_IMAGE_ID}; \
       fi &amp;&amp; \
       \
-      eval \$(aws ecr get-login --profile ${PROFILE}) &amp;&amp; \
+      eval \$(aws ecr get-login --profile ecr.access) &amp;&amp; \
       docker run \
          -d \
          -p 8181:8080 \
@@ -105,7 +92,7 @@ run_command_id=$(aws ssm send-command \
                   echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-received &amp;&amp; \
                   echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-last.sh &amp;&amp; \
                   echo ${BASE64} | base64 --decode | sh&quot; \
-   --profile &quot;${PROFILE}&quot; \
+   --profile &quot;ecr.access&quot; \
    --output text \
    --query &quot;Command.CommandId&quot;) 
    
@@ -115,7 +102,7 @@ run_command_id=$(aws ssm send-command \
 #   -i /var/lib/jenkins/.ssh/bu_kuali_id_jenkins_rsa \
 #   &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
 #   &quot;docker rm -f ${CONTAINER_NAME} || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
-#   &quot;eval $(aws ecr get-login --profile ${PROFILE}) &amp;&amp; &quot; \
+#   &quot;eval $(aws ecr get-login --profile ecr.access) &amp;&amp; &quot; \
 #   &quot;docker run&quot; \
 #   &quot; -d&quot; \
 #   &quot; -p 8181:8080&quot; \
