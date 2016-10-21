@@ -22,7 +22,9 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-2-docker-build-image -v -f \
+      <command># java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ login --username admin --password letmein
+java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080 list-jobs
+# java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-2-docker-build-image -v -f \
 java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build &apos;jenkins-cli test2&apos; -v -f \
 -p PARM1=hello \
 -p PARM2=goodbye</command>

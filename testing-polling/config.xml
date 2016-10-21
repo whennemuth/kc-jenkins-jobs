@@ -20,8 +20,8 @@
 (Unless overridden by the BRANCH parameter).</description>
           <choices class="java.util.Arrays$ArrayList">
             <a class="string-array">
-              <string>mastercopy</string>
               <string>bu-master</string>
+              <string>mastercopy</string>
               <string>master</string>
               <string>develop</string>
               <string>hotfix</string>
@@ -79,6 +79,9 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers>
+    <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.21.1">
+      <spec></spec>
+    </com.cloudbees.jenkins.GitHubPushTrigger>
     <hudson.triggers.SCMTrigger>
       <spec>* * * * *</spec>
       <ignorePostCommitHooks>false</ignorePostCommitHooks>
@@ -89,8 +92,11 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
     <hudson.tasks.Shell>
       <command>set +x
 
-echo &quot;BRANCH_NAME = $BRANCH_NAME&quot;
-git branch
+CLI=/var/lib/jenkins/jenkins-cli.jar
+HOST=http://localhost:8080/
+
+java -jar ${CLI} -s ${HOST} build &apos;kuali-research&apos; -v -f \
+      -p LANDSCAPE=ci
 
 set -x</command>
     </hudson.tasks.Shell>
