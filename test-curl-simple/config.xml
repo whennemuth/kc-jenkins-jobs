@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>The ADD dockerfile instruction will fetch from a URL specific to the docker host.&#xd;
+This is because docker runs the ADD command outside of the image and so localhost will apply to the docker host, not localhost within the context of the image.&#xd;
+However, when jenkins security is applied, the ADD instruction encounters a 403 forbidden reply, probably because docker is running the command and is being challenged for authentication details.&#xd;
+So, what about trying RUN curl localhost... ?&#xd;
+This will not work because localhost within the context of the image might not exist and/or does not apply to localhost of the docker host system.&#xd;
+The localhost ip that is needed is the ip address of the docker0 network bridge.&#xd;
+This can be determined from within the image when it is building.&#xd;
+If this ip is assigned to a variable called GATEWAY, then the following will work inside the docker image:&#xd;
+RUN curl -X POST http://${GATEWAY}:8080/...&#xd;
+&#xd;
+This does not seem to require authentication, probably because the curl command is not executed by docker, but by jenkins, who is running as a user who is already authenticated. &#xd;
+If authentication did become necessary, the required token could be included in the curl command as this is supported (ADD does not support authentication).</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>TOKEN</name>
+          <description></description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command># GATEWAY=172.17.0.1
+# URL=&quot;http://${GATEWAY}:8080/job/kuali-research-1-build-war/ws/coeus-webapp/target/license/THIRD-PARTY.properties&quot;
+
+URL=&quot;http://localhost:8080/job/kuali-research-1-build-war/ws/coeus-webapp/target/license/THIRD-PARTY.properties&quot;
+
+if [ -n &quot;${TOKEN}&quot; ] ; then
+   URL=&quot;${URL}?token=${TOKEN}&quot;
+fi
+
+echo \
+&quot;# FROM scratch
+FROM centos:7
+ARG URL
+# ADD ${URL} /props
+RUN \
+   yum install -y net-tools &amp;&amp; \\
+   GATEWAY=\&quot;\$(route -n | grep -Po \&quot;(?&lt;=^0\.0\.0\.0)\x20+[\d\.]+\&quot; | tr -d \&quot;[:blank:]\&quot;)\&quot; &amp;&amp; \\
+   URL=\$(echo \&quot;\${URL}\&quot; | sed \&quot;s/localhost/\${GATEWAY}/\&quot;) &amp;&amp; \\
+   curl -X POST \${URL} &gt; /props
+   # curl -sSL \${URL} &gt; /props
+CMD [\&quot;/props\&quot;]&quot; &gt; Dockerfile
+
+docker build -t test-image --build-arg URL=${URL} .
+
+
+
+if [ -n &quot;$(docker images --filter dangling=true -q)&quot; ] ; then 
+   docker rmi -f $(docker images --filter dangling=true -q); 
+   echo &quot;Removed dangling image(s)&quot;;
+else
+   echo &quot;No dangling images to remove&quot;;
+fi
+if [ -n &quot;$(docker volume ls -qf dangling=true)&quot; ] ; then 
+   docker volume rm $(docker volume ls -qf dangling=true); 
+   echo &quot;Removed dangling volume(s)&quot;;
+else 
+   echo &quot;No dangling volumes to remove&quot;;
+fi
+
+docker rmi -f test-image
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
