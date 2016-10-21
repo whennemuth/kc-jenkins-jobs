@@ -28,9 +28,11 @@ Look in the pom file of what was built to determine what this should be.</descri
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>POM_ARTIFACTID</name>
-          <description>The maven artifact id.
-Look in the pom file of what was built to determine what this should be.</description>
+          <name>REGISTRY_REPO_NAME</name>
+          <description>This value comes from the maven artifact id (except for sandbox builds).
+Look in the pom file of what was built to determine what this should be.
+This is used to identify the name of the docker registry repository that this image is going to be pulled from.
+The value is &quot;coeus&quot; by default, but remember that any sandbox images should go to a registry repository called &quot;coeus-sandbox&quot;</description>
           <defaultValue>coeus</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -51,7 +53,7 @@ Example: i-099de1c5407493f9b</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
+      <command>DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${POM_VERSION}&quot;
 CONTAINER_NAME=&quot;kuali-research&quot;
 
 # Have to encode the command being sent to ssm agent because of quote escaping restrictions.
@@ -63,7 +65,7 @@ BASE64=$(\
          docker rm -f ${CONTAINER_NAME}; \
       fi &amp;&amp; \
       EXISTING_IMAGE_ID=\$(docker images \
-            | grep -P \&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}\s+${POM_VERSION}\&quot; \
+            | grep -P \&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}\s+${POM_VERSION}\&quot; \
             | sed -r -n &apos;s/[[:blank:]]+/ /gp&apos; \
             | cut -d &apos; &apos; -f 3) &amp;&amp; \
       if [ -n \&quot;\${EXISTING_IMAGE_ID}\&quot; ]; then \
@@ -91,7 +93,7 @@ BASE64=$(\
 run_command_id=$(aws ssm send-command \
    --instance-ids &quot;${EC2_INSTANCE_ID}&quot; \
    --document-name &quot;AWS-RunShellScript&quot; \
-   --comment &quot;Running shell script to pull and run container against a new docker image for ${POM_ARTIFACTID}&quot; \
+   --comment &quot;Running shell script to pull and run container against a new docker image for ${REGISTRY_REPO_NAME}&quot; \
    --parameters \
         commands=&quot;echo &gt;&gt; /tmp/ssm-received &amp;&amp; date &gt;&gt; /tmp/ssm-received &amp;&amp; \
                   echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-received &amp;&amp; \

@@ -215,11 +215,17 @@ if [ &quot;$DEPLOY&quot; == true ] ; then
       echo &quot;EXITING BUILD.&quot;;
       exit 1;
    fi      
+   
+   if [ &quot;${BRANCH}&quot; == &quot;master&quot; ] ; then
+      REGISTRY_REPO_NAME=&quot;${POM_ARTIFACTID}-sandbox&quot;
+   else
+      REGISTRY_REPO_NAME=&quot;${POM_ARTIFACTID}&quot;
+   fi
 
    # 2nd step) Build the docker image locally 
    java -jar ${CLI} -s ${HOST} build &apos;kuali-research-2-docker-build-image&apos; -v -f \
       -p POM_VERSION=${POM_VERSION} \
-      -p POM_ARTIFACTID=${POM_ARTIFACTID} \
+      -p REGISTRY_REPO_NAME=${REGISTRY_REPO_NAME} \
       -p JENKINS_WAR_URL=${WAR_URL} \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL};
          
@@ -227,14 +233,14 @@ if [ &quot;$DEPLOY&quot; == true ] ; then
    java -jar ${CLI} -s ${HOST} build &apos;kuali-research-3-docker-push-image&apos; -v -f \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
       -p POM_VERSION=${POM_VERSION} \
-      -p POM_ARTIFACTID=${POM_ARTIFACTID};
+      -p REGISTRY_REPO_NAME=${REGISTRY_REPO_NAME};
 
    # 4th step) Pull the docker image from the registry to the application instance and start a container there from it.
    java -jar ${CLI} -s ${HOST} build &apos;kuali-research-4-docker-run-container&apos; -v -f \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
       -p EC2_INSTANCE_ID=${EC2_INSTANCE_ID} \
       -p POM_VERSION=${POM_VERSION} \
-      -p POM_ARTIFACTID=${POM_ARTIFACTID};
+      -p REGISTRY_REPO_NAME=${REGISTRY_REPO_NAME};
          
    echo &quot;FINISHED BUILD AND DEPLOYMENT!&quot;;
 else

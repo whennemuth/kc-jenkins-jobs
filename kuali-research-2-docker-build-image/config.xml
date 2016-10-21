@@ -28,8 +28,10 @@ Example: 1603.50-SNAPSHOT</description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>POM_ARTIFACTID</name>
-          <description>The maven artifact id</description>
+          <name>REGISTRY_REPO_NAME</name>
+          <description>This value comes from maven artifact id (except for sandbox builds).
+This is used to identify the name of the docker registry repository that this image is going to be pushed to.
+The value is &quot;coeus&quot; by default, but remember that any sandbox images should go to a registry repository called &quot;coeus-sandbox&quot;</description>
           <defaultValue>coeus</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -86,7 +88,7 @@ fi
 # 3) Define variables.
 # NOTE: JENKINS_URL is the full URL of Jenkins, like http://server:port/jenkins/ 
 #       Only available if Jenkins URL is set in system configuration
-ECR_REPO_URL=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}&quot;
+ECR_REPO_URL=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}&quot;
 DOCKER_TAG=&quot;${ECR_REPO_URL}:${POM_VERSION}&quot;
 DOCKER_BUILD_CONTEXT=&quot;git@github.com:bu-ist/kuali-research-docker.git#${DOCKER_BUILD_CONTEXT_GIT_BRANCH}:kuali-research/build.context&quot;
 

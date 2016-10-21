@@ -26,8 +26,10 @@ Combined with ECR_URL, this value serves to identify the docker image as it will
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>POM_ARTIFACTID</name>
-          <description>The maven artifact id</description>
+          <name>REGISTRY_REPO_NAME</name>
+          <description>This value comes from the maven artifact id (except for sandbox builds).
+This is used to identify the name of the docker registry repository that this image is going to be pushed to.
+The value is &quot;coeus&quot; by default, but remember that any sandbox images should go to a registry repository called &quot;coeus-sandbox&quot;</description>
           <defaultValue>coeus</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
@@ -44,7 +46,7 @@ Combined with ECR_URL, this value serves to identify the docker image as it will
     <hudson.tasks.Shell>
       <command>set +x
 
-DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
+DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${POM_VERSION}&quot;
 
 # Login to the registry
 # NOTE: info on how to store credentials can be found at: 
