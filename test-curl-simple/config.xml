@@ -1,29 +1,17 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>The ADD dockerfile instruction will fetch from a URL specific to the docker host.&#xd;
-This is because docker runs the ADD command outside of the image and so localhost will apply to the docker host, not localhost within the context of the image.&#xd;
-However, when jenkins security is applied, the ADD instruction encounters a 403 forbidden reply, probably because docker is running the command and is being challenged for authentication details.&#xd;
-So, what about trying RUN curl localhost... ?&#xd;
-This will not work because localhost within the context of the image might not exist and/or does not apply to localhost of the docker host system.&#xd;
-The localhost ip that is needed is the ip address of the docker0 network bridge.&#xd;
-This can be determined from within the image when it is building.&#xd;
-If this ip is assigned to a variable called GATEWAY, then the following will work inside the docker image:&#xd;
-RUN curl -X POST http://${GATEWAY}:8080/...&#xd;
-&#xd;
-This does not seem to require authentication, probably because the curl command is not executed by docker, but by jenkins, who is running as a user who is already authenticated. &#xd;
-If authentication did become necessary, the required token could be included in the curl command as this is supported (ADD does not support authentication).</description>
+  <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <hudson.model.ParametersDefinitionProperty>
-      <parameterDefinitions>
-        <hudson.model.StringParameterDefinition>
-          <name>TOKEN</name>
-          <description></description>
-          <defaultValue></defaultValue>
-        </hudson.model.StringParameterDefinition>
-      </parameterDefinitions>
-    </hudson.model.ParametersDefinitionProperty>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
   <canRoam>true</canRoam>
@@ -36,28 +24,56 @@ If authentication did become necessary, the required token could be included in 
     <hudson.tasks.Shell>
       <command># GATEWAY=172.17.0.1
 # URL=&quot;http://${GATEWAY}:8080/job/kuali-research-1-build-war/ws/coeus-webapp/target/license/THIRD-PARTY.properties&quot;
+# URL=&quot;http://localhost:8080/job/kuali-research-1-build-war/ws/coeus-webapp/target/license/THIRD-PARTY.properties&quot;
 
-URL=&quot;http://localhost:8080/job/kuali-research-1-build-war/ws/coeus-webapp/target/license/THIRD-PARTY.properties&quot;
+echo &quot;$(pwd)&quot;
+URL=&quot;http://localhost:8080/job/kuali-research-1-build-war/ws/coeus-webapp/target/coeus-webapp-1608.0043-SNAPSHOT.war&quot;
 
-if [ -n &quot;${TOKEN}&quot; ] ; then
-   URL=&quot;${URL}?token=${TOKEN}&quot;
-fi
+# DOCKER_BUILD_CONTEXT=&quot;git@github.com:bu-ist/kuali-research-docker.git#master:testing/build.context&quot;
 
-echo \
-&quot;# FROM scratch
-FROM centos:7
-ARG URL
-# ADD ${URL} /props
-RUN \
-   yum install -y net-tools &amp;&amp; \\
-   GATEWAY=\&quot;\$(route -n | grep -Po \&quot;(?&lt;=^0\.0\.0\.0)\x20+[\d\.]+\&quot; | tr -d \&quot;[:blank:]\&quot;)\&quot; &amp;&amp; \\
-   URL=\$(echo \&quot;\${URL}\&quot; | sed \&quot;s/localhost/\${GATEWAY}/\&quot;) &amp;&amp; \\
-   curl -X POST \${URL} &gt; /props
+#if [ -n &quot;${TOKEN}&quot; ] ; then
+#   echo &quot;${URL}&quot;
+   #URL=&quot;${URL}?token=${TOKEN}&quot;
+#fi
+
+#echo \
+#&quot;# FROM scratch
+#FROM centos:7
+#ARG URL
+#ADD ${URL} /props
+#RUN \
+#   yum install -y net-tools &amp;&amp; \\
+#   yum install -y wget &amp;&amp; \\
+#   GATEWAY=\&quot;\$(route -n | grep -Po \&quot;(?&lt;=^0\.0\.0\.0)\x20+[\d\.]+\&quot; | tr -d \&quot;[:blank:]\&quot;)\&quot; &amp;&amp; \\
+#   URL=\$(echo \&quot;\${URL}\&quot; | sed \&quot;s/localhost/\${GATEWAY}/\&quot;) &amp;&amp; \\
+   # wget --auth-no-challenge --http-user=admin --http-password=${TOKEN} $URL
+   #curl -X POST -F &apos;user=admin&apos; -F &apos;password=${TOKEN}&apos; -F &apos;token=${TOKEN}&apos; --data token=${TOKEN} \${URL}
+   # curl -X POST \${URL} &gt; /props
+   # curl -X POST \${URL} 
    # curl -sSL \${URL} &gt; /props
-CMD [\&quot;/props\&quot;]&quot; &gt; Dockerfile
+#CMD [\&quot;/props\&quot;]&quot; &gt; Dockerfile
 
-docker build -t test-image --build-arg URL=${URL} .
-
+# docker build -t test-image --build-arg URL=${URL} .
+eval `ssh-agent -s`
+ssh-add ~/.ssh/bu_github_id_docker_rsa
+#docker build -t test-image --build-arg SOURCE_FILE=*.properties ${DOCKER_BUILD_CONTEXT}
+#docker build -t test-image --build-arg SOURCE_FILE=THIRD-PARTY.properties ${DOCKER_BUILD_CONTEXT}
+if [ -d kuali-research-docker ] ; then
+   rm -f -r kuali-research-docker
+fi
+mkdir kuali-research-docker
+cd kuali-research-docker
+git init	
+git config user.email &quot;jenkins@bu.edu&quot;
+git config user.name jenkins
+git config user.sparseCheckout true
+git remote add github git@github.com:bu-ist/kuali-research-docker.git
+echo testing &gt;&gt; .git/info/sparse-checkout
+git fetch github master
+git checkout master 
+eval `ssh-agent -k`
+cp /var/lib/jenkins/workspace/kuali-research-1-build-war/coeus-webapp/target/license/THIRD-PARTY.properties testing/build.context 
+docker build -t test-image testing/build.context
 
 
 if [ -n &quot;$(docker images --filter dangling=true -q)&quot; ] ; then 

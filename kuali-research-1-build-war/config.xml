@@ -206,6 +206,7 @@ if [ &quot;$DEPLOY&quot; == true ] ; then
    HOST=http://localhost:8080/
    WAR_FILE=$(ls -1 ${WORKSPACE}/coeus-webapp/target | grep -P &quot;^.*war$&quot;)
    WAR_URL=http://localhost:8080/job/${JOB_BASE_NAME}/ws/coeus-webapp/target/${WAR_FILE}
+   BACKUP_DIR=/var/lib/jenkins/backup/kuali-research/war
    
    # Confirm the war file has been found
    if [ -z &quot;${WARFILE}&quot; ]; then
@@ -216,11 +217,19 @@ if [ &quot;$DEPLOY&quot; == true ] ; then
       exit 1;
    fi      
    
+   # Set the name of the target repository in docker registry
    if [ &quot;${BRANCH}&quot; == &quot;master&quot; ] ; then
       REGISTRY_REPO_NAME=&quot;${POM_ARTIFACTID}-sandbox&quot;
    else
       REGISTRY_REPO_NAME=&quot;${POM_ARTIFACTID}&quot;
    fi
+   
+   # Backup the war file. This keeps war files with the same name but from different git branches
+   # from overwriting each other in the jenkins workspace on subsequent builds.
+   if [ ! -d ${BACKUP_DIR}/${BRANCH} ] ; then 
+      mkdir -p ${BACKUP_DIR}/${BRANCH} 
+   fi
+   cp -f ${WORKSPACE}/coeus-webapp/target/${WAR_FILE} ${BACKUP_DIR}/${BRANCH}/
 
    # 2nd step) Build the docker image locally 
    java -jar ${CLI} -s ${HOST} build &apos;kuali-research-2-docker-build-image&apos; -v -f \
