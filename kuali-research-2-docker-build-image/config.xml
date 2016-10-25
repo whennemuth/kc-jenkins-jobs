@@ -130,7 +130,7 @@ TARGET_DIR=${JENKINS_HOME}/workspace/kuali-research-1-build-war/coeus-webapp/tar
 cp ${TARGET_DIR}/*.war kuali-research/build.context
 WAR_FILE=$(ls -q ${TARGET_DIR}/*.war)
 
-docker build -t ${DOCKER_TAG} --build-arg SOURCE_WAR=${JENKINS_WAR_URL} kuali-research/build.context
+docker build -t ${DOCKER_TAG} --build-arg SOURCE_WAR=${WAR_FILE} kuali-research/build.context
 </command>
     </hudson.tasks.Shell>
   </builders>
