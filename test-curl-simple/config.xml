@@ -66,7 +66,7 @@ cd kuali-research-docker
 git init	
 git config user.email &quot;jenkins@bu.edu&quot;
 git config user.name jenkins
-git config user.sparseCheckout true
+git config core.sparseCheckout true
 git remote add github git@github.com:bu-ist/kuali-research-docker.git
 echo testing &gt;&gt; .git/info/sparse-checkout
 git fetch github master

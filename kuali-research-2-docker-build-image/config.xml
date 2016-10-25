@@ -94,9 +94,43 @@ DOCKER_BUILD_CONTEXT=&quot;git@github.com:bu-ist/kuali-research-docker.git#${DOC
 
 # 4) Build the app image (the image will curl the jenkins war artifact into itself while it is building).
 eval `ssh-agent -s`
+# We cannot execute the ADD instruction in the Dockerfile against $SOURCE_WAR because we are implementing
+# Jenkins security and docker gets challenged for authentication while trying to the war file from this
+# link. The ADD instruction does not support authentication and I have not been able to make wget or curl 
+# with authentication work from a RUN instruction within the Dockerfile for this same link.
+# Therefore we must get our war file into the build context manually where we can use ADD (or COPY) with 
+# a relative file location.
+# Therefore, the standard docker build command with a context referring to a git repo also cannot be used
+# because it clones the build context to some unknown directory in /tmp.
+# Therefore, we will checkout the build context to a known location within the jenkins build context, copy
+# our war file to it, and then execute the docker build command.
+#
+# so...
+# commenting out the original build command
+# docker build -t ${DOCKER_TAG} --build-arg SOURCE_WAR=${JENKINS_WAR_URL} ${DOCKER_BUILD_CONTEXT}
+#
+# and...
+# adding the manual approach
 ssh-add ~/.ssh/bu_github_id_docker_rsa
-docker build -t ${DOCKER_TAG} --build-arg SOURCE_WAR=${JENKINS_WAR_URL} ${DOCKER_BUILD_CONTEXT}
+if [ -d kuali-research-docker ] ; then
+   rm -f -r kuali-research-docker
+fi
+mkdir kuali-research-docker
+cd kuali-research-docker
+git init	
+git config user.email &quot;jenkins@bu.edu&quot;
+git config user.name jenkins
+git config core.sparseCheckout true
+git remote add github git@github.com:bu-ist/kuali-research-docker.git
+echo kuali-research &gt;&gt; .git/info/sparse-checkout
+git fetch github apache
+git checkout apache 
 eval `ssh-agent -k`
+TARGET_DIR=${JENKINS_HOME}/workspace/kuali-research-1-build-war/coeus-webapp/target
+cp ${TARGET_DIR}/*.war kuali-research/build.context
+WAR_FILE=$(ls -q ${TARGET_DIR}/*.war)
+
+docker build -t ${DOCKER_TAG} --build-arg SOURCE_WAR=${JENKINS_WAR_URL} kuali-research/build.context
 </command>
     </hudson.tasks.Shell>
   </builders>

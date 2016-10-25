@@ -131,7 +131,7 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
     <groupId>org.kuali.coeus</groupId>
     <artifactId>coeus</artifactId>
   </rootModule>
-  <goals>clean compile install -Dgrm.off=true -Dmaven.test.skip=true -Dbuild.version=&apos;${POM_VERSION}/git:branch=${GIT_BRANCH},ref=${GIT_COMMIT}&apos;</goals>
+  <goals>clean compile install -Dgrm.off=true -Dmaven.test.skip=true -Dbuild.version=&apos;${UPCOMING_POM_VERSION}/git:branch=${GIT_BRANCH},ref=${GIT_COMMIT}&apos;</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
@@ -161,7 +161,12 @@ if [ &quot;$CHECK_DEPENDENCIES&quot; == true ] ; then
   
   java -jar ${CLI} -s ${HOST} build &apos;kc-dependency-check&apos; -v -f -p POM=${POM};
   
-fi</command>
+fi
+
+# The environment variable POM_VERSION is set AFTER the mvn command is executed.
+# Therefore you cannot pass it to mvn as a parameter as this will indicate the pom version of the LAST maven build.
+# So, we must get the pom version by grepping for it in physical pom file itself:
+UPCOMING_POM_VERSION=grep -Po &apos;(?!&lt;version&gt;)[^&lt;&gt;]+&lt;/version&gt;&apos; $POM | head -n 1 | sed &apos;s/&lt;\/version&gt;//&apos;</command>
     </hudson.tasks.Shell>
   </prebuilders>
   <postbuilders>
