@@ -126,11 +126,12 @@ echo kuali-research &gt;&gt; .git/info/sparse-checkout
 git fetch github apache
 git checkout apache 
 eval `ssh-agent -k`
-TARGET_DIR=${JENKINS_HOME}/workspace/kuali-research-1-build-war/coeus-webapp/target
-cp ${TARGET_DIR}/*.war kuali-research/build.context
-WAR_FILE=$(ls -q ${TARGET_DIR}/*.war)
+MAVEN_TARGET_DIR=${JENKINS_HOME}/workspace/kuali-research-1-build-war/coeus-webapp/target
+cp ${MAVEN_TARGET_DIR}/*.war kuali-research/build.context
+cd kuali-research/build.context
+WAR_FILE=$(ls *.war)
 
-docker build -t ${DOCKER_TAG} --build-arg SOURCE_WAR=${WAR_FILE} kuali-research/build.context
+docker build -t ${DOCKER_TAG} --build-arg SOURCE_WAR=${WAR_FILE} .
 </command>
     </hudson.tasks.Shell>
   </builders>
