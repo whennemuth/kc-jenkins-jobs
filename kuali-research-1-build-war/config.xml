@@ -98,7 +98,64 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>GIT_BRANCHES_TO_BUILD</name>
-          <description>Specify the branches if you&apos;d like to track a specific branch in a repository. If left blank, all branches will be examined for changes and built.</description>
+          <description>Specify the branches if you&apos;d like to track a specific branch in a repository. If left blank, all branches will be examined for changes and built.
+
+Possible options:
+
+    &lt;branchName&gt;
+        Tracks/checks out the specified branch. If ambiguous the first result is taken, which is not necessarily the expected one. Better use refs/heads/&lt;branchName&gt;.
+        E.g. master, feature1,...
+    
+    refs/heads/&lt;branchName&gt;
+        Tracks/checks out the specified branch.
+        E.g. refs/heads/master, refs/heads/feature1/master,...
+    
+    &lt;remoteRepoName&gt;/&lt;branchName&gt;
+        Tracks/checks out the specified branch. If ambiguous the first result is taken, which is not necessarily the expected one.
+        Better use refs/heads/&lt;branchName&gt;.
+        E.g. origin/master
+    
+    remotes/&lt;remoteRepoName&gt;/&lt;branchName&gt;
+        Tracks/checks out the specified branch.
+        E.g. remotes/origin/master
+    
+    refs/remotes/&lt;remoteRepoName&gt;/&lt;branchName&gt;
+        Tracks/checks out the specified branch.
+        E.g. refs/remotes/origin/master
+    
+    &lt;tagName&gt;
+        This does not work since the tag will not be recognized as tag.
+        Use refs/tags/&lt;tagName&gt; instead.
+        E.g. git-2.3.0
+    
+    refs/tags/&lt;tagName&gt;
+        Tracks/checks out the specified tag.
+        E.g. refs/tags/git-2.3.0
+    
+    &lt;commitId&gt;
+        Checks out the specified commit.
+        E.g. 5062ac843f2b947733e6a3b105977056821bd352, 5062ac84, ...
+    
+    ${ENV_VARIABLE}
+        It is also possible to use environment variables. In this case the variables are evaluated and the result is used as described above.
+        E.g. ${TREEISH}, refs/tags/${TAGNAME},...
+    
+    &lt;Wildcards&gt;
+        The syntax is of the form: REPOSITORYNAME/BRANCH. In addition, BRANCH is recognized as a shorthand of */BRANCH, &apos;*&apos; is recognized as a wildcard, and &apos;**&apos; is recognized as wildcard that includes the separator &apos;/&apos;. Therefore, origin/branches* would match origin/branches-foo but not origin/branches/foo, while origin/branches** would match both origin/branches-foo and origin/branches/foo.
+    
+    :&lt;regular expression&gt;
+        The syntax is of the form: :regexp. Regular expression syntax in branches to build will only build those branches whose names match the regular expression.
+        Examples:
+    
+            :^(?!(origin/prefix)).*
+                matches: origin or origin/master or origin/feature
+                does not match: origin/prefix or origin/prefix_123 or origin/prefix-abc
+            :origin/release-\d{8}
+                matches: origin/release-20150101
+                does not match: origin/release-2015010 or origin/release-201501011 or origin/release-20150101-something
+            :^(?!origin/master$|origin/develop$).*
+                matches: origin/branch1 or origin/branch-2 or origin/master123 or origin/develop-123
+                does not match: origin/master or origin/develop</description>
           <defaultValue>refs/heads/${BRANCH}</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
@@ -149,7 +206,18 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
   <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
   <reporters/>
   <publishers/>
-  <buildWrappers/>
+  <buildWrappers>
+    <com.lookout.jenkins.EnvironmentScript plugin="environment-script@1.2.5">
+      <script># The environment variable POM_VERSION is set AFTER the mvn command is executed.
+# Therefore you cannot pass it to mvn as a parameter as this will indicate the pom version of the LAST maven build.
+# So, we must get the pom version by grepping for it in physical pom file itself and setting it as an environment variable:
+
+echo UPCOMING_POM_VERSION=$(grep -Po &apos;(?!&lt;version&gt;)[^&lt;&gt;]+&lt;/version&gt;&apos; ${WORKSPACE}/pom.xml | head -n 1 | sed &apos;s/&lt;\/version&gt;//&apos;)</script>
+      <scriptType>unixScript</scriptType>
+      <runOnlyOnParent>false</runOnlyOnParent>
+      <hideEnvironmentVariablesValues>false</hideEnvironmentVariablesValues>
+    </com.lookout.jenkins.EnvironmentScript>
+  </buildWrappers>
   <prebuilders>
     <hudson.tasks.Shell>
       <command>
@@ -162,11 +230,7 @@ if [ &quot;$CHECK_DEPENDENCIES&quot; == true ] ; then
   java -jar ${CLI} -s ${HOST} build &apos;kc-dependency-check&apos; -v -f -p POM=${POM};
   
 fi
-
-# The environment variable POM_VERSION is set AFTER the mvn command is executed.
-# Therefore you cannot pass it to mvn as a parameter as this will indicate the pom version of the LAST maven build.
-# So, we must get the pom version by grepping for it in physical pom file itself:
-UPCOMING_POM_VERSION=grep -Po &apos;(?!&lt;version&gt;)[^&lt;&gt;]+&lt;/version&gt;&apos; $POM | head -n 1 | sed &apos;s/&lt;\/version&gt;//&apos;</command>
+</command>
     </hudson.tasks.Shell>
   </prebuilders>
   <postbuilders>

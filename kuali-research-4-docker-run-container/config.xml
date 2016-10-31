@@ -81,6 +81,7 @@ BASE64=$(\
          -v /var/log/kuali/printing:/opt/kuali/logs/printing \
          -v /var/log/tomcat:/var/log/tomcat \
          -v /var/log/kuali/javamelody:/var/log/javamelody \
+         -v /var/log/kuali/attachments:/var/cache/tomcat/temp/dev/attachments \
          --restart unless-stopped \
          --name ${CONTAINER_NAME} \
          ${DOCKER_TAG}&quot; | base64 -w 0 \
@@ -97,7 +98,7 @@ run_command_id=$(aws ssm send-command \
    --parameters \
         commands=&quot;echo &gt;&gt; /tmp/ssm-received &amp;&amp; date &gt;&gt; /tmp/ssm-received &amp;&amp; \
                   echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-received &amp;&amp; \
-                  echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-last.sh &amp;&amp; \
+                  echo ${BASE64} | base64 --decode &gt; /tmp/ssm-last.sh &amp;&amp; \
                   echo ${BASE64} | base64 --decode | sh&quot; \
    --profile &quot;ecr.access&quot; \
    --output text \

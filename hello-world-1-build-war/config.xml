@@ -1,12 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <maven2-moduleset plugin="maven-plugin@2.13">
   <actions/>
-  <description>This build:&#xd;
-   1) Creates the application war file from the HEAD reference of the git master branch.&#xd;
-       (NOTE: this will be the only thing done if DEPLOY is not checked)&#xd;
-   2) Wraps the war file into the image during its creation&#xd;
-   3) Uploads the new image to a docker registry&#xd;
-   4) Issues a command over SSH to docker on the application host to remove any existing container that is running and run a new one based on the new image.</description>
+  <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>
@@ -104,7 +99,7 @@ Example: i-099de1c5407493f9b
     <groupId>com.bu.ist.hello.world</groupId>
     <artifactId>hello-world</artifactId>
   </rootModule>
-  <goals>clean compile install -Dgrm.off=true</goals>
+  <goals>clean compile install -Dgrm.off=true -Dmaven.test.skip=true -Dbuild.version=${UPCOMING_POM_VERSION}</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
@@ -122,7 +117,14 @@ Example: i-099de1c5407493f9b
   <globalSettings class="jenkins.mvn.DefaultGlobalSettingsProvider"/>
   <reporters/>
   <publishers/>
-  <buildWrappers/>
+  <buildWrappers>
+    <com.lookout.jenkins.EnvironmentScript plugin="environment-script@1.2.5">
+      <script>echo UPCOMING_POM_VERSION=$(grep -Po &apos;(?!&lt;version&gt;)[^&lt;&gt;]+&lt;/version&gt;&apos; ${WORKSPACE}/pom.xml | head -n 1 | sed &apos;s/&lt;\/version&gt;//&apos;)</script>
+      <scriptType>unixScript</scriptType>
+      <runOnlyOnParent>false</runOnlyOnParent>
+      <hideEnvironmentVariablesValues>false</hideEnvironmentVariablesValues>
+    </com.lookout.jenkins.EnvironmentScript>
+  </buildWrappers>
   <prebuilders/>
   <postbuilders>
     <hudson.tasks.Shell>
@@ -159,6 +161,7 @@ echo &quot;POM_VERSION = ${POM_VERSION}&quot;
 echo &quot;POM_GROUPID = ${POM_GROUPID}&quot;
 echo &quot;POM_ARTIFACTID = ${POM_ARTIFACTID}&quot;
 echo &quot;POM_PACKAGING = ${POM_PACKAGING}&quot;
+echo &quot;UPCOMING_POM_VERSION = ${UPCOMING_POM_VERSION}&quot;
 
 if [ &quot;$DEPLOY&quot; == true ] ; then
 
