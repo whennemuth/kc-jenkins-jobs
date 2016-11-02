@@ -82,6 +82,8 @@ BASE64=$(\
          -v /var/log/tomcat:/var/log/tomcat \
          -v /var/log/kuali/javamelody:/var/log/javamelody \
          -v /var/log/kuali/attachments:/var/cache/tomcat/temp/dev/attachments \
+         --log-driver=syslog \
+         --log-opt syslog-address=udp://log-srv.bu.edu:514 \
          --restart unless-stopped \
          --name ${CONTAINER_NAME} \
          ${DOCKER_TAG}&quot; | base64 -w 0 \
@@ -112,16 +114,18 @@ run_command_id=$(aws ssm send-command \
 #   &quot;docker rm -f ${CONTAINER_NAME} || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
 #   &quot;eval $(aws ecr get-login --profile ecr.access) &amp;&amp; &quot; \
 #   &quot;docker run&quot; \
-#   &quot; -d&quot; \
-#   &quot; -p 8080:8080&quot; \
-#   &quot; -p 8009:8009&quot; \
+#    -d&quot; \
+#    -p 8080:8080&quot; \
+#    -p 8009:8009&quot; \
 #     -v /opt/kuali/main/config:/opt/kuali/main/config \
 #     -v /var/log/kuali/printing:/opt/kuali/logs/printing \
 #     -v /var/log/tomcat:/var/log/tomcat \
 #     -v /var/log/kuali/javamelody:/var/log/javamelody \
-#   &quot; --restart unless-stopped&quot; \
-#   &quot; --name ${CONTAINER_NAME}&quot; \
-#   &quot; ${DOCKER_TAG} &amp;&amp; &quot; \
+#    --log-driver=syslog \
+#    --log-opt syslog-address=udp://log-srv.bu.edu:514 \
+#    --restart unless-stopped \
+#    --name ${CONTAINER_NAME} \
+#    ${DOCKER_TAG} &amp;&amp; &quot; \
 #   &quot;docker ps&quot;
 </command>
     </hudson.tasks.Shell>
