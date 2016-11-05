@@ -78,12 +78,8 @@ BASE64=$(\
          -p 8080:8080 \
          -p 8009:8009 \
          -v /opt/kuali/main/config:/opt/kuali/main/config \
-         -v /var/log/kuali/printing:/opt/kuali/logs/printing \
+         -v /var/log/kuali:/var/log/kuali \
          -v /var/log/tomcat:/var/log/tomcat \
-         -v /var/log/kuali/javamelody:/var/log/javamelody \
-         -v /var/log/kuali/attachments:/var/cache/tomcat/temp/dev/attachments \
-         --log-driver=syslog \
-         --log-opt syslog-address=udp://log-srv.bu.edu:514 \
          --restart unless-stopped \
          --name ${CONTAINER_NAME} \
          ${DOCKER_TAG}&quot; | base64 -w 0 \
@@ -117,12 +113,9 @@ run_command_id=$(aws ssm send-command \
 #    -d&quot; \
 #    -p 8080:8080&quot; \
 #    -p 8009:8009&quot; \
-#     -v /opt/kuali/main/config:/opt/kuali/main/config \
-#     -v /var/log/kuali/printing:/opt/kuali/logs/printing \
-#     -v /var/log/tomcat:/var/log/tomcat \
-#     -v /var/log/kuali/javamelody:/var/log/javamelody \
-#    --log-driver=syslog \
-#    --log-opt syslog-address=udp://log-srv.bu.edu:514 \
+#    -v /opt/kuali/main/config:/opt/kuali/main/config \
+#    -v /var/log/kuali:/var/log/kuali \
+#    -v /var/log/tomcat:/var/log/tomcat \
 #    --restart unless-stopped \
 #    --name ${CONTAINER_NAME} \
 #    ${DOCKER_TAG} &amp;&amp; &quot; \
