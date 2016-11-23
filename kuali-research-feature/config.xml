@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>5</daysToKeep>
+        <numToKeep>-1</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>LANDSCAPE</name>
+          <description>The landscape to deploy to.</description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>ci</string>
+              <string>sandbox</string>
+              <string>qa</string>
+              <string>stage</string>
+              <string>prod</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>GIT_REPO_URL</name>
+          <description>The git repository from which the build will pull source code.</description>
+          <defaultValue>https://github.com/bu-ist/kuali-research</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_REF_TYPE</name>
+          <description></description>
+          <randomName>choice-parameter-37338648206767</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>def list = [&apos;Branch&apos;, &apos;Tag&apos;, &apos;Commit ID&apos;]</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>def list = [error]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-research-feature</projectName>
+          <choiceType>PT_RADIO</choiceType>
+          <filterable>false</filterable>
+        </org.biouno.unochoice.ChoiceParameter>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_REF</name>
+          <description></description>
+          <randomName>choice-parameter-37338650218997</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>if (&quot;branch&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
+   def multiline = (&apos;git -c core.askpass=true ls-remote -h &apos; + GIT_REPO_URL).execute() | &apos;grep -i -P -o ^[^\\s]+\\s+refs/heads/\\K(.*)\$&apos;.execute()
+   multiline.waitForOrKill(20000)
+   def list = multiline.text.readLines()
+} 
+else if (&quot;tag&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
+   def multiline = (&apos;git -c core.askpass=true ls-remote -t &apos; + GIT_REPO_URL).execute() | &apos;grep -i -P -o ^[^\\s]+\\s+refs/tags/\\K(.*)\$&apos;.execute() | &apos;grep -i -P ^[^\\^\\{\\}]+$&apos;.execute()
+   multiline.waitForOrKill(20000)
+   def list = multiline.text.readLines()
+}
+else if (&quot;commit id&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
+   def list = [&quot;N/A&quot;]
+}
+else {
+   def list = [&quot;&lt;- Select a git ref type -&gt;&quot;]
+}</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>def list = [error]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-research-feature</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>GIT_REPO_URL, GIT_REF_TYPE</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+        </org.biouno.unochoice.CascadeChoiceParameter>
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_COMMIT_ID</name>
+          <description></description>
+          <randomName>choice-parameter-37338652203340</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>def multiline = null
+if (&quot;branch&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
+   multiline = (&quot;git -c core.askpass=true ls-remote -h &quot; + GIT_REPO_URL + &quot; refs/heads/&apos; &quot; + GIT_REF).execute() | &apos;grep -i -P -o ^[^\\s]+&apos;.execute()
+}
+else if (&quot;tag&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
+   multiline = (&quot;git -c core.askpass=true ls-remote -t &quot; + GIT_REPO_URL + &quot; refs/tags/&apos; &quot; + GIT_REF).execute() | &apos;grep -i -P -o ^[^\\s]+&apos;.execute()
+}
+else if(&quot;commit id&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
+    multiline = &quot;echo N/A&quot;.execute()
+}
+
+if (multiline == null) {
+   def list = [&quot;&lt;- Select a git ref type -&gt;&quot;]
+}
+else {
+   multiline.waitForOrKill(20000)
+   def list = multiline.text.readLines()   
+}</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>def list = [error]</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-research-feature</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>GIT_REPO_URL, GIT_REF_TYPE, GIT_REF, GIT_MANUAL_COMMIT_ID</referencedParameters>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
+          <filterable>false</filterable>
+        </org.biouno.unochoice.CascadeChoiceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_MANUAL_COMMIT_ID</name>
+          <description></description>
+          <randomName>choice-parameter-41018352587677</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>if(GIT_REF_TYPE.isEmpty()) {
+   return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&lt;- Select a git ref type -&gt;&apos; disabled=true&gt;&quot;
+}
+else if ( ! &quot;commit id&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
+   return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&quot; + GIT_COMMIT_ID + &quot;&apos; disabled=true&gt;&quot;
+}
+else {
+   return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos;&gt;&quot;
+}</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script></script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-research-feature</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>GIT_REF_TYPE, GIT_COMMIT_ID </referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>true</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.5.3">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/bu-ist/kuali-research</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>set +x
+
+echo &quot;LANDSCAPE = ${LANDSCAPE}&quot;
+echo &quot;GIT_REPO_URL = ${GIT_REPO_URL}&quot;
+echo &quot;GIT_REF_TYPE = ${GIT_REF_TYPE}&quot;
+echo &quot;GIT_REF = ${GIT_REF}&quot;
+echo &quot;GIT_COMMIT_ID = ${GIT_COMMIT_ID}&quot;
+echo &quot;GIT_MANUAL_COMMIT_ID = ${GIT_MANUAL_COMMIT_ID}&quot;
+
+# TODO: Cut and paste and then extend code from build &apos;kuali-research&apos;
+
+set -x</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

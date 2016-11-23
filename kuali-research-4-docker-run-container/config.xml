@@ -78,7 +78,10 @@ BASE64=$(\
          -p 8080:8080 \
          -p 8009:8009 \
          -v /opt/kuali/main/config:/opt/kuali/main/config \
-         -v /var/log/kuali:/var/log/kuali \
+         -v /var/log/kuali/printing/logs:/var/log/kuali/printing/logs \
+         -v /var/log/kuali/printing/xml:/var/log/kuali/printing/xml \
+         -v /var/log/kuali/javamelody:/var/log/kuali/javamelody \
+         -v /var/log/kuali/attachments:/var/cache/tomcat/temp/dev/attachments \
          -v /var/log/tomcat:/var/log/tomcat \
          --restart unless-stopped \
          --name ${CONTAINER_NAME} \

@@ -89,9 +89,11 @@ Example: i-099de1c5407493f9b
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>GIT_REFSPEC</name>
-          <description>Controls the remote refs to be retrieved and how they map to local refs.
+          <description>Controls the remote refs to be retrieved (git fetch) and how they map to local refs.
 The default ref narrows refs to retrieve to a specific branch.
 To narrow down to a specific tag or tags (will use the latest matching pattern used) use:
+
+NOTE: This is NOT what determines what gets checked out for building (see GIT_BRANCHES_TO_BUILD)
 
 +refs/tags/[tag pattern]:refs/remotes/origin/tags/[tag pattern]</description>
           <defaultValue>+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}</defaultValue>
@@ -99,6 +101,9 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
         <hudson.model.StringParameterDefinition>
           <name>GIT_BRANCHES_TO_BUILD</name>
           <description>Specify the branches if you&apos;d like to track a specific branch in a repository. If left blank, all branches will be examined for changes and built.
+
+NOTE: This is NOT what determines what gets fetched from the remote repository (see GIT_REFSPEC).
+Therefore, it is possible to specify a certain tagname of commitId here and have the build fail because the GIT_REFSPEC value has only cause fetches that to date have not yet included the that tagname or commitId.
 
 Possible options:
 

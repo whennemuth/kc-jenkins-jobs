@@ -46,7 +46,11 @@
 The default ref narrows refs to retrieve to a specific branch.
 To narrow down to a specific tag or tags (will use the latest matching pattern used) use:
 
-+refs/tags/[tag pattern]:refs/remotes/origin/tags/[tag pattern]</description>
++refs/tags/[tag pattern]:refs/remotes/origin/tags/[tag pattern]
+
+To narrow to the HEAD of a branch use:
+
++refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}</description>
           <defaultValue>+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -84,11 +88,41 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
     <hudson.tasks.Shell>
       <command>set +x
 
-CLI=/var/lib/jenkins/jenkins-cli.jar
-HOST=http://localhost:8080/
+echo &quot;GIT_COMMIT - SHA of the current:&quot;
+echo $GIT_COMMIT
+echo &quot;&quot;
 
-java -jar ${CLI} -s ${HOST} build &apos;kuali-research&apos; -v -f \
-      -p LANDSCAPE=ci
+echo &quot;GIT_BRANCH - Name of the remote repository (defaults to origin), followed by name of the branch currently being used, e.g. \&quot;origin/master&quot; or &quot;origin/foo\&quot;:&quot;
+echo $GIT_BRANCH
+echo &quot;&quot;
+
+echo &quot;GIT_LOCAL_BRANCH - Name of the branch on Jenkins. When the \&quot;checkout to specific local branch\&quot; behavior is configured, the variable is published.  If the behavior is configured as null or **, the property will contain the resulting local branch name sans the remote name. :&quot;
+echo $GIT_LOCAL_BRANCH
+echo &quot;&quot;
+
+echo &quot;GIT_PREVIOUS_COMMIT - SHA of the previous built commit from the same branch (the current SHA on first build in branch):&quot;
+echo $GIT_PREVIOUS_COMMIT
+echo &quot;&quot;
+
+echo &quot;GIT_PREVIOUS_SUCCESSFUL_COMMIT - SHA of the previous successfully built commit from the same branch.:&quot;
+echo $GIT_PREVIOUS_SUCCESSFUL_COMMIT
+echo &quot;&quot;
+
+echo &quot;GIT_URL - Repository remote URL:&quot;
+echo $GIT_URL
+echo &quot;&quot;
+
+echo &quot;GIT_URL_N - Repository remote URLs when there are more than 1 remotes, e.g. GIT_URL_1, GIT_URL_2:&quot;
+echo $GIT_URL_N
+echo &quot;&quot;
+
+echo &quot;GIT_AUTHOR_NAME and GIT_COMMITTER_NAME - The name entered if the \&quot;Custom user name/e-mail address\&quot; behaviour is enabled; falls back to the value entered in the Jenkins system config under \&quot;Global Config user.name Value\&quot; (if any):&quot;
+echo &quot;$GIT_AUTHOR_NAME and $GIT_COMMITTER_NAME&quot;
+echo &quot;&quot;
+
+echo &quot;GIT_AUTHOR_EMAIL and GIT_COMMITTER_EMAIL - The email entered if the \&quot;Custom user name/e-mail address\&quot; behaviour is enabled; falls back to the value entered in the Jenkins system config under \&quot;Global Config user.email Value\&quot; (if any):&quot;
+echo &quot;$GIT_AUTHOR_EMAIL and $GIT_COMMITTER_EMAIL&quot;
+echo &quot;&quot;
 
 set -x</command>
     </hudson.tasks.Shell>
