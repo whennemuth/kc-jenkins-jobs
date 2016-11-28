@@ -65,8 +65,9 @@ This is determined by analyzing the pom file for this build and the local .m2 re
           <name>DEPLOY</name>
           <description>When the build has finished, trigger the next 3 jobs which 
    1) Build the docker image around the war file created here
-   2) Push the docker image it to the docker registry
-   3) Execute commands on the application server to pull the docker image from the registry and run a container from it. </description>
+   2) Push the docker image to the docker registry
+   3) Execute commands on the application server to pull the docker image from the registry and run a container from it. 
+Uncheck this box if you simply want to build a war file and do nothing else (location of war: ${JENKINS_HOME}/workspace/kuali-research-1-build-war/coeus-webapp/target). </description>
           <defaultValue>true</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -103,7 +104,7 @@ NOTE: This is NOT what determines what gets checked out for building (see GIT_BR
           <description>Specify the branches if you&apos;d like to track a specific branch in a repository. If left blank, all branches will be examined for changes and built.
 
 NOTE: This is NOT what determines what gets fetched from the remote repository (see GIT_REFSPEC).
-Therefore, it is possible to specify a certain tagname of commitId here and have the build fail because the GIT_REFSPEC value has only cause fetches that to date have not yet included the that tagname or commitId.
+Therefore, it is possible to specify a certain tagname of commitId here and have the build fail because the GIT_REFSPEC value has only caused fetches that to date have not yet included that tagname or commitId.
 
 Possible options:
 
