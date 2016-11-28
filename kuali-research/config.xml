@@ -28,7 +28,7 @@ NOTE:
    If &quot;sandbox&quot; is selected, the build will be based on the HEAD of the git master branch for kuali-research
    If &quot;ci&quot; is selected, the build will be based on the HEAD of the git bu-master branch for kuali-research
    If any other landscape is selected, whatever was last built for the ci is deployed to that landscape
-   or, you can override this by selecting a specific git reference below (CI AND SANDBOX ONLY!!!).
+   or, you can override this by selecting a specific git reference below.
 
 </description>
           <choices class="java.util.Arrays$ArrayList">
@@ -64,7 +64,7 @@ It is assumed that you are attempting to build against a feature branch, tag or 
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>def list = [&apos;Branch&apos;, &apos;Tag&apos;, &apos;Commit ID&apos;]</script>
+              <script>def list = [&apos;Default:selected&apos;, &apos;Branch&apos;, &apos;Tag&apos;, &apos;Commit ID&apos;]</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
@@ -76,44 +76,55 @@ It is assumed that you are attempting to build against a feature branch, tag or 
           <choiceType>PT_RADIO</choiceType>
           <filterable>false</filterable>
         </org.biouno.unochoice.ChoiceParameter>
-        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>GIT_REF</name>
-          <description>The items in the selected git reference type
-&lt;br&gt;
-&lt;br&gt;</description>
-          <randomName>choice-parameter-11109105201828</randomName>
+          <description></description>
+          <randomName>choice-parameter-52128031899195</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>if (&quot;branch&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
+              <script>def list = null
+if (&quot;branch&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
    def multiline = (&apos;git -c core.askpass=true ls-remote -h &apos; + GIT_REPO_URL).execute() | &apos;grep -i -P -o ^[^\\s]+\\s+refs/heads/\\K(.*)\$&apos;.execute()
    multiline.waitForOrKill(20000)
-   def list = multiline.text.readLines()
+   list = multiline.text.readLines()
 } 
 else if (&quot;tag&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
    def multiline = (&apos;git -c core.askpass=true ls-remote -t &apos; + GIT_REPO_URL).execute() | &apos;grep -i -P -o ^[^\\s]+\\s+refs/tags/\\K(.*)\$&apos;.execute() | &apos;grep -i -P ^[^\\^\\{\\}]+$&apos;.execute()
    multiline.waitForOrKill(20000)
-   def list = multiline.text.readLines()
+   list = multiline.text.readLines()
 }
-else if (&quot;commit id&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
-   def list = [&quot;N/A&quot;]
+
+if (list== null) {
+   if (&quot;commit id&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
+      return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;width:310px;&apos; disabled=true&gt;&quot;
+   }
+   else {
+      return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;width:310px;&apos; disabled=true&gt;&quot;
+    }
 }
 else {
-   def list = [&quot;&lt;- Select a git ref type -&gt;&quot;]
-}</script>
+   def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:310px;&apos;&gt;&quot;)
+   list.each {
+      sb.append(&quot;&lt;option value=&apos;&quot;).append(&quot;${it}&quot;).append(&quot;&apos;&gt;&quot;).append(&quot;${it}&quot;).append(&quot;&lt;/option&gt;&quot;)
+   }
+   sb.append(&quot;&lt;/select&gt;&quot;)
+   return sb.toString()
+}
+</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
-              <script>def list = [error]</script>
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:310px;&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
           <projectName>kuali-research</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>GIT_REPO_URL, GIT_REF_TYPE</referencedParameters>
-          <choiceType>PT_SINGLE_SELECT</choiceType>
-          <filterable>false</filterable>
-        </org.biouno.unochoice.CascadeChoiceParameter>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>GIT_COMMIT_ID</name>
           <description>This is the git commit ID that the build will be based on.
@@ -134,11 +145,21 @@ else if (&quot;tag&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
 else if(&quot;commit id&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
     process = &quot;echo N/A&quot;.execute()
 }
-
-if (process == null) {
-   commitId = &quot;&lt;- Select a git ref type -&gt;&quot;
-}
 else {
+   def branch = null
+   if(&quot;ci&quot;.equalsIgnoreCase(LANDSCAPE)) {
+      branch = &quot;bu-master&quot;
+   }
+   if(&quot;sandbox&quot;.equalsIgnoreCase(LANDSCAPE)) {
+      branch = &quot;master&quot;
+   }
+   if(branch != null) {
+      //process = &quot;echo ${branch}&quot;.execute()
+      process = (&quot;git -c core.askpass=true ls-remote -h &quot; + GIT_REPO_URL + &quot; refs/heads/&quot; + branch).execute() | &apos;grep -i -P -o ^[^\\s]+&apos;.execute()
+   }
+}
+
+if (process != null) {
    process.waitForOrKill(20000)
    def list = process.text.readLines()
    if (list == null || list.isEmpty()) {
@@ -150,7 +171,7 @@ else {
 }
 
 
-if(GIT_REF_TYPE.isEmpty()) {
+if(commitId == null) {
    return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; disabled=true style=&apos;font-family:monospace; width:310px;&apos;&gt;&quot;
 }
 else if ( ! &quot;commit id&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
@@ -162,13 +183,13 @@ else {
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
-              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; readonly=true style=&apos;font-family:monospace; width:310px;&apos;&gt;&quot;</script>
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; disabled=true style=&apos;font-family:monospace; width:310px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
           <projectName>kuali-research</projectName>
           <parameters class="linked-hash-map"/>
-          <referencedParameters>GIT_REPO_URL, GIT_REF_TYPE, GIT_REF</referencedParameters>
+          <referencedParameters>GIT_REPO_URL, GIT_REF_TYPE, GIT_REF, LANDSCAPE</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
@@ -194,6 +215,9 @@ GIT_REF_TYPE=$(echo $GIT_REF_TYPE | tr &apos;[:upper:]&apos; &apos;[:lower:]&apo
 BRANCH=&quot;&quot;
 CANCEL_JOB=&quot;&quot;
 EC2_IDS=()
+# BUGFIX: The Active Choices Reactive Parameter Rendering feature is adding 
+# a comma to the end of the GIT_REF listbox value, so strip off the comma
+GIT_REF=$(echo $GIT_REF | grep -i -o -P &apos;^.*[^,](?=,?$)&apos;)
 # By convention, we are calling the repository name within the registry the same as the artifactid of the pom file 
 # that the repository keeps images for. However if we want to break this rule and cause downstream jobs to push 
 # and pull from the registry referencing a different repository name, then set this value accordingly.
@@ -209,39 +233,31 @@ case &quot;$LANDSCAPE&quot; in
       BRANCH=&quot;bu-master&quot;
       EC2_IDS=(&quot;i-0258a5f2a87ba7972&quot; &quot;i-0511b83a249cd9fb1&quot;);;      
    &quot;qa&quot;)
-      if [ -n &quot;${GIT_COMMIT_ID}&quot; ] ; then CANCEL_JOB=&quot;yes&quot;; fi
       EC2_IDS=(&quot;i-011ccd29dec6c6d10&quot;);;
    &quot;stage&quot;)
-      if [ -n &quot;${GIT_COMMIT_ID}&quot; ] ; then CANCEL_JOB=&quot;yes&quot;; fi
       EC2_IDS=(&quot;i-090d188ea237c8bcf&quot; &quot;i-0cb479180574b4ba2&quot;);;
    &quot;prod&quot;)
-      if [ -n &quot;${GIT_COMMIT_ID}&quot; ] ; then CANCEL_JOB=&quot;yes&quot;; fi
       EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;);;
 esac
 
-if [ &quot;$CANCEL_JOB&quot; == &quot;yes&quot; ] ; then
-   echo &quot;INVALID PARAMETERS! CANCELLING BUILD.&quot;
-   echo &quot;Custom git references are restricted for landscapes other than ci and sandbox&quot;
-   echo &quot;Whatever you want to deploy to these landscapes must be built on the CI landscape first&quot;;
-   exit 1;
+# Prepare custom git references for manual feature builds and overriding of default git practice        
+if [ &quot;$GIT_REF_TYPE&quot; == &quot;branch&quot; ] ; then
+   GIT_REFSPEC=&quot;+refs/heads/${GIT_REF}:refs/remotes/origin/${GIT_REF}&quot;
+   GIT_BRANCHES_TO_BUILD=&quot;refs/heads/${GIT_REF}&quot;
+elif [ &quot;$GIT_REF_TYPE&quot; == &quot;tag&quot; ] ; then
+   GIT_REFSPEC=&quot;+refs/tags/${GIT_REF}:refs/remotes/origin/tags/${GIT_REF}&quot;
+   GIT_BRANCHES_TO_BUILD=&quot;refs/tags/${GIT_REF}&quot;
+else
+   GIT_REFSPEC=&quot;+refs/heads/*:refs/remotes/origin/*&quot;
+   GIT_BRANCHES_TO_BUILD=&quot;${GIT_COMMIT_ID}&quot;         
 fi
 
 for i in $(seq ${#EC2_IDS[@]}); do
    EC2_ID=${EC2_IDS[i-1]}
    if ( [ $i -eq 1 ] &amp;&amp; [ &quot;$BRANCH&quot; != &quot;&quot; ] ); then
-      # A) FULL BUILD AND DEPLOY (maven &amp; docker)
+      # A) STANDARD FULL BUILD AND DEPLOY (maven &amp; docker)
       #    (NOTE: several parameters are ommitted to invoke their default values.)
-      if [ -n &quot;${GIT_COMMIT_ID}&quot; ] ; then
-         if [ &quot;$GIT_REF_TYPE&quot; == &quot;branch&quot; ] ; then
-            GIT_REFSPEC=&quot;+refs/heads/${GIT_REF}:refs/remotes/origin/${GIT_REF}&quot;
-            GIT_BRANCHES_TO_BUILD=&quot;refs/heads/${GIT_REF}&quot;
-         elif [ &quot;$GIT_REF_TYPE&quot; == &quot;tag&quot; ] ; then
-            GIT_REFSPEC=&quot;+refs/tags/${GIT_REF}:refs/remotes/origin/tags/${GIT_REF}&quot;
-            GIT_BRANCHES_TO_BUILD=&quot;refs/tags/${GIT_REF}&quot;
-         else
-            GIT_REFSPEC=&quot;+refs/heads/*:refs/remotes/origin/*&quot;
-            GIT_BRANCHES_TO_BUILD=&quot;${GIT_COMMIT_ID}&quot;         
-         fi
+      if [ &quot;${GIT_REF_TYPE}&quot; != &quot;default&quot; ] ; then      
          CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-1-build-war&apos; -v -f \
             -p BRANCH=feature \
             -p GIT_REFSPEC=${GIT_REFSPEC} \
@@ -252,6 +268,14 @@ for i in $(seq ${#EC2_IDS[@]}); do
             -p BRANCH=${BRANCH} \
             -p EC2_INSTANCE_ID=${EC2_ID}&quot;      
       fi
+   elif ( [ $i -eq 1 ] &amp;&amp; [ &quot;${GIT_REF_TYPE}&quot; != &quot;default&quot; ] ); then
+      # B) CUSTOM FULL BUILD AND DEPLOY (maven &amp; docker)
+      #    (NOTE: The resulting docker images will be pushed and pulled against the feature docker repo in our registry
+      CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-1-build-war&apos; -v -f \
+         -p BRANCH=feature \
+         -p GIT_REFSPEC=${GIT_REFSPEC} \
+         -p GIT_BRANCHES_TO_BUILD=${GIT_BRANCHES_TO_BUILD} \
+         -p EC2_INSTANCE_ID=${EC2_ID}&quot;         
    elif ( [ ! -f $DOCKER_PUSH_LOG_FILE ] &amp;&amp; [ &quot;$DEBUG&quot; == false ] ); then
       echo &quot;PROBLEM!!! Cannot determine registry image to reference.&quot;;
       echo &quot;Cannot find log for most recent docker push job:&quot;;
@@ -259,7 +283,7 @@ for i in $(seq ${#EC2_IDS[@]}); do
       echo &quot;Cancelling build...&quot;;
       exit 1;
    else
-      # B) DEPLOY ONLY (docker) 
+      # C) DEPLOY ONLY (docker) 
       #    Use aws CLI only to get new docker container running against updated image on target EC2 instance.
       #    It is assumed the corresponding docker image is already in the registry and will be the last one put there by jenkins.
       #    (NOTE: any parameters ommitted will invoke the default values.)
@@ -269,6 +293,11 @@ for i in $(seq ${#EC2_IDS[@]}); do
       CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-4-docker-run-container&apos; -v -f \
          -p EC2_INSTANCE_ID=${EC2_ID} \
          -p POM_VERSION=${POM_VERSION}&quot;
+         
+      if [ &quot;${GIT_REF_TYPE}&quot; != &quot;default&quot; ] ; then
+         # Anything built from a custom selected git reference will be pushed to the feature docker repo in our registry
+         CMD=&quot;${CMD} -p REGISTRY_REPO_NAME=coeus-feature&quot;
+      fi
    fi
    
    if [ -n &quot;${POM_ARTIFACTID_OVERRIDE}&quot; ] ; then 

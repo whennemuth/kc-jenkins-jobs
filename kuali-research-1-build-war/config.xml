@@ -293,7 +293,9 @@ if [ &quot;$DEPLOY&quot; == true ] ; then
    fi      
    
    # Set the name of the target repository in docker registry
-   if [ &quot;${BRANCH}&quot; == &quot;master&quot; ] ; then
+   if [ &quot;${BRANCH}&quot; == &quot;feature&quot; ] ; then
+      REGISTRY_REPO_NAME=&quot;${POM_ARTIFACTID}-feature&quot;
+   elif [ &quot;${BRANCH}&quot; == &quot;master&quot; ] ; then
       REGISTRY_REPO_NAME=&quot;${POM_ARTIFACTID}-sandbox&quot;
    else
       REGISTRY_REPO_NAME=&quot;${POM_ARTIFACTID}&quot;
@@ -304,13 +306,16 @@ if [ &quot;$DEPLOY&quot; == true ] ; then
    if [ ! -d ${BACKUP_DIR}/${BRANCH} ] ; then 
       mkdir -p ${BACKUP_DIR}/${BRANCH} 
    fi
+   # Clear out the backup dir (ensures only one war file and no space-consuming buildup)
+   rm -f -r ${BACKUP_DIR}/${BRANCH}/*
+   # Copy the war file from the maven target directory to the backup directory
    cp -f ${WORKSPACE}/coeus-webapp/target/${WAR_FILE} ${BACKUP_DIR}/${BRANCH}/
 
    # 2nd step) Build the docker image locally 
    java -jar ${CLI} -s ${HOST} build &apos;kuali-research-2-docker-build-image&apos; -v -f \
       -p POM_VERSION=${POM_VERSION} \
       -p REGISTRY_REPO_NAME=${REGISTRY_REPO_NAME} \
-      -p JENKINS_WAR_URL=${WAR_URL} \
+      -p JENKINS_WAR_FILE=${BACKUP_DIR}/${BRANCH}/${WAR_FILE} \
       -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL};
          
    # 3rd step) Push the docker image to the registry

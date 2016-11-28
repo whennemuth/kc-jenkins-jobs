@@ -15,10 +15,11 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>JENKINS_WAR_URL</name>
-          <description>The location of the war file within the jenkins website.
-Example: http://localhost:8080/job/kuali-research-1-build-war/ws/coeus-webapp/target/coeus-webapp-1603.50-SNAPSHOT.war	
-(NOTE: This must start with http:// to indicate the protocol being used to the ADD instruction in the docker file.</description>
+          <name>JENKINS_WAR_FILE</name>
+          <description>The location of the war file within the jenkins home directory.
+Example: /var/lib/jenkins/workspace/kuali-research-1-build-war/coeus-webapp/target/coeus-webapp-1603.50-SNAPSHOT.war	
+
+NOTE: If you are executing this job directly, keep in mind that the war file you want will not necessarily be the last war file that was built by maven in the kuali-research-1-build-war job (this is the default value). Instead, you may want one of the war files that has been backed up in /var/lib/jenkins/backup/kuali-research/war</description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -126,8 +127,13 @@ echo kuali-research &gt;&gt; .git/info/sparse-checkout
 git fetch github apache
 git checkout apache 
 eval `ssh-agent -k`
-MAVEN_TARGET_DIR=${JENKINS_HOME}/workspace/kuali-research-1-build-war/coeus-webapp/target
-cp ${MAVEN_TARGET_DIR}/*.war kuali-research/build.context
+# Copy the war file into the docker build context directory
+if [ -n &quot;${JENKINS_WAR_FILE}&quot; ] ; then
+   cp ${JENKINS_WAR_FILE} kuali-research/build.context
+else
+   MAVEN_TARGET_DIR=${JENKINS_HOME}/workspace/kuali-research-1-build-war/coeus-webapp/target
+   cp ${MAVEN_TARGET_DIR}/*.war kuali-research/build.context
+fi
 cd kuali-research/build.context
 WAR_FILE=$(ls *.war)
 
