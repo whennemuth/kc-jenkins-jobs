@@ -43,7 +43,7 @@ The value is &quot;coeus&quot; by default, but remember that any sandbox images 
         <hudson.model.StringParameterDefinition>
           <name>DOCKER_BUILD_CONTEXT_GIT_BRANCH</name>
           <description>You can modify this value to pull a build context stored in a branch other than master.</description>
-          <defaultValue>apache</defaultValue>
+          <defaultValue>master</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -124,8 +124,8 @@ git config user.name jenkins
 git config core.sparseCheckout true
 git remote add github git@github.com:bu-ist/kuali-research-docker.git
 echo kuali-research &gt;&gt; .git/info/sparse-checkout
-git fetch github apache
-git checkout apache 
+git fetch github master
+git checkout master 
 eval `ssh-agent -k`
 # Copy the war file into the docker build context directory
 if [ -n &quot;${JENKINS_WAR_FILE}&quot; ] ; then

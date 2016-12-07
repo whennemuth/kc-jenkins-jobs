@@ -27,7 +27,7 @@
         <hudson.model.StringParameterDefinition>
           <name>DOCKER_BUILD_CONTEXT_GIT_BRANCH</name>
           <description>You can modify this value to pull a build context stored in a branch other than master.</description>
-          <defaultValue>apache</defaultValue>
+          <defaultValue>master</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>DOCKER_TAG_VERSION</name>
