@@ -217,7 +217,9 @@ CANCEL_JOB=&quot;&quot;
 EC2_IDS=()
 # BUGFIX: The Active Choices Reactive Parameter Rendering feature is adding 
 # a comma to the end of the GIT_REF listbox value, so strip off the comma
-GIT_REF=$(echo $GIT_REF | grep -i -o -P &apos;^.*[^,](?=,?$)&apos;)
+if ( [ -n &quot;${GIT_REF}&quot; ] &amp;&amp; [ &quot;${GIT_REF}&quot; != &quot;,&quot; ] ); then
+   GIT_REF=$(echo ${GIT_REF} | grep -i -o -P &apos;^.*[^,](?=,?$)&apos;)
+fi
 # By convention, we are calling the repository name within the registry the same as the artifactid of the pom file 
 # that the repository keeps images for. However if we want to break this rule and cause downstream jobs to push 
 # and pull from the registry referencing a different repository name, then set this value accordingly.
@@ -252,7 +254,7 @@ else
    GIT_BRANCHES_TO_BUILD=&quot;${GIT_COMMIT_ID}&quot;         
 fi
 
-for i in $(seq ${#EC2_IDS[@]}); do
+for i in $(seq ${#EC2_IDS[@]}); do 
    EC2_ID=${EC2_IDS[i-1]}
    if ( [ $i -eq 1 ] &amp;&amp; [ &quot;$BRANCH&quot; != &quot;&quot; ] ); then
       # A) STANDARD FULL BUILD AND DEPLOY (maven &amp; docker)

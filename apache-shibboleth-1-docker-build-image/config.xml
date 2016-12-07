@@ -67,9 +67,16 @@ ECR_REPO_URL=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}&quot;
 DOCKER_TAG=&quot;${ECR_REPO_URL}:${DOCKER_TAG_VERSION}&quot;
 DOCKER_BUILD_CONTEXT=&quot;git@github.com:bu-ist/kuali-research-docker.git#${DOCKER_BUILD_CONTEXT_GIT_BRANCH}:apache-shib/build.context&quot;
 
-# 3) Build the image
+# 3) This is a private repo and needs ssh to access it
+eval `ssh-agent -s`
+# Add the key to the agent.
+ssh-add ${JENKINS_HOME}/.ssh/bu_github_id_docker_rsa
+
+# 4) Build the image
 docker build -t ${DOCKER_TAG} ${DOCKER_BUILD_CONTEXT}
-</command>
+
+# 5) Kill the ssh agent
+eval `ssh-agent -k`</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
