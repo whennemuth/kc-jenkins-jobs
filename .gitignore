@@ -4,3 +4,4 @@
 !/**/config.xml
 #...and this file
 !.gitignore
+ssh.sh
