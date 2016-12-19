@@ -4,4 +4,6 @@
 !/**/config.xml
 #...and this file
 !.gitignore
+#...and javajobs
+!/javajobs/ContinuousIntegration/
 ssh.sh
