@@ -71,6 +71,8 @@ if [ ! -f .gitignore ] ; then
     echo &gt;&gt; .gitignore &quot;!/**/config.xml&quot;
     echo &gt;&gt; .gitignore &quot;#...and this file&quot;
     echo &gt;&gt; .gitignore &quot;!.gitignore&quot;
+    echo &gt;&gt; .gitignore &quot;#...and javajobs&quot;
+    echo &gt;&gt; .gitignore &quot;!/javajobs/ContinuousIntegration/&quot;
 fi
 
 if [ -n &quot;$(git status -s -z)&quot; ] ; then
