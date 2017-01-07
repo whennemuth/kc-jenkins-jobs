@@ -16,6 +16,11 @@
   		<artifactId>mockito-all</artifactId>
   		<version>1.10.19</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.glassfish.jersey.media</groupId>
+  		<artifactId>jersey-media-json-jackson</artifactId>
+  		<version>2.22</version>
+  	</dependency>
   </dependencies>
   
       <build>
@@ -49,7 +54,7 @@
 	                <archive>
 	                    <manifest>
 	                        <addClasspath>true</addClasspath>
-	                        <mainClass>edu.bu.ist.ci.jenkins.MainClass</mainClass>
+	                        <mainClass>edu.bu.ist.ci.MainClass</mainClass>
 	                    </manifest>
 	                </archive>
 	            </configuration>
@@ -62,7 +67,7 @@
 			  <configuration>
 			    <archive>
 			      <manifest>
-			        <mainClass>edu.bu.ist.ci.jenkins.MainClass</mainClass>
+			        <mainClass>edu.bu.ist.ci.MainClass</mainClass>
 			      </manifest>
 			    </archive>
 			    <descriptorRefs>
