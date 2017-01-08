@@ -188,13 +188,18 @@ public class Utils {
 
 		}
 		else if(root.isDirectory()) {
+			
+System.out.println("1) root: " + root.getAbsolutePath());			
+			
 			// A) Assume a target/classes folder exists per the standard maven build archtype.
 			if(root.getName().equals("target")) {
 				root = new File(root, "classes");
 			}
 			String path = rootPath.replaceAll("/", "\\\\");
+System.out.println("2) root: " + root.getAbsolutePath());			
 			if(root.isDirectory()) {
 				File rcsdir = new File(root, path);
+System.out.println("3) rcsdir: " + rcsdir.getAbsolutePath());			
 				if(rcsdir.isDirectory()) {
  					for(String f : rcsdir.list()) {
 						results.add(rootPath + "/" + f);
@@ -205,7 +210,9 @@ public class Utils {
 			// B) Maybe this is a junit test, so assume a target/test-classes folder exists per the standard maven build archtype.
 			if(results.isEmpty()) {
 				root = new File(root.getParent(), "test-classes");
+System.out.println("4) root: " + root.getAbsolutePath());			
 				File rcsdir = new File(root, path);
+System.out.println("5) rcsdir: " + rcsdir.getAbsolutePath());			
 				if(rcsdir.isDirectory()) {
  					for(String f : rcsdir.list()) {
 						results.add(rootPath + "/" + f);
@@ -213,24 +220,6 @@ public class Utils {
 				}
 			}
 		}
-		
-		
-//TEMPORARY: for debugging purposes			
-if(results.isEmpty()) {
-	System.out.println("getClassPathResourceList(" + rootPath + ") = NO RESULTS");
-}
-else {
-	System.out.print("getClassPathResourceList(" + rootPath + ") = ");
-	for (Iterator<String> iterator = results.iterator(); iterator.hasNext();) {
-		String item = (String) iterator.next();
-		System.out.print(item);
-		if(iterator.hasNext())
-			System.out.print(", ");
-	}
-	System.out.println();
-}
-
-
 
 		return results;		
 	}
