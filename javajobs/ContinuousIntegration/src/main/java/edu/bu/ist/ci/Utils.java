@@ -189,17 +189,19 @@ public class Utils {
 		}
 		else if(root.isDirectory()) {
 			
-System.out.println("1) root: " + root.getAbsolutePath());			
-			
 			// A) Assume a target/classes folder exists per the standard maven build archtype.
 			if(root.getName().equals("target")) {
 				root = new File(root, "classes");
 			}
-			String path = rootPath.replaceAll("/", "\\\\");
-System.out.println("2) root: " + root.getAbsolutePath());			
+			
+			String path = new String(rootPath);
+			if(!"/".equals(File.separator)) {
+				// We're running in a windows environment
+				path = rootPath.replaceAll("/", "\\\\");
+			}
+
 			if(root.isDirectory()) {
 				File rcsdir = new File(root, path);
-System.out.println("3) rcsdir: " + rcsdir.getAbsolutePath());			
 				if(rcsdir.isDirectory()) {
  					for(String f : rcsdir.list()) {
 						results.add(rootPath + "/" + f);
@@ -210,9 +212,7 @@ System.out.println("3) rcsdir: " + rcsdir.getAbsolutePath());
 			// B) Maybe this is a junit test, so assume a target/test-classes folder exists per the standard maven build archtype.
 			if(results.isEmpty()) {
 				root = new File(root.getParent(), "test-classes");
-System.out.println("4) root: " + root.getAbsolutePath());			
 				File rcsdir = new File(root, path);
-System.out.println("5) rcsdir: " + rcsdir.getAbsolutePath());			
 				if(rcsdir.isDirectory()) {
  					for(String f : rcsdir.list()) {
 						results.add(rootPath + "/" + f);
