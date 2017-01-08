@@ -12,7 +12,7 @@ import edu.bu.ist.ci.JobDef;
 import edu.bu.ist.ci.JobParameterDef;
 import edu.bu.ist.ci.jenkins.JenkinsJobDef;
 import edu.bu.ist.ci.jenkins.JenkinsJobParameterDef;
-import edu.bu.ist.ci.jenkins.job.JenkinsJob;
+import edu.bu.ist.ci.jenkins.job.SampleJavaJob;
 
 public class BasicMock {
 	
@@ -24,7 +24,7 @@ public class BasicMock {
 	private Set<JobParameterDef> jpdefs = new LinkedHashSet<JobParameterDef>();
 	
 	private JenkinsJobDef jobdef2;
-	private JenkinsJob job2;
+	private SampleJavaJob job2;
 	private JenkinsJobParameterDef jpdef4;
 	private JenkinsJobParameterDef jpdef5;
 	private JenkinsJobParameterDef jpdef6;
@@ -66,7 +66,7 @@ public class BasicMock {
 		when(jobdef2.getClassName()).thenReturn("myjobdef1");
 		when(jobdef2.getParameterDefs()).thenReturn(jpdefs2);
 		
-		job2 = Mockito.mock(JenkinsJob.class);
+		job2 = Mockito.mock(SampleJavaJob.class);
 		when(job2.getJobDef()).thenReturn(jobdef2);
 		
 		jpdef4 = Mockito.mock(JenkinsJobParameterDef.class);
@@ -100,7 +100,7 @@ public class BasicMock {
 		return (new BasicMock()).initializeBasicMock().jobdef1;
 	}
 	
-	public static JenkinsJob getJenkinsJob() {
+	public static SampleJavaJob getJenkinsJob() {
 		return (new BasicMock()).initializeJenkinsMock().job2;
 	}
 	

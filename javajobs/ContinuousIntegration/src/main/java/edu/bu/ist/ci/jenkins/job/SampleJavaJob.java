@@ -7,13 +7,13 @@ import edu.bu.ist.ci.JobParameter;
 import edu.bu.ist.ci.jenkins.AbstractJenkinsJob;
 import edu.bu.ist.ci.jenkins.JenkinsJobEnvironment;
 
-public class JenkinsJob extends AbstractJenkinsJob {
+public class SampleJavaJob extends AbstractJenkinsJob {
 
-	public JenkinsJob(JobDef jobDef) {
+	public SampleJavaJob(JobDef jobDef) {
 		super(jobDef, new JenkinsJobEnvironment());
 	}
 	
-	public JenkinsJob(JobDef jobDef, JenkinsJobEnvironment env) {
+	public SampleJavaJob(JobDef jobDef, JenkinsJobEnvironment env) {
 		super(jobDef, env);
 	}
 
@@ -25,7 +25,6 @@ public class JenkinsJob extends AbstractJenkinsJob {
 	@Override
 	public void run(List<JobParameter> parameters) {
 		
-		// RESUME NEXT: Create a jenkins job on the website and make it call this method.
 		System.out.println(this.getJobDef().toJSON());
 		
 		for(JobParameter parm : parameters) {
@@ -37,7 +36,6 @@ public class JenkinsJob extends AbstractJenkinsJob {
 	@Override
 	public String getView(String parameterName, List<JobParameter> parameters) {
 		
-		// RESUME NEXT: Create a jenkins job on the website and get the Active parameters call this method.
 		StringBuilder html = new StringBuilder();
 		String parm1 = null;
 		String parm2 = null;

@@ -9,7 +9,7 @@ import edu.bu.ist.ci.JobDef;
 import edu.bu.ist.ci.JobParameter;
 import edu.bu.ist.ci.JobParameterDef;
 import edu.bu.ist.ci.Utils;
-import edu.bu.ist.ci.jenkins.job.JenkinsJob;
+import edu.bu.ist.ci.jenkins.job.SampleJavaJob;
 
 public abstract class AbstractJenkinsJob implements Job {
 
@@ -184,7 +184,7 @@ public abstract class AbstractJenkinsJob implements Job {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		JenkinsJob other = (JenkinsJob) obj;
+		SampleJavaJob other = (SampleJavaJob) obj;
 		if (getJobDef() == null) {
 			if (other.getJobDef() != null)
 				return false;
