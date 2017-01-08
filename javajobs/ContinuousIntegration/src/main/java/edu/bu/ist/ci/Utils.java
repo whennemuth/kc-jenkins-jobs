@@ -11,6 +11,7 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -122,9 +123,11 @@ public class Utils {
 	
 		if(Utils.isEmpty(resourceName))
 			return null;
-		String content = getClassPathResourceContent((Utils.isEmpty(rootPath) ? "" : rootPath + "/") + resourceName);
+		
+		String path = (Utils.isEmpty(rootPath) ? "" : rootPath + "/") + resourceName;
+		String content = getClassPathResourceContent(path);
 		if(content == null) {
-			List<String> items = getClassPathResourceList(rootPath);
+			List<String> items = getClassPathResourceList(rootPath);			
 			for(String item : items) {
 				String itemName = new String(item);
 				if(itemName.contains("/")) {
@@ -135,6 +138,7 @@ public class Utils {
 				}
 			}
 		}
+		
 		return content;
 	}
 
@@ -209,6 +213,24 @@ public class Utils {
 				}
 			}
 		}
+		
+		
+//TEMPORARY: for debugging purposes			
+if(results.isEmpty()) {
+	System.out.println("getClassPathResourceList(" + rootPath + ") = NO RESULTS");
+}
+else {
+	System.out.print("getClassPathResourceList(" + rootPath + ") = ");
+	for (Iterator<String> iterator = results.iterator(); iterator.hasNext();) {
+		String item = (String) iterator.next();
+		System.out.print(item);
+		if(iterator.hasNext())
+			System.out.print(", ");
+	}
+	System.out.println();
+}
+
+
 
 		return results;		
 	}
