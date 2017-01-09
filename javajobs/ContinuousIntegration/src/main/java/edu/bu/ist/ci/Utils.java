@@ -274,6 +274,6 @@ public class Utils {
 	}
 	
 	public static boolean isBase64(String encoded) {
-		return encoded.matches("[^A-Za-z0-9+/=]+");
+		return encoded.matches("[A-Za-z0-9+/=]+");
 	}
 }
