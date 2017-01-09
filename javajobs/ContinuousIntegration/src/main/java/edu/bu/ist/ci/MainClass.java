@@ -52,23 +52,29 @@ public class MainClass {
 	 */
 	public static void main(String[] args) throws Exception {
 		
-		String htmlFor = System.getProperty("job.get.html");
-		String jobJson = System.getProperty("job.def.json");
-		
-		if(Utils.isEmpty(jobJson)) {
-			System.out.println("ERROR! Missing system property: job.def.json");
-		}
-		else {
-			Job job = getJob(jobJson, args);
-
-			if(Utils.isEmpty(htmlFor)) {
-				
-				job.run();	
+		try {
+			String htmlFor = System.getProperty("job.get.html");
+			String jobJson = System.getProperty("job.def.json");
+			
+			if(Utils.isEmpty(jobJson)) {
+				System.out.println("ERROR! Missing system property: job.def.json");
 			}
 			else {
-				
-				printView(htmlFor, job);
+				Job job = getJob(jobJson, args);
+
+				if(Utils.isEmpty(htmlFor)) {
+					
+					job.run();	
+				}
+				else {
+					
+					printView(htmlFor, job);
+				}
 			}
+		} 
+		catch (Exception e) {
+			// We want the stack trace to go to stdout, not stderr
+			e.printStackTrace(System.out);
 		}
 	}
 	
@@ -129,7 +135,7 @@ public class MainClass {
 			}
 		}
 		
-		return job;
+		return job;		
 	}
 	
 	

@@ -11,15 +11,9 @@ import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import edu.bu.ist.ci.jenkins.JenkinsJobDef;
-import edu.bu.ist.ci.jenkins.JenkinsJobParameterDef;
 
 public class Utils {
 	
