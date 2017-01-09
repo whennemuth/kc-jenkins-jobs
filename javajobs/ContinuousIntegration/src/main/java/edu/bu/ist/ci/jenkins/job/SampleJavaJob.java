@@ -52,46 +52,42 @@ public class SampleJavaJob extends AbstractJenkinsJob {
 				parm3 = String.valueOf(parm.getValue()); break;
 			}				
 		}
+			
+		String[] options = null;
 		
-		for(JobParameter parm : parameters) {
-			
-			String[] options = null;
-			String name = parm.getJobParameterDef().getName().toLowerCase();
-			
-			switch(name) {
-			case "myparmdef1": options = new String[]{"fruit", "dairy", "vegetables"}; break;
-			case "myparmdef2":
-				switch(parm1) {
-				case "fruit": options = new String[]{"apples", "oranges", "melons"}; break;
-				case "vegetables": options = new String[]{"lettuce", "tomatoes", "onions"}; break;
-				case "dairy": options = new String[]{"cheese", "yogurt", "milk"}; break;
-				}
-				break;
-			case "myparmdef3":
-				switch(parm2) {
-				case "apples": options = new String[]{"macintosh", "granny smith", "red delicious"}; break;
-				case "oranges": options = new String[]{"navel", "tangerine", "valencia"}; break;
-				case "melons": options = new String[]{"honeydew", "watermelon", "cantaloupe"}; break;
-				case "lettuce": options = new String[]{"iceberg", "romaine", "red leaf"}; break;
-				case "tomatoes": options = new String[]{"cherry", "roma", "campari"}; break;
-				case "onions": options = new String[]{"vidalia", "red", "yellow"}; break;
-				case "cheese": options = new String[]{"cheddar", "mozzarella", "swiss"}; break;
-				case "yogurt": options = new String[]{"greek", "traditional", "frozen"}; break;
-				case "milk": options = new String[]{"whole", "skim", "soy"}; break;
-				}
-			}				
-
-			html.append("<table cellpadding=5 border=0><tr><td>")
-			 .append(parameterName)
-			 .append("</td><td><select name='")
-			 .append(parameterName)
-			 .append("' style='width:200px;'>");
-			for(String option : options) {
-				html.append("<option value='").append(option).append("'>").append(option).append("</option>");
+		switch(parameterName.toLowerCase()) {
+		case "myparmdef1": options = new String[]{"fruit", "dairy", "vegetables"}; break;
+		case "myparmdef2":
+			switch(parm1) {
+			case "fruit": options = new String[]{"apples", "oranges", "melons"}; break;
+			case "vegetables": options = new String[]{"lettuce", "tomatoes", "onions"}; break;
+			case "dairy": options = new String[]{"cheese", "yogurt", "milk"}; break;
 			}
+			break;
+		case "myparmdef3":
+			switch(parm2) {
+			case "apples": options = new String[]{"macintosh", "granny smith", "red delicious"}; break;
+			case "oranges": options = new String[]{"navel", "tangerine", "valencia"}; break;
+			case "melons": options = new String[]{"honeydew", "watermelon", "cantaloupe"}; break;
+			case "lettuce": options = new String[]{"iceberg", "romaine", "red leaf"}; break;
+			case "tomatoes": options = new String[]{"cherry", "roma", "campari"}; break;
+			case "onions": options = new String[]{"vidalia", "red", "yellow"}; break;
+			case "cheese": options = new String[]{"cheddar", "mozzarella", "swiss"}; break;
+			case "yogurt": options = new String[]{"greek", "traditional", "frozen"}; break;
+			case "milk": options = new String[]{"whole", "skim", "soy"}; break;
+			}
+		}				
+
+		html.append("<table cellpadding=5 border=0><tr><td>")
+		 .append(parameterName)
+		 .append("</td><td><select name='")
+		 .append(parameterName)
+		 .append("' style='width:200px;'>");
+		for(String option : options) {
+			html.append("<option value='").append(option).append("'>").append(option).append("</option>");
+		}
 			
 			html.append("</select></td></tr></table>");
-		}
 		
 		return html.toString();
 	}
