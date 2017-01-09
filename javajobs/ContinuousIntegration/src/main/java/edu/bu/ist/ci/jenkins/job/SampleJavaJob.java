@@ -80,14 +80,15 @@ public class SampleJavaJob extends AbstractJenkinsJob {
 
 		html.append("<table cellpadding=5 border=0><tr><td>")
 		 .append(parameterName)
-		 .append("</td><td><select name='")
+		 .append("</td><td><select name='value' id='")
 		 .append(parameterName)
 		 .append("' style='width:200px;'>");
+		
 		for(String option : options) {
 			html.append("<option value='").append(option).append("'>").append(option).append("</option>");
 		}
 			
-			html.append("</select></td></tr></table>");
+		html.append("</select></td></tr></table>");
 		
 		return html.toString();
 	}
