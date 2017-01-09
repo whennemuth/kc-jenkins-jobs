@@ -40,6 +40,7 @@ public class SampleJavaJob extends AbstractJenkinsJob {
 		String parm1 = null;
 		String parm2 = null;
 		String parm3 = null;
+		String typeOf = null;
 		
 		for(JobParameter parm : parameters) {			
 			String name = parm.getJobParameterDef().getName().toLowerCase();
@@ -56,30 +57,35 @@ public class SampleJavaJob extends AbstractJenkinsJob {
 		String[] options = null;
 		
 		switch(parameterName.toLowerCase()) {
-		case "myparmdef1": options = new String[]{"fruit", "dairy", "vegetables"}; break;
+		case "myparmdef1": options = new String[]{"fruit", "dairy", "vegetable"}; typeOf = "food"; break;
 		case "myparmdef2":
 			switch(parm1) {
-			case "fruit": options = new String[]{"apples", "oranges", "melons"}; break;
-			case "vegetables": options = new String[]{"lettuce", "tomatoes", "onions"}; break;
+			case "fruit": options = new String[]{"apple", "orange", "melon"}; break;
+			case "vegetable": options = new String[]{"lettuce", "tomato", "onion"}; break;
 			case "dairy": options = new String[]{"cheese", "yogurt", "milk"}; break;
-			}
+			};
+			typeOf = parm1;
 			break;
 		case "myparmdef3":
 			switch(parm2) {
-			case "apples": options = new String[]{"macintosh", "granny smith", "red delicious"}; break;
-			case "oranges": options = new String[]{"navel", "tangerine", "valencia"}; break;
-			case "melons": options = new String[]{"honeydew", "watermelon", "cantaloupe"}; break;
+			case "apple": options = new String[]{"macintosh", "granny smith", "red delicious"}; break;
+			case "orange": options = new String[]{"navel", "tangerine", "valencia"}; break;
+			case "melon": options = new String[]{"honeydew", "watermelon", "cantaloupe"}; break;
 			case "lettuce": options = new String[]{"iceberg", "romaine", "red leaf"}; break;
-			case "tomatoes": options = new String[]{"cherry", "roma", "campari"}; break;
-			case "onions": options = new String[]{"vidalia", "red", "yellow"}; break;
+			case "tomato": options = new String[]{"cherry", "roma", "campari"}; break;
+			case "onion": options = new String[]{"vidalia", "red", "yellow"}; break;
 			case "cheese": options = new String[]{"cheddar", "mozzarella", "swiss"}; break;
 			case "yogurt": options = new String[]{"greek", "traditional", "frozen"}; break;
 			case "milk": options = new String[]{"whole", "skim", "soy"}; break;
-			}
+			};
+			typeOf = parm2;
+			break;
 		}				
 
-		html.append("<table cellpadding=5 border=0><tr><td>")
-		 .append(parameterName)
+		
+		html.append("<table cellpadding=5 border=0 style='padding-left:20px; padding-top:20px;'>")
+		 .append("<tr><td align=right style='width:180px;'>Select a type of ")
+		 .append(typeOf)
 		 .append("</td><td><select name='value' id='")
 		 .append(parameterName)
 		 .append("' style='width:200px;'>");
