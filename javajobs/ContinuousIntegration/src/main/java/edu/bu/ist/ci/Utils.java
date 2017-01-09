@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.codec.binary.Base64;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -265,5 +266,14 @@ public class Utils {
 		ObjectMapper mapper = new ObjectMapper();
 		T obj = mapper.readValue(json, clazz);
 		return obj;
+	}
+	
+	public static String base64Decode(String encoded) {
+		byte[] decoded = Base64.decodeBase64(encoded);
+		return new String(decoded);
+	}
+	
+	public static boolean isBase64(String encoded) {
+		return encoded.matches("[^A-Za-z0-9+/=]+");
 	}
 }

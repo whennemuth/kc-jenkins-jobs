@@ -55,6 +55,9 @@ public class MainClass {
 		try {
 			String htmlFor = System.getProperty("job.get.html");
 			String jobJson = System.getProperty("job.def.json");
+			if(Utils.isBase64(jobJson)) {
+				jobJson = Utils.base64Decode(jobJson);
+			}
 			
 			if(Utils.isEmpty(jobJson)) {
 				System.out.println("ERROR! Missing system property: job.def.json");
