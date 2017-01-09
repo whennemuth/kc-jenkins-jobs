@@ -51,12 +51,11 @@ public class MainClass {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-
+		
 		try {
 			String htmlFor = System.getProperty("job.get.html");
 			String jobJson = System.getProperty("job.def.json");
 			if(Utils.isBase64(jobJson)) {
-System.out.println("Decoding json...");
 				jobJson = Utils.base64Decode(jobJson);
 			}
 			
@@ -64,7 +63,6 @@ System.out.println("Decoding json...");
 				System.out.println("ERROR! Missing system property: job.def.json");
 			}
 			else {
-System.out.println("jobJson = " + jobJson);				
 				Job job = getJob(jobJson, args);
 
 				if(Utils.isEmpty(htmlFor)) {
