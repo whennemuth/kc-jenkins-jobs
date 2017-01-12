@@ -7,3 +7,5 @@
 #...and javajobs
 !/javajobs/ContinuousIntegration/
 ssh.sh
+#...and html files
+!/**/*.htm
