@@ -1,15 +1,17 @@
 <div>
 <style>
 	div.landscape { 
-		width: 95px; 
+		width: 120px; 
 		float: left; 
 		border-right-style: solid; 
-		background-color: #efefef;
+		background-color: #4b758b;
 		border-right-width: 3px;
 		border-right-color: white; 
 		margin-top: 5px; 
 		padding-left: 5px;
-		padding-bottom: 3px;	
+		padding-bottom: 3px;
+		font-weight: bold;
+		color: white;	
 	}
 
 	.hide { display: none; }
@@ -101,6 +103,8 @@
 		if(counter == 5) {
 			toggle(['centos', 'apache', 'kuali', 'landscape-all'], true);
 		}
+
+		serializeChoices();
 	}
 
 	function toggle(chkIds, show) {
@@ -145,14 +149,25 @@
 
 	function allChecked(landscape) {
 		if(landscape == null || landscape == undefined) {
-			return sameCheckedStatus(['centos-sb', 'centos-ci', 'centos-qa', 'centos-stg', '-prod',
+			return sameCheckedStatus(['centos-sb', 'centos-ci', 'centos-qa', 'centos-stg', 'centos-prod',
 						'apache-sb', 'apache-ci', 'apache-qa', 'apache-stg', 'apache-prod',
-						'kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod',], true);
+						'kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod'], true);
 		}
 		return sameCheckedStatus(['centos-'+landscape, 'apache-'+landscape, 'kuali-'+landscape], true);
 	}
 
-	
+	function serializeChoices() {
+		var choices = ['centos-sb', 'centos-ci', 'centos-qa', 'centos-stg', 'centos-prod',
+				'apache-sb', 'apache-ci', 'apache-qa', 'apache-stg', 'apache-prod',
+				'kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod'];
+		var s = '';
+		for(var i=0; i<choices.length; i++) {
+			if(document.getElementById(choices[i]).checked) {
+				s += ((s?', ':'') + choices[i]);
+			}
+		}
+		document.getElementById('build-action').value = s;
+	}
 </script>
 
 <table border=0 style='font-family:arial; font-size:10px'>
@@ -267,7 +282,7 @@
 	</td>
 </tr>
 <tr>
-	<td colspan=2><input type=text id='build-action' name='value' value='0'> </td>
+	<td colspan=2><input type=hidden id='build-action' name='value' style='width:700px;'> </td>
 </tr>
 
 
