@@ -15,71 +15,21 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
-          <name>REBUILD_CHOICE</name>
+          <name>SELECTIONS</name>
           <description></description>
-          <randomName>choice-parameter-1286538794031172</randomName>
+          <randomName>choice-parameter-3648888793256717</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>return &quot;&lt;html&gt;&quot; + 
-&quot;&lt;body&gt;&quot; + 
-&quot;&lt;script&gt;&quot; + 
-&quot;&quot; + 
-&quot;   function validate_checkboxes() {&quot; + 
-&quot;      var ours = document.getElementById(&apos;ours&apos;).innerText;&quot; + 
-&quot;      var theirs = document.getElementById(&apos;theirs&apos;).innerText;&quot; + 
-&quot;      if(/^\\w+\$/.test(ours) &amp;&amp; /^\\w+\$/.test(theirs)) {&quot; + 
-&quot;         if(ours != theirs) {&quot; + 
-&quot;            toggle_checkboxes();&quot; + 
-&quot;            return;&quot; + 
-&quot;         }&quot; + 
-&quot;      }&quot; + 
-&quot;      document.getElementById(&apos;build-action&apos;).value = &apos;0&apos;;&quot; + 
-&quot;   }&quot; + 
-&quot;   function toggle_checkboxes() {&quot; + 
-&quot;      var centos = document.getElementById(&apos;centos&apos;);&quot; + 
-&quot;      var apache = document.getElementById(&apos;apache&apos;);&quot; + 
-&quot;      var kuali = document.getElementById(&apos;kuali&apos;);&quot; + 
-&quot;      if(kuali.checked &amp;&amp; (!centos.checked || !apache.checked)) { document.getElementById(&apos;kuali&apos;).click() }&quot; + 
-&quot;      else if(apache.checked &amp;&amp; !centos.checked) { document.getElementById(&apos;apache&apos;).click() }&quot; + 
-&quot;      var action = centos.checked ? 1 : 0;&quot; + 
-&quot;      action += apache.checked ? 1 : 0;&quot; + 
-&quot;      action += kuali.checked ? 1 : 0;&quot; + 
-&quot;      document.getElementById(&apos;build-action&apos;).value = action;&quot; + 
-&quot;   }&quot; + 
-&quot;&lt;/script&gt;&quot; + 
-&quot;&lt;table border=0 style=&apos;font-family:arial; font-size:10px&apos;&gt;&quot; + 
-&quot;&lt;tr&gt;&quot; + 
-&quot;   &lt;td align=right&gt;local centos:7 image id:&lt;/td&gt;&quot; + 
-&quot;   &lt;td id=&apos;ours&apos; style=&apos;font-family:monospace; padding-left:8px;&apos;&gt;97ca462ad9eeae25941546209454496e1d66749d53dfa2ee32bf1faabd239d38&lt;/td&gt;&quot; + 
-&quot;&lt;/tr&gt;&quot; + 
-&quot;&lt;tr&gt;&quot; + 
-&quot;   &lt;td align=right&gt;dockerhub centos:7 image id:&lt;/td&gt;&quot; + 
-&quot;   &lt;td id=&apos;theirs&apos; style=&apos;font-family:monospace; padding-left:8px;&apos;&gt;5a2725191d75eb64e9b7c969cd23d8c67c6e8af9979e521a417bbfa34434fb83&lt;/td&gt;&quot; + 
-&quot;&lt;/tr&gt;&quot; + 
-&quot;&lt;tr&gt;&quot; + 
-&quot;   &lt;td colspan=2&gt;&lt;hr width=&apos;100%&apos;&gt;&lt;/td&gt;&quot; + 
-&quot;&lt;/tr&gt;&quot; + 
-&quot;&lt;tr&gt;&quot; + 
-&quot;   &lt;td align=right&gt;Rebuild centos/java/tomcat docker image:&lt;/td&gt;&quot; + 
-&quot;   &lt;td style=&apos;font-family:monospace; padding-left:8px;&apos;&gt;&lt;input id=&apos;centos&apos; type=checkbox onclick=&apos;validate_checkboxes()&apos;&gt;&lt;/td&gt;&quot; + 
-&quot;&lt;/tr&gt;&quot; + 
-&quot;&lt;tr&gt;&quot; + 
-&quot;   &lt;td align=right&gt;Rebuild apache/shibboleth image:&lt;/td&gt;&quot; + 
-&quot;   &lt;td style=&apos;font-family:monospace; padding-left:8px;&apos;&gt;&lt;input id=&apos;apache&apos; type=checkbox onclick=&apos;validate_checkboxes()&apos;&gt;&lt;/td&gt;&quot; + 
-&quot;&lt;/tr&gt;&quot; + 
-&quot;&lt;tr&gt;&quot; + 
-&quot;   &lt;td align=right&gt;Rebuild kuali-research image:&lt;/td&gt;&quot; + 
-&quot;   &lt;td style=&apos;font-family:monospace; padding-left:8px;&apos;&gt;&lt;input id=&apos;kuali&apos; type=checkbox onclick=&apos;validate_checkboxes()&apos;&gt;&lt;/td&gt;&quot; + 
-&quot;&lt;/tr&gt;&quot; + 
-&quot;&lt;tr&gt;&quot; + 
-&quot;   &lt;td colspan=2&gt;&lt;input type=text id=&apos;build-action&apos; name=&apos;value&apos; value=&apos;0&apos;&gt; &lt;/td&gt;&quot; + 
-&quot;&lt;/tr&gt;&quot; + 
-&quot;&lt;/table&gt;&quot;;</script>
+              <script>File ui = new File(&apos;/var/lib/jenkins/jobs/check-centos/ui.htm&apos;)
+if(ui.isFile()) {
+   return ui.text
+}
+return &apos;&lt;span color=red&gt;ERROR! cannot find html for this parameter at: &apos; + ui.getAbsolutePath() + &apos;&lt;/span&gt;&apos;</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
-              <script>return &quot;&lt;div style=&apos;font-weight:bold; color:red&apos;&gt;ERROR!!! Groovy script failed.&lt;/div&gt;&quot;</script>
+              <script>return &quot;ERROR!!!&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
@@ -89,6 +39,11 @@
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
+        <hudson.model.BooleanParameterDefinition>
+          <name>DEBUG</name>
+          <description>If true, prints out would be calls to other jobs, but does not go through with them.</description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -99,7 +54,11 @@
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
-  <builders/>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>echo ${SELECTIONS}</command>
+    </hudson.tasks.Shell>
+  </builders>
   <publishers/>
   <buildWrappers/>
 </project>
