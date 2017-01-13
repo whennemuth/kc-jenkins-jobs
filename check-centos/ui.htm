@@ -14,9 +14,21 @@
 		color: white;	
 	}
 
+	div.detail {
+		width: 720px; 
+		margin-left: 20px;
+		/*background-color: #e6e6e6;*/
+		padding: 5px;
+		font-family: verdana;
+		color: #4b758b;
+		border:solid 1px #4b758b;
+	}
+
 	.hide { display: none; }
 
 	td { font-family:monospace; font-size:12px; }
+
+	input[type="text"] { font-family:monospace; font-size:12px; }
 </style>
 <script>
 
@@ -180,7 +192,7 @@
 				s += ((s?', ':'') + choices[i]);
 			}
 		}
-		document.getElementById('build-action').value = s;
+		document.getElementById('build-action').value = s; 
 	}
 </script>
 
@@ -205,7 +217,7 @@
 	<td><hr width='100%'></td>
 </tr>
 <tr>
-	<td>By Landscape:<br>
+	<td><b>By Landscape:</b><br>
 		<div class='landscape' style='margin-bottom:10px;'>All:<input type='checkbox' id='landscape-all' onclick="toggle_checkboxes(this)"></div>
 		<div class='landscape'>sandbox:<input type='checkbox' id='landscape-sb' onclick="toggle_checkboxes(this)"></div>
 		<div class='landscape'>ci:<input type='checkbox' id='landscape-ci' onclick="toggle_checkboxes(this)"></div>
@@ -218,7 +230,12 @@
 
 <tr>
 	<td style='padding-left:8px;'>
-		<input id='centos' type=checkbox onclick="toggle_checkboxes(this)">Rebuild centos/java/tomcat docker image
+		<input id='centos' type=checkbox onclick="toggle_checkboxes(this)"><b>Rebuild centos/java/tomcat docker image</b>
+		<div class=detail>
+			Rebuild the docker image image locally and push it up to our AWS 'centos7-java-tomcat' registry repository. 
+			If an image with the same tag already exists in the registry it loses its tag to the incoming image 
+			and becomes anonymous and becomes a candidate for manual garbage collection of images.
+		</div>
 	</td>
 </tr>
 <tr><td>&nbsp; </td></tr>
@@ -226,7 +243,14 @@
 
 <tr>
 	<td style='padding-left:8px;'>
-		<input id='apache' type=checkbox onclick="toggle_checkboxes(this)">Rebuild apache/shibboleth image
+		<input id='apache' type=checkbox onclick="toggle_checkboxes(this)"><b>Rebuild apache/shibboleth image</b>
+		<div class=detail>
+			Rebuild the docker image locally and push it to our AWS 'apache-shibboleth' registry repository.
+			If an image with the same tag already exists in the registry it loses its tag to the incoming image 
+			and becomes anonymous and becomes a candidate for manual garbage collection of images. For each selected
+			landscape, the associated EC2 instances are triggered to pull the new images to their local docker
+			repositories restart the associated containers using the new image. 
+		</div>
 	</td>
 </tr>
 <tr class=hide>
@@ -259,7 +283,16 @@
 
 <tr>
 	<td style='padding-left:8px;'>
-		<input id='kuali' type=checkbox onclick="toggle_checkboxes(this)">Rebuild kuali-research image
+		<input id='kuali' type=checkbox onclick="toggle_checkboxes(this)"><b>Rebuild kuali-research image</b>
+		<div class=detail>
+			Rebuild the docker image locally and push it to our AWS 'coeus' registry repository.
+			If an image with the same tag already exists in the registry it loses its tag to the incoming image 
+			and becomes anonymous and becomes a candidate for manual garbage collection of images. For each selected
+			landscape, the associated EC2 instances are triggered to pull the new images to their local docker
+			repositories restart the associated containers using the new image. NOTE: creating the new docker images
+			does not include rebuilding the war contained war file with maven - it is assumed that the war file most
+			recently built is still valid.
+		</div>
 	</td>
 </tr>
 <tr class=hide>
@@ -287,8 +320,10 @@
 		<div><input id='kuali-prod' type=checkbox onclick="toggle_checkboxes(this)">production</div>
 	</td>
 </tr>
+<tr><td>&nbsp; </td></tr>
+<tr><td style='border-bottom-style:solid; border-bottom-width:1px;'><b>Selected Options:</b></td></tr>
 <tr>
-	<td><input type=text id='build-action' name='value' style='width:700px;'> </td>
+	<td style='padding-left:15px;'><input type=text id='build-action' name='value' style='width:700px; border-style:none;' readonly> </td>
 </tr>
 
 
