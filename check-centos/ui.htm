@@ -20,6 +20,7 @@
 </style>
 <script>
 
+	/*
 	function validate_checkboxes(chk) {
 		var ours = document.getElementById('ours').innerText;
 		var theirs = document.getElementById('theirs').innerText;
@@ -36,6 +37,7 @@
 			document.getElementById('build-action').value = '0';
 		}		
 	}
+	*/
 
 	function toggle_checkboxes(chk) {
 
@@ -43,7 +45,6 @@
 			case 'landscape-all':
 				toggle(['centos', 'apache', 'kuali', 
 					'landscape-sb', 'landscape-ci', 'landscape-qa', 'landscape-stg', 'landscape-prod',
-					'centos-sb', 'centos-ci', 'centos-qa', 'centos-stg', 'centos-prod',
 					'apache-sb', 'apache-ci', 'apache-qa', 'apache-stg', 'apache-prod',
 					'kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod'], chk.checked);
 				break;
@@ -51,16 +52,22 @@
 				var landscape = chk.id.split('\-')[1];
 				if(chk.checked) {
 					toggle(['centos', 'apache', 'kuali', 
-						'centos-'+landscape, 'apache-'+landscape, 'kuali-'+landscape], chk.checked);
+						'apache-'+landscape, 'kuali-'+landscape], chk.checked);
 				}
 				else {
-					toggle(['landscape-all', 'centos-'+landscape, 'apache-'+landscape, 'kuali-'+landscape], chk.checked);
+					toggle(['landscape-all', 'apache-'+landscape, 'kuali-'+landscape], chk.checked);
 					if(noLandscapes()) {
-						toggle(['centos', 'apache', 'kuali'], chk.checked);
+						toggle(['apache', 'kuali'], chk.checked);
 					}
 				}
 				break;
 			case 'centos': case 'apache': case 'kuali':
+				if(chk.id == 'centos') {
+					if(!chk.checked) {
+						toggle(['landscape-all', 'landscape-sb', 'landscape-ci', 'landscape-qa', 'landscape-stg', 'landscape-prod'], false);
+					}
+					break;
+				}
 				if(chk.checked) {
 					toggleRow(chk.id, ['sb', 'ci', 'qa', 'stg', 'prod'], true);
 				}
@@ -102,10 +109,10 @@
 			counter++;
 		}
 		if(counter == 5) {
-			toggle(['centos', 'apache', 'kuali', 'landscape-all'], true);
+			toggle(['apache', 'kuali', 'landscape-all'], true);
 		}
 
-		if(noImages('centos')) {
+		if(document.getElementById('centos').checked == false) {
 			toggle(['kuali', 'kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod'], false);
 			if(/^kuali/.test(chk.id)) {
 				alert('This selection requires rebuilding the centos/java/tomcat docker image for at least one landscape');
@@ -157,15 +164,14 @@
 
 	function allChecked(landscape) {
 		if(landscape == null || landscape == undefined) {
-			return sameCheckedStatus(['centos-sb', 'centos-ci', 'centos-qa', 'centos-stg', 'centos-prod',
-						'apache-sb', 'apache-ci', 'apache-qa', 'apache-stg', 'apache-prod',
+			return sameCheckedStatus(['centos', 'apache-sb', 'apache-ci', 'apache-qa', 'apache-stg', 'apache-prod',
 						'kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod'], true);
 		}
-		return sameCheckedStatus(['centos-'+landscape, 'apache-'+landscape, 'kuali-'+landscape], true);
+		return sameCheckedStatus(['centos', 'apache-'+landscape, 'kuali-'+landscape], true);
 	}
 
 	function serializeChoices() {
-		var choices = ['centos-sb', 'centos-ci', 'centos-qa', 'centos-stg', 'centos-prod',
+		var choices = ['centos',
 				'apache-sb', 'apache-ci', 'apache-qa', 'apache-stg', 'apache-prod',
 				'kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod'];
 		var s = '';
@@ -200,44 +206,19 @@
 </tr>
 <tr>
 	<td>By Landscape:<br>
-		<div class='landscape' style='margin-bottom:10px;'>All:<input type='checkbox' id='landscape-all' onclick="validate_checkboxes(this)"></div>
-		<div class='landscape'>sandbox:<input type='checkbox' id='landscape-sb' onclick="validate_checkboxes(this)"></div>
-		<div class='landscape'>ci:<input type='checkbox' id='landscape-ci' onclick="validate_checkboxes(this)"></div>
-		<div class='landscape'>qa:<input type='checkbox' id='landscape-qa' onclick="validate_checkboxes(this)"></div>
-		<div class='landscape'>staging:<input type='checkbox' id='landscape-stg' onclick="validate_checkboxes(this)"></div>
-		<div class='landscape'>production:<input type='checkbox' id='landscape-prod' onclick="validate_checkboxes(this)"></div>
+		<div class='landscape' style='margin-bottom:10px;'>All:<input type='checkbox' id='landscape-all' onclick="toggle_checkboxes(this)"></div>
+		<div class='landscape'>sandbox:<input type='checkbox' id='landscape-sb' onclick="toggle_checkboxes(this)"></div>
+		<div class='landscape'>ci:<input type='checkbox' id='landscape-ci' onclick="toggle_checkboxes(this)"></div>
+		<div class='landscape'>qa:<input type='checkbox' id='landscape-qa' onclick="toggle_checkboxes(this)"></div>
+		<div class='landscape'>staging:<input type='checkbox' id='landscape-stg' onclick="toggle_checkboxes(this)"></div>
+		<div class='landscape'>production:<input type='checkbox' id='landscape-prod' onclick="toggle_checkboxes(this)"></div>
 	</td>
 </tr>
 
 
 <tr>
 	<td style='padding-left:8px;'>
-		<input id='centos' type=checkbox onclick="validate_checkboxes(this)">Rebuild centos/java/tomcat docker image
-	</td>
-</tr>
-<tr class=hide>
-	<td style='padding-left:50px;'>
-		<div><input id='centos-sb' type=checkbox onclick="validate_checkboxes(this)">sandbox</div>
-	</td>
-</tr>
-<tr class=hide>
-	<td style='padding-left:50px;'>
-		<div><input id='centos-ci' type=checkbox onclick="validate_checkboxes(this)">ci</div>
-	</td>
-</tr>
-<tr class=hide>
-	<td style='padding-left:50px;'>
-		<div><input id='centos-qa' type=checkbox onclick="validate_checkboxes(this)">qa</div>
-	</td>
-</tr>
-<tr class=hide>
-	<td style='padding-left:50px;'>
-		<div><input id='centos-stg' type=checkbox onclick="validate_checkboxes(this)">staging</div>
-	</td>
-</tr>
-<tr class=hide>
-	<td style='padding-left:50px;'>
-		<div><input id='centos-prod' type=checkbox onclick="validate_checkboxes(this)">production</div>
+		<input id='centos' type=checkbox onclick="toggle_checkboxes(this)">Rebuild centos/java/tomcat docker image
 	</td>
 </tr>
 <tr><td>&nbsp; </td></tr>
@@ -245,32 +226,32 @@
 
 <tr>
 	<td style='padding-left:8px;'>
-		<input id='apache' type=checkbox onclick="validate_checkboxes(this)">Rebuild apache/shibboleth image
+		<input id='apache' type=checkbox onclick="toggle_checkboxes(this)">Rebuild apache/shibboleth image
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='apache-sb' type=checkbox onclick="validate_checkboxes(this)">sandbox</div>
+		<div><input id='apache-sb' type=checkbox onclick="toggle_checkboxes(this)">sandbox</div>
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='apache-ci' type=checkbox onclick="validate_checkboxes(this)">ci</div>
+		<div><input id='apache-ci' type=checkbox onclick="toggle_checkboxes(this)">ci</div>
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='apache-qa' type=checkbox onclick="validate_checkboxes(this)">qa</div>
+		<div><input id='apache-qa' type=checkbox onclick="toggle_checkboxes(this)">qa</div>
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='apache-stg' type=checkbox onclick="validate_checkboxes(this)">staging</div>
+		<div><input id='apache-stg' type=checkbox onclick="toggle_checkboxes(this)">staging</div>
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='apache-prod' type=checkbox onclick="validate_checkboxes(this)">production</div>
+		<div><input id='apache-prod' type=checkbox onclick="toggle_checkboxes(this)">production</div>
 	</td>
 </tr>
 <tr><td>&nbsp; </td></tr>
@@ -278,36 +259,36 @@
 
 <tr>
 	<td style='padding-left:8px;'>
-		<input id='kuali' type=checkbox onclick="validate_checkboxes(this)">Rebuild kuali-research image
+		<input id='kuali' type=checkbox onclick="toggle_checkboxes(this)">Rebuild kuali-research image
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='kuali-sb' type=checkbox onclick="validate_checkboxes(this)">sandbox</div>
+		<div><input id='kuali-sb' type=checkbox onclick="toggle_checkboxes(this)">sandbox</div>
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='kuali-ci' type=checkbox onclick="validate_checkboxes(this)">ci</div>
+		<div><input id='kuali-ci' type=checkbox onclick="toggle_checkboxes(this)">ci</div>
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='kuali-qa' type=checkbox onclick="validate_checkboxes(this)">qa</div>
+		<div><input id='kuali-qa' type=checkbox onclick="toggle_checkboxes(this)">qa</div>
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='kuali-stg' type=checkbox onclick="validate_checkboxes(this)">staging</div>
+		<div><input id='kuali-stg' type=checkbox onclick="toggle_checkboxes(this)">staging</div>
 	</td>
 </tr>
 <tr class=hide>
 	<td style='padding-left:50px;'>
-		<div><input id='kuali-prod' type=checkbox onclick="validate_checkboxes(this)">production</div>
+		<div><input id='kuali-prod' type=checkbox onclick="toggle_checkboxes(this)">production</div>
 	</td>
 </tr>
 <tr>
-	<td><input type=hidden id='build-action' name='value' style='width:700px;'> </td>
+	<td><input type=text id='build-action' name='value' style='width:700px;'> </td>
 </tr>
 
 
