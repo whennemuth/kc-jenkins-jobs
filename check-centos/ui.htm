@@ -38,6 +38,7 @@
 	}
 
 	function toggle_checkboxes(chk) {
+
 		switch(chk.id) {
 			case 'landscape-all':
 				toggle(['centos', 'apache', 'kuali', 
@@ -102,6 +103,13 @@
 		}
 		if(counter == 5) {
 			toggle(['centos', 'apache', 'kuali', 'landscape-all'], true);
+		}
+
+		if(noImages('centos')) {
+			toggle(['kuali', 'kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod'], false);
+			if(/^kuali/.test(chk.id)) {
+				alert('This selection requires rebuilding the centos/java/tomcat docker image for at least one landscape');
+			}
 		}
 
 		serializeChoices();
@@ -172,18 +180,26 @@
 
 <table border=0 style='font-family:arial; font-size:10px'>
 <tr>
-	<td align=right>local centos:7 image id:</td>
-	<td id='ours' style='font-family:monospace; padding-left:8px;'>97ca462ad9eeae25941546209454496e1d66749d53dfa2ee32bf1faabd239d38</td>
+	<td>
+		<div align=right style='width:600px;'>
+			local centos:7 image id:
+			<div id='ours' style='padding-left:8px; display:inline;'>97ca462ad9eeae25941546209454496e1d66749d53dfa2ee32bf1faabd239d38</div>
+		</div>
+	</td>
 </tr>
 <tr>
-	<td align=right>dockerhub centos:7 image id:</td>
-	<td id='theirs' style='font-family:monospace; padding-left:8px;'>5a2725191d75eb64e9b7c969cd23d8c67c6e8af9979e521a417bbfa34434fb83</td>
+	<td>
+		<div align=right style='width:600px;'>
+			dockerhub centos:7 image id:
+			<div id='theirs' style='padding-left:8px; display:inline;'>5a2725191d75eb64e9b7c969cd23d8c67c6e8af9979e521a417bbfa34434fb83</div>
+		</div>
+	</td>	
 </tr>
 <tr>
-	<td colspan=2><hr width='100%'></td>
+	<td><hr width='100%'></td>
 </tr>
 <tr>
-	<td colspan=2>By Landscape:<br>
+	<td>By Landscape:<br>
 		<div class='landscape' style='margin-bottom:10px;'>All:<input type='checkbox' id='landscape-all' onclick="validate_checkboxes(this)"></div>
 		<div class='landscape'>sandbox:<input type='checkbox' id='landscape-sb' onclick="validate_checkboxes(this)"></div>
 		<div class='landscape'>ci:<input type='checkbox' id='landscape-ci' onclick="validate_checkboxes(this)"></div>
@@ -192,97 +208,106 @@
 		<div class='landscape'>production:<input type='checkbox' id='landscape-prod' onclick="validate_checkboxes(this)"></div>
 	</td>
 </tr>
+
+
 <tr>
-	<td>Rebuild centos/java/tomcat docker image:</td>
-	<td style='font-family:monospace; padding-left:8px;'><input id='centos' type=checkbox onclick="validate_checkboxes(this)"></td>
+	<td style='padding-left:8px;'>
+		<input id='centos' type=checkbox onclick="validate_checkboxes(this)">Rebuild centos/java/tomcat docker image
+	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='centos-sb' type=checkbox onclick="validate_checkboxes(this)">sandbox</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='centos-ci' type=checkbox onclick="validate_checkboxes(this)">ci</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='centos-qa' type=checkbox onclick="validate_checkboxes(this)">qa</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='centos-stg' type=checkbox onclick="validate_checkboxes(this)">staging</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='centos-prod' type=checkbox onclick="validate_checkboxes(this)">production</div>
 	</td>
 </tr>
-<tr><td colspan=2>&nbsp; </td></tr>
+<tr><td>&nbsp; </td></tr>
+
+
 <tr>
-	<td>Rebuild apache/shibboleth image:</td>
-	<td style='font-family:monospace; padding-left:8px;'><input id='apache' type=checkbox onclick="validate_checkboxes(this)"></td>
+	<td style='padding-left:8px;'>
+		<input id='apache' type=checkbox onclick="validate_checkboxes(this)">Rebuild apache/shibboleth image
+	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='apache-sb' type=checkbox onclick="validate_checkboxes(this)">sandbox</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='apache-ci' type=checkbox onclick="validate_checkboxes(this)">ci</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='apache-qa' type=checkbox onclick="validate_checkboxes(this)">qa</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='apache-stg' type=checkbox onclick="validate_checkboxes(this)">staging</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='apache-prod' type=checkbox onclick="validate_checkboxes(this)">production</div>
 	</td>
 </tr>
-<tr><td colspan=2>&nbsp; </td></tr>
+<tr><td>&nbsp; </td></tr>
+
+
 <tr>
-	<td>Rebuild kuali-research image:</td>
-	<td style='font-family:monospace; padding-left:8px;'><input id='kuali' type=checkbox onclick="validate_checkboxes(this)"></td>
+	<td style='padding-left:8px;'>
+		<input id='kuali' type=checkbox onclick="validate_checkboxes(this)">Rebuild kuali-research image
+	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='kuali-sb' type=checkbox onclick="validate_checkboxes(this)">sandbox</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='kuali-ci' type=checkbox onclick="validate_checkboxes(this)">ci</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='kuali-qa' type=checkbox onclick="validate_checkboxes(this)">qa</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='kuali-stg' type=checkbox onclick="validate_checkboxes(this)">staging</div>
 	</td>
 </tr>
 <tr class=hide>
-	<td colspan=2 style='font-family:monospace; padding-left:50px;'>
+	<td style='padding-left:50px;'>
 		<div><input id='kuali-prod' type=checkbox onclick="validate_checkboxes(this)">production</div>
 	</td>
 </tr>
 <tr>
-	<td colspan=2><input type=hidden id='build-action' name='value' style='width:700px;'> </td>
+	<td><input type=hidden id='build-action' name='value' style='width:700px;'> </td>
 </tr>
 
 
