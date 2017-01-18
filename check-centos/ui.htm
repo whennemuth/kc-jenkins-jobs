@@ -197,7 +197,7 @@
 </script>
 
 <table border=0 style='font-family:arial; font-size:10px'>
-<tr>
+<tr class=hide>
 	<td>
 		<div align=right>
 			local centos:7 image id:
@@ -205,7 +205,7 @@
 		</div>
 	</td>
 </tr>
-<tr>
+<tr class=hide>
 	<td>
 		<div align=right>
 			dockerhub centos:7 image id:
@@ -213,12 +213,12 @@
 		</div>
 	</td>	
 </tr>
-<tr>
+<tr class=hide>
 	<td><hr width='100%'></td>
 </tr>
 <tr>
 	<td><b>By Landscape:</b><br>
-		<div class='landscape' style='margin-bottom:10px;'>All:<input type='checkbox' id='landscape-all' onclick="toggle_checkboxes(this)"></div>
+		<div class='landscape' style='margin-bottom:10px; display:none;'>All:<input type='checkbox' id='landscape-all' onclick="toggle_checkboxes(this)"></div>
 		<div class='landscape'>sandbox:<input type='checkbox' id='landscape-sb' onclick="toggle_checkboxes(this)"></div>
 		<div class='landscape'>ci:<input type='checkbox' id='landscape-ci' onclick="toggle_checkboxes(this)"></div>
 		<div class='landscape'>qa:<input type='checkbox' id='landscape-qa' onclick="toggle_checkboxes(this)"></div>
@@ -228,9 +228,9 @@
 </tr>
 
 
-<tr>
+<tr class=hide>
 	<td style='padding-left:8px;'>
-		<input id='centos' type=checkbox onclick="toggle_checkboxes(this)"><b>Rebuild centos/java/tomcat docker image</b>
+		<input id='centos' type=checkbox onclick="toggle_checkboxes(this)" CHECKED><b>Rebuild centos/java/tomcat docker image</b>
 		<div class=detail>
 			Rebuild the docker image image locally and push it up to our AWS 'centos7-java-tomcat' registry repository. 
 			If an image with the same tag already exists in the registry it loses its tag to the incoming image 
@@ -245,11 +245,11 @@
 	<td style='padding-left:8px;'>
 		<input id='apache' type=checkbox onclick="toggle_checkboxes(this)"><b>Rebuild apache/shibboleth image</b>
 		<div class=detail>
-			Rebuild the docker image locally and push it to our AWS 'apache-shibboleth' registry repository.
+			Rebuild the docker image locally and push it to the 'apache-shibboleth' repository in our AWS registry.
 			If an image with the same tag already exists in the registry it loses its tag to the incoming image 
 			and becomes anonymous and becomes a candidate for manual garbage collection of images. For each selected
-			landscape, the associated EC2 instances are triggered to pull the new images to their local docker
-			repositories restart the associated containers using the new image. 
+			landscape, the associated EC2 instances are each commanded to pull the new images to their local docker
+			repositories and recreate the associated containers. 
 		</div>
 	</td>
 </tr>
@@ -285,13 +285,13 @@
 	<td style='padding-left:8px;'>
 		<input id='kuali' type=checkbox onclick="toggle_checkboxes(this)"><b>Rebuild kuali-research image</b>
 		<div class=detail>
-			Rebuild the docker image locally and push it to our AWS 'coeus' registry repository.
+			Rebuild the docker image locally and push it to the 'coeus' repository in our AWS registry.
 			If an image with the same tag already exists in the registry it loses its tag to the incoming image 
 			and becomes anonymous and becomes a candidate for manual garbage collection of images. For each selected
-			landscape, the associated EC2 instances are triggered to pull the new images to their local docker
-			repositories restart the associated containers using the new image. NOTE: creating the new docker images
-			does not include rebuilding the war contained war file with maven - it is assumed that the war file most
-			recently built is still valid.
+			landscape, the associated EC2 instances will each be commanded to pull the new images to their local docker
+			repositories and recreate the associated containers. NOTE: creating the new docker images
+			does not include rebuilding the war file with maven - it is assumed that the war file most recently built 
+			is still valid and can be wrapped by the docker image.
 		</div>
 	</td>
 </tr>
@@ -323,7 +323,7 @@
 <tr><td>&nbsp; </td></tr>
 <tr><td style='border-bottom-style:solid; border-bottom-width:1px;'><b>Selected Options:</b></td></tr>
 <tr>
-	<td style='padding-left:15px;'><input type=text id='build-action' name='value' style='width:700px; border-style:none;' readonly> </td>
+	<td style='padding-left:15px;'><input type=text id='build-action' name='value' value='centos' style='width:700px; border-style:none;' readonly> </td>
 </tr>
 
 
