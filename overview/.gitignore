@@ -1,0 +1,6 @@
+*
+!*.xml
+!*.odt
+!*.htm
+!*.pdf
+!.gitignore
