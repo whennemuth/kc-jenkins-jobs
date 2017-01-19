@@ -124,11 +124,11 @@
 			toggle(['apache', 'kuali', 'landscape-all'], true);
 		}
 
-		if(document.getElementById('centos').checked == false) {
-			toggle(['kuali', 'kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod'], false);
-			if(/^kuali/.test(chk.id)) {
-				alert('This selection requires rebuilding the centos/java/tomcat docker image for at least one landscape');
-			}
+		if(sameCheckedStatus(['kuali-sb', 'kuali-ci', 'kuali-qa', 'kuali-stg', 'kuali-prod'], false)) {
+			document.getElementById('centos').checked = false;
+		}
+		else {
+			document.getElementById('centos').checked = true;
 		}
 
 		serializeChoices();
@@ -230,7 +230,7 @@
 
 <tr class=hide>
 	<td style='padding-left:8px;'>
-		<input id='centos' type=checkbox onclick="toggle_checkboxes(this)" CHECKED><b>Rebuild centos/java/tomcat docker image</b>
+		<input id='centos' type=checkbox onclick="toggle_checkboxes(this)"><b>Rebuild centos/java/tomcat docker image</b>
 		<div class=detail>
 			Rebuild the docker image image locally and push it up to our AWS 'centos7-java-tomcat' registry repository. 
 			If an image with the same tag already exists in the registry it loses its tag to the incoming image 
@@ -323,7 +323,7 @@
 <tr><td>&nbsp; </td></tr>
 <tr><td style='border-bottom-style:solid; border-bottom-width:1px;'><b>Selected Options:</b></td></tr>
 <tr>
-	<td style='padding-left:15px;'><input type=text id='build-action' name='value' value='centos' style='width:700px; border-style:none;' readonly> </td>
+	<td style='padding-left:15px;'><input type=text id='build-action' name='value' style='width:700px; border-style:none;' readonly> </td>
 </tr>
 
 
