@@ -21,7 +21,7 @@
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>File ui = new File(&apos;/var/lib/jenkins/jobs/check-centos/ui.htm&apos;)
+              <script>File ui = new File(&apos;/var/lib/jenkins/jobs/all-updates/ui.htm&apos;)
 if(ui.isFile()) {
    return ui.text
 }
@@ -33,7 +33,7 @@ return &apos;&lt;span color=red&gt;ERROR! cannot find html for this parameter at
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>check-centos</projectName>
+          <projectName>all-updates</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
