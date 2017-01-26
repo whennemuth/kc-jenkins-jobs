@@ -1,7 +1,22 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>THIS IS THE STARTING POINT FOR A MANUAL BUILD OF THE KUALI-RESEARCH APPLICATION</description>
+  <description>THIS IS THE STARTING POINT FOR A MANUAL BUILD OF THE KUALI-RESEARCH APPLICATION&#xd;
+&#xd;
+The following factors of our kuali-research environment would make deploying a new release to it complicated.&#xd;
+(proper sequencing and parameter selection of multiple jobs applies):&#xd;
+&#xd;
+1) Kuali research runs in multiple &quot;landscapes&quot;&#xd;
+2) Each landscape comprises 2 load-balanced EC2 instances, except for the QA landscape, which only has one.&#xd;
+3) Each EC2 instance must be referenced by its specific AWS intance ID.&#xd;
+4) Each EC2 instance of every landscape run the BU-customized kuali research app, except for those of the sandbox landscape, which run the non-customized app.&#xd;
+5) Each EC2 instance of every landscape run the application based on the git &quot;bu-master&quot; branch, except for those of the sandbox landscape, which are based on the &quot;master&quot; branch&#xd;
+6a) Only deployments to the sandbox and CI landscapes involve maven, a new war file, and a new docker image. Builds to all other landscapes assume the last docker image pushed up to our docker registry by the most recent CI build contain the correct build artifact. Therefore such deployments only involve pulling from our docker registry and re-running a corresponding container on the target EC2 instances.&#xd;
+6b) As stated above, only deployments to the sandbox and CI landscapes involve maven, a new war file, and a new docker image. However, this only applies to the first EC2 instance of the pair. The second instance need only pull from the docker registry what was pushed there during the build and deployment process of the first EC2 instance.&#xd;
+7) A set of advanced optional parameters are provided to select from a particular point in the git codebase to carry out a &quot;feature&quot; build deployment. Some of the above rules do not apply or apply differently. However, use of these parameters is rare and is outside our standard integration procedure.&#xd;
+&#xd;
+This job requires the user make only one landscape selection from a pick-list.&#xd;
+All the rules above are handled by a dynamically validated job parameter UI screen and shell scripting that call out to other jobs in correct sequence to do the work, passing them the appropriate parameters.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>

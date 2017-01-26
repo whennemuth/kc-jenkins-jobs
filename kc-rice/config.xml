@@ -3,9 +3,22 @@
   <actions/>
   <description>Builds the rice war.&#xd;
 &#xd;
-NOTE: If the local maven repo does not have the artifacts required to run tests, then you cannot skip tests in the build.&#xd;
+NOTE: &#xd;
+If the local maven repo does not have the artifacts required to run tests, then you cannot skip tests in the build.&#xd;
 That is, &quot;-Dmaven.test.skip=true&quot; and &quot;-DskipTests=true&quot; have to be ommitted.&#xd;
-These switches skip the running of the tests but maven still complains about missing dependency file(s) because some of them cannot be downloaded from the nexus repo, and they are not in the local .m2 repo.</description>
+These switches skip the running of the tests but maven still complains about missing dependency file(s) because some of them cannot be downloaded from the nexus repo, and they are not in the local .m2 repo.&#xd;
+&#xd;
+NOTE:&#xd;
+This build includes a parameter that allows the running of a script that merges bu customizations to the rice codebase to each subsequent upstream commit made&#xd;
+by rebasing the master branch on top of the bu-master branch where the customizations reside.&#xd;
+This way, we can build rice against any commit made AFTER the customizations and still retain&#xd;
+those customizations. This would not be possible with a simple merge as only the HEAD merge commit&#xd;
+would have the customization and it would be a merge result between the tip of bu-master and the&#xd;
+tip of upstream/master, which we don&apos;t want because we may require a version of rice that dates before the version indicated at the tip of the master branch.&#xd;
+Once the rebase is done, the pom file is searched in the git log on the rebased branch using git pickaxe for the first appearance of the&#xd;
+rice version id we are interested in and the maven build can use the SHA of that commit to build against (we check out that commit in headless mode).&#xd;
+WARNING: An assumption is made that BU customizations are minor enough to preclude the possibility that we will run&#xd;
+into a merge conflict when git attempts the rebase.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>

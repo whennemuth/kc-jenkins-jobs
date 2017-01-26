@@ -1,7 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description></description>
+  <description>This job shells into a specified target EC2 instance and executes docker commands.&#xd;
+1) Remove the existing image from the local docker repository if it exists&#xd;
+2) Log into our AWS docker registry using an AWS API call&#xd;
+3) Pull an updated docker image from the registry to the local docker repository.&#xd;
+4) Run a new container based on the new image.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>
