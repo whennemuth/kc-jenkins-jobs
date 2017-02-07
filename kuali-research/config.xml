@@ -208,6 +208,12 @@ else {
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
+        <hudson.model.StringParameterDefinition>
+          <name>NOTIFY_EMAIL</name>
+          <description>This is the individual or group email that all job result notifications will be sent to by default.
+This parameter can be overridden in the job configuration on a more granular level.</description>
+          <defaultValue>kcrmproj@bu.edu</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -328,6 +334,94 @@ done
 set -x</command>
     </hudson.tasks.Shell>
   </builders>
-  <publishers/>
+  <publishers>
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.47">
+      <recipientList></recipientList>
+      <configuredTriggers>
+        <hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
+          <email>
+            <recipientList>$NOTIFY_EMAIL</recipientList>
+            <subject>BUILD SUCCESS! (kuali-research for $LANDSCAPE)</subject>
+            <body>The build succeeded!
+Ready for smoke test.
+
+$PROJECT_DEFAULT_CONTENT</body>
+            <recipientProviders/>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>false</attachBuildLog>
+            <compressBuildLog>false</compressBuildLog>
+            <replyTo>$NOTIFY_EMAIL</replyTo>
+            <contentType>project</contentType>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
+        <hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+          <email>
+            <recipientList>$NOTIFY_EMAIL</recipientList>
+            <subject>BUILD FAILURE! (kuali-research for $LANDSCAPE)</subject>
+            <body>The build failed.
+See attached file for console output
+
+$PROJECT_DEFAULT_CONTENT</body>
+            <recipientProviders/>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>true</attachBuildLog>
+            <compressBuildLog>false</compressBuildLog>
+            <replyTo>$NOTIFY_EMAIL</replyTo>
+            <contentType>project</contentType>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FailureTrigger>
+        <hudson.plugins.emailext.plugins.trigger.FixedTrigger>
+          <email>
+            <recipientList>$NOTIFY_EMAIL</recipientList>
+            <subject>BUILD FIXED SUCCESSFULLY! (kuali-research for $LANDSCAPE)</subject>
+            <body>After recent issue, the Kuali Research has been corrected and sucessfully run.
+Ready for smoke test.
+
+$PROJECT_DEFAULT_CONTENT</body>
+            <recipientProviders/>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>false</attachBuildLog>
+            <compressBuildLog>false</compressBuildLog>
+            <replyTo>$NOTIFY_EMAIL</replyTo>
+            <contentType>project</contentType>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.FixedTrigger>
+        <hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
+          <email>
+            <recipientList>$NOTIFY_EMAIL</recipientList>
+            <subject>BUILD UNSTABLE! (kuali-research for $LANDSCAPE)</subject>
+            <body>The build successfully deployed, but with automated test failures.
+See attached file for console output
+
+$PROJECT_DEFAULT_CONTENT</body>
+            <recipientProviders/>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>true</attachBuildLog>
+            <compressBuildLog>false</compressBuildLog>
+            <replyTo>$NOTIFY_EMAIL</replyTo>
+            <contentType>project</contentType>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.UnstableTrigger>
+      </configuredTriggers>
+      <contentType>text/plain</contentType>
+      <defaultSubject></defaultSubject>
+      <defaultContent>$DEFAULT_CONTENT</defaultContent>
+      <attachmentsPattern></attachmentsPattern>
+      <presendScript>def landscape = build.getBuildVariables().get(&quot;LANDSCAPE&quot;)
+
+if(&quot;ci&quot;.equalsIgnoreCase(landscape) || &quot;sandbox&quot;.equalsIgnoreCase(landscape)) {
+    logger.println(&quot;Cancelling notification email. &quot; + landscape + &quot; landscape not configured for email notifications&quot;)
+    cancel = true
+}
+
+</presendScript>
+      <postsendScript>$DEFAULT_POSTSEND_SCRIPT</postsendScript>
+      <attachBuildLog>false</attachBuildLog>
+      <compressBuildLog>false</compressBuildLog>
+      <replyTo></replyTo>
+      <saveOutput>false</saveOutput>
+      <disabled>false</disabled>
+    </hudson.plugins.emailext.ExtendedEmailPublisher>
+  </publishers>
   <buildWrappers/>
 </project>
