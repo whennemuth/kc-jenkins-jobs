@@ -51,6 +51,11 @@ into a merge conflict when git attempts the rebase.
 </description>
           <defaultValue>true</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>REBASE_ON_BRANCH</name>
+          <description>The name of the branch that we are rebasing the upstream codebase on top of.</description>
+          <defaultValue>bu-master</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -125,8 +130,12 @@ into a merge conflict when git attempts the rebase.
 	fi
 	RICE_VERSION=&quot;&lt;version&gt;${RICE_TAG}&lt;/version&gt;&quot;
 	
-	# Check out bu-master in case it is only a remote tracking branch
-	git checkout bu-master
+	# Check out the branch to rebase on (probably bu-master) in case it is only a remote tracking branch
+	git checkout ${REBASE_ON_BRANCH}
+    # The REBASE_ON_BRANCH branch would have already been fetched by this point, but not merged.
+    # NOTE: Assuming that there is only one remote defined.
+    git merge &quot;$(git remote)/${REBASE_ON_BRANCH}&quot;
+
 	# Check out master as we will be making a copy branch from it.
 	git checkout master
 	if [ -n &quot;$(git branch -a | grep &quot;rice-rebase&quot;)&quot; ] ; then
@@ -142,7 +151,7 @@ into a merge conflict when git attempts the rebase.
 	fi
 	
 	echo &quot;Rebasing...&quot;
-	git rebase bu-master
+	git rebase ${REBASE_ON_BRANCH}
 	
 	# Pickaxe will search the pom file for where the rice version tag appears and disappears
 	# We should get 2 lines of history - we want the 2nd line (the one where ${RICE_TAG} appears in the pom)
