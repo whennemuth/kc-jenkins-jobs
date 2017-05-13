@@ -26,7 +26,8 @@
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>https://github.com/kuali/kc-api</url>
+        <url>https://github.com/KualiCo/kc-api</url>
+        <credentialsId>7df02254-0753-4ddc-af08-df701fc29862</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>

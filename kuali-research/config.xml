@@ -155,7 +155,7 @@ if (&quot;branch&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
    process = (&quot;git -c core.askpass=true ls-remote -h &quot; + GIT_REPO_URL + &quot; refs/heads/&apos; &quot; + GIT_REF).execute() | &apos;grep -i -P -o ^[^\\s]+&apos;.execute()
 }
 else if (&quot;tag&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
-   process = (&quot;git -c core.askpass=true ls-remote -t &quot; + GIT_REPO_URL + &quot; refs/tags/&apos; &quot; + GIT_REF).execute() | &apos;grep -i -P -o ^[^\\s]+&apos;.execute()
+   process = (&quot;git -c core.askpass=true ls-remote -t &quot; + GIT_REPO_URL + &quot; refs/tags/&apos; &quot; + GIT_REF + &quot;^{}&quot;).execute() | &apos;grep -i -P -o ^[^\\s]+&apos;.execute()
 }
 else if(&quot;commit id&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
     process = &quot;echo N/A&quot;.execute()
