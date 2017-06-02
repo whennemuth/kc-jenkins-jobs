@@ -138,6 +138,7 @@ into a merge conflict when git attempts the rebase.
 
 	# Check out master as we will be making a copy branch from it.
 	git checkout master
+    git merge &quot;$(git remote)/master&quot;
 	if [ -n &quot;$(git branch -a | grep &quot;rice-rebase&quot;)&quot; ] ; then
 		echo &quot;rice-base branch found. deleting...&quot;
 		git branch -D rice-rebase
