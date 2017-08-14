@@ -1,14 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>This build will:&#xd;
-&#xd;
-     1) Fetch the HEAD of the master branch of each selected repository from the specified github organization&#xd;
-&#xd;
-     2) Push each fetched branch to the master branch of the corresponding bu-ist github organization&#xd;
-     The push should be fast-forward.&#xd;
-&#xd;
-</description>
+  <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
@@ -109,9 +102,9 @@ if [ -z &quot;$PUSH_PASSWORD&quot; ] ; then
    exit 1
 fi
 
-# Escape all &quot;@&quot; characters in the password fields
-FETCH_PWD=$(echo $FETCH_PASSWORD | sed s/@/%40/g)
-PUSH_PWD=$(echo $PUSH_PASSWORD | sed s/@/%40/g)
+# Urlencode all bytes of the password fields
+FETCH_PWD=&quot;$(echo -ne $FETCH_PWD | xxd -plain | tr -d &apos;\n&apos; | sed &apos;s/\(..\)/%\1/g&apos;)&quot;
+PUSH_PWD=&quot;$(echo -ne $PUSH_PWD | xxd -plain | tr -d &apos;\n&apos; | sed &apos;s/\(..\)/%\1/g&apos;)&quot;
 
 cd /tmp
 
