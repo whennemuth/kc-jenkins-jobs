@@ -141,6 +141,7 @@ Possible options:
     &lt;commitId&gt;
         Checks out the specified commit.
         E.g. 5062ac843f2b947733e6a3b105977056821bd352, 5062ac84, ...
+        NOTE: technically, the entry must be */branchname commitid, not simply commitid
     
     ${ENV_VARIABLE}
         It is also possible to use environment variables. In this case the variables are evaluated and the result is used as described above.
