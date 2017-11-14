@@ -67,11 +67,17 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;
     <hudson.tasks.Shell>
       <command>set +x
 
+# BUGFIX: The Active Choices Reactive Parameter Rendering feature is adding 
+# a comma to the end of the GIT_COMMIT_ID textbox value, so strip off the comma
+if ( [ -n &quot;${GIT_COMMIT_ID}&quot; ] &amp;&amp; [ &quot;${GIT_COMMIT_ID}&quot; != &quot;,&quot; ] ); then
+   GIT_COMMIT_ID=$(echo ${GIT_COMMIT_ID} | grep -i -o -P &apos;^.*[^,](?=,?$)&apos;)
+fi
+
 java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build &apos;kuali-research-1-build-war&apos; -v -f \
    -p BRANCH=feature \
    -p GIT_REFSPEC=+refs/heads/dashboard:refs/remotes/origin/dashboard \
-   -p GIT_BRANCHES_TO_BUILD=&quot;*/dashboard ${GIT_COMMIT_ID}&quot; \
-   -p EC2_INSTANCE_ID=i-0c2d2ef87e98f2088        
+   -p GIT_BRANCHES_TO_BUILD=$GIT_COMMIT_ID \
+   -p EC2_INSTANCE_ID=i-0c2d2ef87e98f2088 \
    
 set -x</command>
     </hudson.tasks.Shell>
