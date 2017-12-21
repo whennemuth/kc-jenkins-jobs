@@ -76,7 +76,9 @@ BASE64=$(\
          docker rmi \${EXISTING_IMAGE_ID}; \
       fi &amp;&amp; \
       \
-      eval \$(aws ecr get-login --profile ecr.access) &amp;&amp; \
+      evalstr=\$(aws ecr get-login --profile ecr.access) &amp;&amp; \
+      evalstr=\$(echo \$evalstr | sed &apos;s/ -e none//&apos;) &amp;&amp; \
+      echo \$evalstr &gt; /tmp/last-ecr-login &amp;&amp; \
       docker run \
          -d \
          -p 8080:8080 \
@@ -89,8 +91,11 @@ BASE64=$(\
          -v /var/log/tomcat:/var/log/tomcat \
          --restart unless-stopped \
          --name ${CONTAINER_NAME} \
-         ${DOCKER_TAG}&quot; | base64 -w 0 \
+         ${DOCKER_TAG} &gt; /tmp/last-run-cmd 2&gt;&amp;1&quot; | base64 -w 0 \
 )
+# NOTE: Not sure why, but all commands up to the the docker run command would execute, but you have
+# to redirect stdout and stderr of the docker run command to a file for it to work as well.
+# This was not always necessary - became necessary without an explanation as to why.
 
 # Execute a docker command using the aws cli on the application host to run a container against the new image in the registry
 # DOCUMENTATION: 
