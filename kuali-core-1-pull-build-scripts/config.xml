@@ -75,7 +75,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
-              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:310px;&apos; disabled=true&gt;&quot;</script>
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
@@ -127,6 +127,8 @@ if branchExists &quot;$GIT_BRANCH&quot; ; then
 else 
   git checkout -b $GIT_BRANCH remotes/github/$GIT_BRANCH
 fi
+
+eval &quot;ssh-agent -k&quot; || true
 </command>
     </hudson.tasks.Shell>
   </builders>

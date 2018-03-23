@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Build the docker image for cor-main</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_REPULL</name>
+          <description>Before building the image, should the content on which it is based be pulled again from its git repository?
+&lt;br&gt;
+&lt;br&gt;</description>
+          <randomName>choice-parameter-7427131155961935</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos;&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;true&apos;&gt;true&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;false&apos;&gt;false&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;/select&gt;&quot;)
+return sb.toString()</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-core-2-build-docker-image</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_REPO_URL</name>
+          <description>The git repository from which the build will pull source code.
+&lt;br&gt;
+&lt;br&gt;</description>
+          <randomName>choice-parameter-7427131157409288</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>if(&quot;${GIT_REPULL}&quot; == &quot;false&quot;) {
+  return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos; disabled=true&gt;&quot;
+}
+
+def url = &quot;git@github.com:bu-ist/kuali-core-main.git&quot;
+return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos; value=&apos;&quot; +  url + &quot;&apos;&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-core-2-build-docker-image</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>GIT_REPULL</referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_BRANCH</name>
+          <description>The branch to be pulled and checked out for the cor-main source code
+&lt;br&gt;
+&lt;br&gt;</description>
+          <randomName>choice-parameter-7427131158717739</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>if(&quot;${GIT_REPULL}&quot; == &quot;false&quot;) {
+  return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos; disabled=true&gt;&quot;
+}
+
+// Instantiate a string builder to build a dropdown box populated with all the branches in the target git repo
+def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos;&gt;&quot;)
+def defaultBranch = &apos;coi-ui-1802.0001&apos;
+// Create a command to that passed to ssh-agent to run with sh that will acquire the list of branches in the target git repo
+def cmd = 
+   &quot;ssh-add /var/lib/jenkins/.ssh/bu_github_id_core_rsa &gt; /dev/null 2&gt;&amp;1; &quot; + 
+   &quot;git -c core.askpass=true ls-remote -h ${GIT_REPO_URL} | &quot; + 
+   &quot;grep -i -P -o &apos;^[^\\s]+\\s+refs/heads/\\K(.*)\$&apos;&quot;
+
+// Create an array for the ProcessBuilder and run the process.
+// Cannot use execute command because of use of subprocess with sh.
+def cmdarr = [ &quot;ssh-agent&quot;, &quot;sh&quot;, &quot;-c&quot;, cmd ]
+def process = new ProcessBuilder(cmdarr).start()
+
+// Iterate over the input stream produced by having run the process (should be git ls-remote standard output)
+process.inputStream.eachLine {
+   if( &quot;${it}&quot; == defaultBranch) {
+      sb.append(&quot;&lt;option selected=true value=&apos;&quot;).append(&quot;${it}&quot;).append(&quot;&apos;&gt;&quot;).append(&quot;${it}&quot;).append(&quot;&lt;/option&gt;&quot;)
+   }
+   else {
+      sb.append(&quot;&lt;option value=&apos;&quot;).append(&quot;${it}&quot;).append(&quot;&apos;&gt;&quot;).append(&quot;${it}&quot;).append(&quot;&lt;/option&gt;&quot;)
+   }
+}
+process.waitFor();
+sb.append(&quot;&lt;/select&gt;&quot;)
+return sb.toString()</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-core-2-build-docker-image</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>GIT_REPULL,GIT_REPO_URL</referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_REFSPEC</name>
+          <description>From the specified branch, pick an explicit commit.&lt;br&gt;
+Leave this blank to select the HEAD of the selected branch.</description>
+          <randomName>choice-parameter-7427131160653079</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>if(&quot;${GIT_REPULL}&quot; == &quot;false&quot;) {
+  return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos; disabled=true&gt;&quot;
+}
+
+return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos;&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-core-2-build-docker-image</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>GIT_REPULL,GIT_BRANCH</referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>buildcontext=&apos;/tmp/krd/core/build.context&apos;
+if [ ! -d $buildcontext ] ; then
+  echo &quot;ERROR! Cannot find docker build context directory: $buildcontext&quot;
+  exit 1
+fi
+
+cd $buildcontext
+
+parms=(
+  &quot;interactive=false&quot;
+  &quot;git_repull=$GIT_REPULL&quot;
+  &quot;git_branch=$GIT_BRANCH&quot;
+  &quot;git_refspec=$GIT_REFSPEC&quot;
+  &quot;dryrun=$DRYRUN&quot;
+)
+
+source docker.sh
+
+build &quot;${parms[@]}&quot;</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
