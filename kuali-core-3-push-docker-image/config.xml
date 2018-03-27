@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>This job uploads a specified docker image for core from the local repository to a specified docker registry</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.BooleanParameterDefinition>
+          <name>VERBOSE</name>
+          <description>Log output will be verbose</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ECR_REGISTRY_URL</name>
+          <description>Indicates the location of the elastic container registry (ECR) where the docker image is to be pushed to.</description>
+          <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>VERSION</name>
+          <description>This value reflects the git tag applied to the codebase the docker image was based on.
+The git commit may not be the exact commit that was tagged, but would be the most recent commit since that tag before the next tag is encountered.
+Combined with ECR_URL, this value serves to identify the docker image as it will have been already tagged accordingly.</description>
+          <defaultValue></defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>REGISTRY_REPO_NAME</name>
+          <description>This is used to identify the name of the docker registry repository that this image is going to be pushed to.
+The value is &quot;core&quot; by default, but remember that any feature images should go to a registry repository called &quot;core-feature&quot;
+Unlike coeus, the docker image for the sandbox environment is no different from any other environment - it is run-time configuration that makes that distinction.</description>
+          <defaultValue>core</defaultValue>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
+
+DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
+
+# Login to the registry
+# NOTE: info on how to store credentials can be found at: 
+#       http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
+#       requires ~/.aws/config
+
+evalstr=&quot;$(aws ecr get-login --profile ecr.access)&quot;
+# NOTE: The ecr get-login command of the aws cli returns a docker command that includes a removed switch.
+# The -e (email) switch will be rejected by the newer version of docker that we have installed on our aws
+# ec2 instances to accomodate cloud watch logging from our containers. Therefore I am removing the offending
+# &quot;-e none&quot; portion of the command with the stream editor.
+evalstr=&quot;$(echo $evalstr | sed &apos;s/ -e none//&apos;)&quot;
+eval $evalstr
+
+# Push the newly created image to the registry
+docker push ${DOCKER_TAG}
+
+set -x</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

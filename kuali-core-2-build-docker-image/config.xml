@@ -200,7 +200,7 @@ else {
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
-              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; disabled=true style=&apos;font-family:monospace; width:404px;&apos;&gt;&quot;</script>
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; disabled=true style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
@@ -210,6 +210,48 @@ else {
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>VERSION</name>
+          <description>This value reflects the git tag applied to the codebase the docker image will be based on.
+The git commit may not be the exact commit that was tagged, but would be the most recent commit since that tag before the next tag is encountered.
+VERSION follows the convention of YYMM.xxxx
+    Example: 1802.0001
+    This version would specify the January release for 2018 (The month indicates February, but &quot;0001&quot; indicates the very first commit, which the same as the last commit the previous day.</description>
+          <randomName>choice-parameter-7699775113984495</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>if(&quot;${GIT_REF}&quot;.matches(&quot;^\\d{4}\\.\\d{4}\$&quot;)) {
+   return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;${GIT_REF}&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;
+}
+else {
+   return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;
+}</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-core-2-build-docker-image</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>GIT_REF</referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <hudson.model.StringParameterDefinition>
+          <name>ECR_REGISTRY_URL</name>
+          <description>The url of the elastic container registry (ECR) where the newly created image is to be pushed to from this server and pulled from by the target docker host for the new image</description>
+          <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>REGISTRY_REPO_NAME</name>
+          <description>This is used to identify the name of the docker registry repository that this image is going to be pushed to.
+The value is &quot;core&quot; by default, but remember that any feature images should go to a registry repository called &quot;core-feature&quot;
+Unlike coeus, the docker image for the sandbox environment is no different from any other environment - it is run-time configuration that makes that distinction.</description>
+          <defaultValue>core</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -235,6 +277,7 @@ GIT_PULL=&quot;$(echo $GIT_PULL | sed &apos;s/,//g&apos;)&quot;
 GIT_REF=&quot;$(echo $GIT_REF | sed &apos;s/,//g&apos;)&quot;
 GIT_COMMIT_ID=&quot;$(echo $GIT_COMMIT_ID | sed &apos;s/,//g&apos;)&quot;
 DRYRUN=&quot;$(echo $DRYRUN | sed &apos;s/,//g&apos;)&quot;
+DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
 
 parms=(
   &quot;interactive=false&quot;
@@ -243,6 +286,7 @@ parms=(
   &quot;git_branch=$GIT_REF&quot;
   &quot;git_refspec=$GIT_COMMIT_ID&quot;
   &quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)&quot;
+  &quot;docker_image_name=$DOCKER_TAG&quot;
 )
 
 echo &quot;&quot;
