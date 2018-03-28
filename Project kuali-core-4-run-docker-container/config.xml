@@ -22,6 +22,78 @@
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_REPO_URL</name>
+          <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
+The git repository from which the target EC2 instance will pull the docker build context directories and scripts to run the docker commands.
+&lt;/div&gt;</description>
+          <randomName>choice-parameter-7867260687242740</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>def url = &quot;git@github.com:bu-ist/kuali-research-docker.git&quot;
+return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos; value=&apos;&quot; +  url + &quot;&apos;&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>GIT_BRANCH</name>
+          <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
+The git branch from which the target EC2 instance will pull the docker build context directories and scripts to run the docker commands.
+&lt;/div&gt;</description>
+          <randomName>choice-parameter-7867260688516826</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>// Instantiate a string builder to build a dropdown box populated with all the branches in the target git repo
+def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos;&gt;&quot;)
+def defaultBranch = &apos;coi-ui-1802.0001&apos;
+// Create a command to that passed to ssh-agent to run with sh that will acquire the list of branches in the target git repo
+def cmd = 
+   &quot;ssh-add /var/lib/jenkins/.ssh/bu_github_id_docker_rsa &gt; /dev/null 2&gt;&amp;1; &quot; + 
+   &quot;git -c core.askpass=true ls-remote -h ${GIT_REPO_URL} | &quot; + 
+   &quot;grep -i -P -o &apos;^[^\\s]+\\s+refs/heads/\\K(.*)\$&apos;&quot;
+
+// Create an array for the ProcessBuilder and run the process.
+// Cannot use execute command because of use of subprocess with sh.
+def cmdarr = [ &quot;ssh-agent&quot;, &quot;sh&quot;, &quot;-c&quot;, cmd ]
+def process = new ProcessBuilder(cmdarr).start()
+
+// Iterate over the input stream produced by having run the process (should be git ls-remote standard output)
+process.inputStream.eachLine {
+   if( &quot;${it}&quot; == defaultBranch) {
+      sb.append(&quot;&lt;option selected=true value=&apos;&quot;).append(&quot;${it}&quot;).append(&quot;&apos;&gt;&quot;).append(&quot;${it}&quot;).append(&quot;&lt;/option&gt;&quot;)
+   }
+   else {
+      sb.append(&quot;&lt;option value=&apos;&quot;).append(&quot;${it}&quot;).append(&quot;&apos;&gt;&quot;).append(&quot;${it}&quot;).append(&quot;&lt;/option&gt;&quot;)
+   }
+}
+process.waitFor();
+sb.append(&quot;&lt;/select&gt;&quot;)
+return sb.toString()</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>GIT_REPO_URL</referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>ECR_REGISTRY_URL</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 Indicates the location of the elastic container registry (ECR) where the docker image is to be pulled from by the remote EC2 server.
@@ -49,8 +121,8 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;
           <name>REGISTRY_REPO_NAME</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 This is used to identify the name of the docker registry repository that the image is going to be pulled from by the remote EC2 server. 
-The value is &quot;core&quot; by default, but remember that any feature images found in the registry under a &quot;core-feature&quot; repository name.
-Unlike coeus, the docker image for the sandbox environment is no different from any other environment - it is run-time configuration that makes that distinction.
+The value is &quot;core&quot; by default, but remember that any feature images are found in the registry under a &quot;core-feature&quot; repository name.
+Unlike coeus, the docker image for the sandbox environment is no different from any other environment - it is run-time configurations that implement environment specific distinctions.
 &lt;/div&gt;</description>
           <randomName>choice-parameter-7758862631200119</randomName>
           <visibleItemCount>1</visibleItemCount>
@@ -129,6 +201,81 @@ else {
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>LANDSCAPE</name>
+          <description>What landscape is the target EC2 instance in?</description>
+          <randomName>choice-parameter-7868421881336372</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
+sb.append(&quot;&lt;option selected=true value=&apos;sb&apos;&gt;sb&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;ci&apos;&gt;ci&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;qa&apos;&gt;qa&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;stg&apos;&gt;stg&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;prod&apos;&gt;prod&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;/select&gt;&quot;)
+return sb.toString()</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>EC2_INSTANCE_ID</name>
+          <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
+The id of the EC2 instance that will be running the container based on the docker image it pulls from the docker registry.
+&lt;/div&gt;</description>
+          <randomName>choice-parameter-7832735263877350</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
+switch(LANDSCAPE) {
+   case &apos;sb&apos;:
+      sb.append(&quot;&lt;option value=&apos;i-099de1c5407493f9b&apos;&gt;i-099de1c5407493f9b&lt;/option&gt;&quot;);
+      sb.append(&quot;&lt;option value=&apos;i-0c2d2ef87e98f2088&apos;&gt;i-0c2d2ef87e98f2088&lt;/option&gt;&quot;);
+      break;
+   case &apos;ci&apos;:
+      sb.append(&quot;&lt;option value=&apos;i-0258a5f2a87ba7972&apos;&gt;i-0258a5f2a87ba7972&lt;/option&gt;&quot;);
+      sb.append(&quot;&lt;option value=&apos;i-0511b83a249cd9fb1&apos;&gt;i-0511b83a249cd9fb1&lt;/option&gt;&quot;);
+      break;
+   case &apos;qa&apos;:
+      sb.append(&quot;&lt;option value=&apos;i-011ccd29dec6c6d10&apos;&gt;i-011ccd29dec6c6d10&lt;/option&gt;&quot;)
+      break;
+   case &apos;stg&apos;:
+      sb.append(&quot;&lt;option value=&apos;i-090d188ea237c8bcf&apos;&gt;i-090d188ea237c8bcf&lt;/option&gt;&quot;)
+      sb.append(&quot;&lt;option value=&apos;i-0cb479180574b4ba2&apos;&gt;i-0cb479180574b4ba2&lt;/option&gt;&quot;)
+      break;
+   case &apos;prod&apos;:
+      sb.append(&quot;&lt;option value=&apos;i-0534c4e38e6a24009&apos;&gt;i-0534c4e38e6a24009&lt;/option&gt;&quot;)
+      sb.append(&quot;&lt;option value=&apos;i-07d7b5f3e629e89ae&apos;&gt;i-07d7b5f3e629e89ae&lt;/option&gt;&quot;)
+      break;
+}
+sb.append(&quot;&lt;/select&gt;&quot;)
+return sb.toString()
+</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>LANDSCAPE</referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -143,15 +290,101 @@ else {
     <hudson.tasks.Shell>
       <command>[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
 
+# Validate the job parameters
+[ -z &quot;$GIT_REPO_URL&quot; ] &amp;&amp; echo &quot;ERROR! GIT_REPO_URL cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$GIT_BRANCH&quot; ] &amp;&amp; echo &quot;ERROR! GIT_BRANCH cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$LANDSCAPE&quot; ] &amp;&amp; echo &quot;ERROR! LANDSCAPE cannot be empty!&quot; &amp;&amp; exit 1
+if [ -z &quot;$VERSION&quot; ] ; then
+  echo &quot;ERROR! VERSION parameter cannot be empty&quot;
+  exit 1
+elif [ -z &quot;$(echo $VERSION | grep -P &apos;^\\d{4}\.\\d{4}\$&apos;)&quot; ] ; then
+  echo &quot;ERROR! VERSION parameter must be of format &apos;YYYY.xxxx&apos; where Y and x are both numeric.&quot;
+  exit 1
+fi
+
 # Fix the trailing comma issue with active choices parameters reactive
+GIT_REPO_URL=&quot;$(echo $GIT_REPO_URL | sed &apos;s/,//g&apos;)&quot;
+GIT_BRANCH=&quot;$(echo $GIT_BRANCH | sed &apos;s/,//g&apos;)&quot;
 ECR_REGISTRY_URL=&quot;$(echo $ECR_REGISTRY_URL | sed &apos;s/,//g&apos;)&quot;
 REGISTRY_REPO_NAME=&quot;$(echo $REGISTRY_REPO_NAME | sed &apos;s/,//g&apos;)&quot;
 VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
-
+EC2_INSTANCE_ID=&quot;$(echo $EC2_INSTANCE_ID | sed &apos;s/,//g&apos;)&quot;
+ROOT_DIR=&quot;/opt/kuali-research-docker/core/build.context&quot;
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
 
-# TODO: Put aws send command code here.
+# Create an array of parameters to pass to the runapp function (see below).
+parms=(
+  &quot;interactive=false&quot;
+  &quot;renew_configs=true&quot;
+  &quot;root_dir=$ROOT_DIR&quot;
+  &quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)&quot;
+  &quot;docker_image_name=$DOCKER_TAG&quot;
+  &quot;landscape=$LANDSCAPE&quot;
+)
 
+# Compose the code that is to be passed as a command with the ssm send-command call
+#
+# NOTE: Have to encode the command being sent to ssm agent because of quote escaping restrictions.
+# (jenkins removes double quotes and escapes single quotes and wraps command args with more single
+#  quotes if they contain spaces, making it impossible to provide a string that is acceptable to send-command commands arg)
+GIT_ROOT=&quot;/opt/kuali-research-docker&quot;
+BASE64=$(\
+   echo \
+      &quot;[ ! -d ${GIT_ROOT} ] &amp;&amp; mkdir ${GIT_ROOT}; \
+      cd ${GIT_ROOT}; \      
+      if [ ! -d $GIT_ROOT/.git ] ; then \
+        git init; \
+        git config user.email jenkins@bu.edu; \
+        git config user.name jenkins; \
+        git remote add github ${GIT_REPO_URL}; \
+      fi \      
+      eval \&quot;ssh-agent -k\&quot; || true; \
+      eval `ssh-agent -s`; \
+      ssh-add /var/lib/jenkins/.ssh/bu_github_id_docker_rsa; \
+      git fetch github ${GIT_BRANCH}; \
+      if [ -n \&quot;\$(git rev-parse --verify ${GIT_BRANCH} 2&gt;/dev/null)\&quot; ] ; then \
+         git reset --hard FETCH_HEAD; \
+      else \
+         git checkout -b ${GIT_BRANCH} remotes/github/${GIT_BRANCH}; \
+      fi \
+      eval \&quot;ssh-agent -k\&quot; || true; \
+      cd $GIT_ROOT/core/build.context; \
+      source docker.sh; \
+      runapp \&quot;${parms[@]}\&quot; &gt; /tmp/last-core-run-cmd 2&gt;&amp;1&quot; | base64 -w 0 \
+      # runapp \&quot;${parms[@]}\&quot; &gt; /tmp/last-core-run-cmd 2&gt;&amp;1&quot; | base64 -w 0 \
+)
+echo $BASE_64
+exit 0
+
+# Execute the send-command call
+COMMAND_ID=$(aws ssm send-command \
+   --instance-ids &quot;${EC2_INSTANCE_ID}&quot; \
+   --document-name &quot;AWS-RunShellScript&quot; \
+   --comment &quot;Running shell script to pull and run container against a new docker image for ${REGISTRY_REPO_NAME}&quot; \
+   --parameters \
+        commands=&quot;echo &gt;&gt; /tmp/ssm-core-received &amp;&amp; date &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
+                  echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
+                  echo ${BASE64} | base64 --decode &gt; /tmp/ssm-core-last.sh &amp;&amp; \
+                  echo ${BASE64} | base64 --decode | sh&quot; \
+   --profile &quot;ecr.access&quot; \
+   --output text \
+   --query &quot;Command.CommandId&quot; \
+   --output-s3-bucket-name &quot;kuali-docker-run-stdout&quot; \
+   --output-s3-key-prefix &quot;core&quot;)
+   
+s3Url=&quot;s3://kuali-docker-run-stdout/core/${COMMAND_ID}/${EC2_INSTANCE_ID}/awsrunShellScript/0.awsrunShellScript/stdout&quot;
+days=10
+seconds=&quot;$((60*60*24*${days}))&quot;
+httpUrl=&quot;$(aws --profile=ecr.access s3 presign &quot;${s3Url}&quot; --expires-in=${seconds})&quot;
+echo &quot;Access the docker container creation output on the remote EC2 instance ($EC2_INSTANCE_ID}) at:&quot;
+echo &quot; &quot;
+echo &quot;$httpUrl&quot;
+echo &quot; &quot;
+echo &quot;(expires in $days days)&quot;
+   
 set -x</command>
     </hudson.tasks.Shell>
   </builders>

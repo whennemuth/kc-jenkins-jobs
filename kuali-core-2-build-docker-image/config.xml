@@ -309,6 +309,9 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
     <hudson.tasks.Shell>
       <command>[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
 
+# Validate the job parameters
+[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
 if [ -z &quot;$VERSION&quot; ] ; then
   echo &quot;ERROR! VERSION parameter cannot be empty&quot;
   exit 1

@@ -92,7 +92,7 @@ BASE64=$(\
          -v /var/log/tomcat:/var/log/tomcat \
          --restart unless-stopped \
          --name ${CONTAINER_NAME} \
-         ${DOCKER_TAG} &gt; /tmp/last-run-cmd 2&gt;&amp;1&quot; | base64 -w 0 \
+         ${DOCKER_TAG} &gt; /tmp/last-coeus-run-cmd 2&gt;&amp;1&quot; | base64 -w 0 \
 )
 # NOTE: Not sure why, but all commands up to the the docker run command would execute, but you have
 # to redirect stdout and stderr of the docker run command to a file for it to work as well.

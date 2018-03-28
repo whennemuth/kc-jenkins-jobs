@@ -17,9 +17,9 @@ This job pulls the kuali-research-docker repo into the /tmp directory.</descript
       <parameterDefinitions>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>GIT_REPO_URL</name>
-          <description>The git repository from which the build will pull source code.
-&lt;br&gt;
-&lt;br&gt;</description>
+          <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
+The git repository from which this job will pull the docker build context directories and scripts to run the docker commands.
+&lt;/div&gt;</description>
           <randomName>choice-parameter-7414145968157592</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
@@ -41,7 +41,9 @@ return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>GIT_BRANCH</name>
-          <description>The branch to be checked out for the scripts.</description>
+          <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
+The git branch from which this job will pull the docker build context directories and scripts to run the docker commands.
+&lt;/div&gt;</description>
           <randomName>choice-parameter-7330918921590289</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">

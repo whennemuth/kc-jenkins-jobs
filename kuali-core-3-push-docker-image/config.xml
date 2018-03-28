@@ -49,7 +49,8 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;
           <name>REGISTRY_REPO_NAME</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 This is used to identify the name of the docker registry repository that this image is going to be pushed to. 
-The value is &quot;core&quot; by default, but remember that any feature images should go to a registry repository called &quot;core-feature&quot; Unlike coeus, the docker image for the sandbox environment is no different from any other environment - it is run-time configuration that makes that distinction.
+The value is &quot;core&quot; by default, but remember that any feature images should go to a registry repository called &quot;core-feature&quot;. 
+Unlike coeus, the docker image for the sandbox environment is no different from any other environment - it is run-time configuration that implement environment specific distinctions.
 &lt;/div&gt;</description>
           <randomName>choice-parameter-7758862631200119</randomName>
           <visibleItemCount>1</visibleItemCount>
@@ -141,6 +142,12 @@ else {
   <builders>
     <hudson.tasks.Shell>
       <command>[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
+
+# Validate the job parameters
+[ -z &quot;$REGISTRY_REPO_NAME&quot; ] &amp;&amp; echo &quot;ERROR! REGISTRY_REPO_NAME cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$VERSION&quot; ] &amp;&amp; echo &quot;ERROR! VERSION cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
 
 # Fix the trailing comma issue with active choices parameters reactive
 ECR_REGISTRY_URL=&quot;$(echo $ECR_REGISTRY_URL | sed &apos;s/,//g&apos;)&quot;
