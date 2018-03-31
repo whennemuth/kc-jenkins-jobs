@@ -309,13 +309,23 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
     <hudson.tasks.Shell>
       <command>[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
 
+# Fix the trailing comma issue with active choices parameters reactive
+ECR_REGISTRY_URL=&quot;$(echo $ECR_REGISTRY_URL | sed &apos;s/,//g&apos;)&quot;
+REGISTRY_REPO_NAME=&quot;$(echo $REGISTRY_REPO_NAME | sed &apos;s/,//g&apos;)&quot;
+GIT_PULL=&quot;$(echo $GIT_PULL | sed &apos;s/,//g&apos;)&quot;
+GIT_REF=&quot;$(echo $GIT_REF | sed &apos;s/,//g&apos;)&quot;
+GIT_COMMIT_ID=&quot;$(echo $GIT_COMMIT_ID | sed &apos;s/,//g&apos;)&quot;
+DRYRUN=&quot;$(echo $DRYRUN | sed &apos;s/,//g&apos;)&quot;
+VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
+DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
+
 # Validate the job parameters
 [ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
 if [ -z &quot;$VERSION&quot; ] ; then
   echo &quot;ERROR! VERSION parameter cannot be empty&quot;
   exit 1
-elif [ -z &quot;$(echo $VERSION | grep -P &apos;^\\d{4}\.\\d{4}\$&apos;)&quot; ] ; then
+elif [ -z &quot;$(echo &quot;$VERSION&quot; | grep -P &quot;^\\d{4}\.\\d{4}\$&quot;)&quot; ] ; then
   echo &quot;ERROR! VERSION parameter must be of format &apos;YYYY.xxxx&apos; where Y and x are both numeric.&quot;
   exit 1
 fi
@@ -325,15 +335,6 @@ if [ ! -d $ROOT_DIR ] ; then
   echo &quot;ERROR! Cannot find docker build context directory: $ROOT_DIR&quot;
   exit 1
 fi
-
-# Fix the trailing comma issue with active choices parameters reactive
-ECR_REGISTRY_URL=&quot;$(echo $ECR_REGISTRY_URL | sed &apos;s/,//g&apos;)&quot;
-REGISTRY_REPO_NAME=&quot;$(echo $REGISTRY_REPO_NAME | sed &apos;s/,//g&apos;)&quot;
-GIT_PULL=&quot;$(echo $GIT_PULL | sed &apos;s/,//g&apos;)&quot;
-GIT_REF=&quot;$(echo $GIT_REF | sed &apos;s/,//g&apos;)&quot;
-GIT_COMMIT_ID=&quot;$(echo $GIT_COMMIT_ID | sed &apos;s/,//g&apos;)&quot;
-DRYRUN=&quot;$(echo $DRYRUN | sed &apos;s/,//g&apos;)&quot;
-DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
 
 parms=(
   &quot;interactive=false&quot;

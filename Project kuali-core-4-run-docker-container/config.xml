@@ -290,21 +290,6 @@ return sb.toString()
     <hudson.tasks.Shell>
       <command>[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
 
-# Validate the job parameters
-[ -z &quot;$GIT_REPO_URL&quot; ] &amp;&amp; echo &quot;ERROR! GIT_REPO_URL cannot be empty!&quot; &amp;&amp; exit 1
-[ -z &quot;$GIT_BRANCH&quot; ] &amp;&amp; echo &quot;ERROR! GIT_BRANCH cannot be empty!&quot; &amp;&amp; exit 1
-[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
-[ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
-[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
-[ -z &quot;$LANDSCAPE&quot; ] &amp;&amp; echo &quot;ERROR! LANDSCAPE cannot be empty!&quot; &amp;&amp; exit 1
-if [ -z &quot;$VERSION&quot; ] ; then
-  echo &quot;ERROR! VERSION parameter cannot be empty&quot;
-  exit 1
-elif [ -z &quot;$(echo $VERSION | grep -P &apos;^\\d{4}\.\\d{4}\$&apos;)&quot; ] ; then
-  echo &quot;ERROR! VERSION parameter must be of format &apos;YYYY.xxxx&apos; where Y and x are both numeric.&quot;
-  exit 1
-fi
-
 # Fix the trailing comma issue with active choices parameters reactive
 GIT_REPO_URL=&quot;$(echo $GIT_REPO_URL | sed &apos;s/,//g&apos;)&quot;
 GIT_BRANCH=&quot;$(echo $GIT_BRANCH | sed &apos;s/,//g&apos;)&quot;
@@ -312,8 +297,33 @@ ECR_REGISTRY_URL=&quot;$(echo $ECR_REGISTRY_URL | sed &apos;s/,//g&apos;)&quot;
 REGISTRY_REPO_NAME=&quot;$(echo $REGISTRY_REPO_NAME | sed &apos;s/,//g&apos;)&quot;
 VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
 EC2_INSTANCE_ID=&quot;$(echo $EC2_INSTANCE_ID | sed &apos;s/,//g&apos;)&quot;
+LANDSCAPE=&quot;$(echo $LANDSCAPE | sed &apos;s/,//g&apos;)&quot;
 ROOT_DIR=&quot;/opt/kuali-research-docker/core/build.context&quot;
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
+AWS_REG=$(aws configure get region --profile ecr.access)
+AWS_KEY=$(aws configure get aws_access_key_id --profile ecr.access)
+# Encode the secret key so that special characters don&apos;t cause problems below.
+AWS_SEC=$(aws configure get aws_secret_access_key --profile ecr.access | base64 -w 0)
+
+# Validate the job parameters
+[ -z &quot;$GIT_REPO_URL&quot; ] &amp;&amp; echo &quot;ERROR! GIT_REPO_URL cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$GIT_BRANCH&quot; ] &amp;&amp; echo &quot;ERROR! GIT_BRANCH cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$LANDSCAPE&quot; ] &amp;&amp; echo &quot;ERROR! LANDSCAPE cannot be empty!&quot; &amp;&amp; exit 1
+[ -z &quot;$AWS_KEY&quot; ] &amp;&amp; echo &quot;ERROR! AWS_ACCESS_KEY_ID could not be determined!&quot; &amp;&amp; exit 1
+[ -z &quot;$AWS_SEC&quot; ] &amp;&amp; echo &quot;ERROR! AWS_SECRET_ACCESS_KEY could not be determined!&quot; &amp;&amp; exit 1
+[ -z &quot;$AWS_REG&quot; ] &amp;&amp; echo &quot;ERROR! AWS_DEFAULT_REGION could not be determined!&quot; &amp;&amp; exit 1
+if [ -z &quot;$VERSION&quot; ] ; then
+  echo &quot;ERROR! VERSION parameter cannot be empty&quot;
+  exit 1
+elif [ -z &quot;$(echo &quot;$VERSION&quot; | grep -P &quot;^\\d{4}\.\\d{4}\$&quot;)&quot; ] ; then
+  echo &quot;ERROR! VERSION parameter must be of format &apos;YYYY.xxxx&apos; where Y and x are both numeric.&quot;
+  exit 1
+fi
+
+[ &quot;$LANDSCAPE&quot; == &apos;prod&apos; ] &amp;&amp; CORE_HOST=&quot;kuali-research.bu.edu&quot; || CORE_HOST=&quot;kuali-research-${LANDSCAPE}.bu.edu&quot;
 
 # Create an array of parameters to pass to the runapp function (see below).
 parms=(
@@ -323,6 +333,7 @@ parms=(
   &quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)&quot;
   &quot;docker_image_name=$DOCKER_TAG&quot;
   &quot;landscape=$LANDSCAPE&quot;
+  &quot;core_host=$CORE_HOST&quot;
 )
 
 # Compose the code that is to be passed as a command with the ssm send-command call
@@ -333,31 +344,57 @@ parms=(
 GIT_ROOT=&quot;/opt/kuali-research-docker&quot;
 BASE64=$(\
    echo \
-      &quot;[ ! -d ${GIT_ROOT} ] &amp;&amp; mkdir ${GIT_ROOT}; \
-      cd ${GIT_ROOT}; \      
-      if [ ! -d $GIT_ROOT/.git ] ; then \
-        git init; \
+      &quot;set +x &amp;&amp; echo &apos;#################################################################################&apos;; \
+      echo &apos;###### 1) Obtaining the private key to get the docker build context from git&apos;; \
+      echo &apos;#################################################################################&apos; &amp;&amp; set -x; \
+      if [ ! -f ~/.ssh/bu_github_id_docker_rsa ] ; then \     
+        [ -n \&quot;\$(aws help 1&gt; /dev/null)\&quot; ] &amp;&amp; echo &apos;ERROR! The aws cli does not seem to be installed!&apos; &amp;&amp; exit 1; \
+        export AWS_DEFAULT_REGION=$AWS_REG; \
+        export AWS_ACCESS_KEY_ID=$AWS_KEY; \
+        export AWS_SECRET_ACCESS_KEY=\$(echo $AWS_SEC | base64 --decode); \
+        aws s3 cp s3://kuali-research-ec2-setup/bu_github_id_docker_rsa ~/.ssh ; \
+        if [ ! -f ~/.ssh/bu_github_id_docker_rsa ] ; then \
+          echo &apos;ERROR! Cannot obtain private key bu_github_id_docker_rsa&apos;; \
+          exit 1; \
+        fi; \
+        chmod 600 ~/.ssh/bu_github_id_docker_rsa; \
+        ssh-keyscan -t rsa github.com &gt;&gt; ~/.ssh/known_hosts; \
+      fi; \
+      set +x &amp;&amp; echo &apos;#################################################################################&apos;; \
+      echo &apos;###### 2) Checking/preparing git configuration for pull of docker build context&apos;; \
+      echo &apos;#################################################################################&apos; &amp;&amp; set -x; \
+      [ ! -d ${GIT_ROOT} ] &amp;&amp; mkdir ${GIT_ROOT}; \
+      cd ${GIT_ROOT}; \
+      if [ ! -d .git ] ; then \
+         git init; \
+      fi; \
+      if [ -z \&quot;\$(git config --get remote.github.url)\&quot; ] ; then \
         git config user.email jenkins@bu.edu; \
         git config user.name jenkins; \
         git remote add github ${GIT_REPO_URL}; \
-      fi \      
+      fi; \
       eval \&quot;ssh-agent -k\&quot; || true; \
-      eval `ssh-agent -s`; \
-      ssh-add /var/lib/jenkins/.ssh/bu_github_id_docker_rsa; \
+      eval \&quot;\$(ssh-agent -s)\&quot;; \
+      ssh-add ~/.ssh/bu_github_id_docker_rsa; \
+      set +x &amp;&amp; echo &apos;#################################################################################&apos;; \
+      echo &apos;###### 3) Fetching docker build context from git&apos;; \
+      echo &apos;#################################################################################&apos; &amp;&amp; set -x; \
       git fetch github ${GIT_BRANCH}; \
       if [ -n \&quot;\$(git rev-parse --verify ${GIT_BRANCH} 2&gt;/dev/null)\&quot; ] ; then \
          git reset --hard FETCH_HEAD; \
       else \
          git checkout -b ${GIT_BRANCH} remotes/github/${GIT_BRANCH}; \
-      fi \
+      fi; \
       eval \&quot;ssh-agent -k\&quot; || true; \
+      set +x &amp;&amp; echo &apos;#################################################################################&apos;; \
+      echo &apos;###### 4) Running docker run command...&apos;; \
+      echo &apos;#################################################################################&apos; &amp;&amp; set -x; \
       cd $GIT_ROOT/core/build.context; \
-      source docker.sh; \
-      runapp \&quot;${parms[@]}\&quot; &gt; /tmp/last-core-run-cmd 2&gt;&amp;1&quot; | base64 -w 0 \
-      # runapp \&quot;${parms[@]}\&quot; &gt; /tmp/last-core-run-cmd 2&gt;&amp;1&quot; | base64 -w 0 \
+      source $GIT_ROOT/core/build.context/docker.sh; \
+      [ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x; \
+      runapp \&quot;${parms[@]}\&quot; 2&gt;&amp;1 | tee /tmp/last-core-run-cmd&quot; | base64 -w 0 \
 )
-echo $BASE_64
-exit 0
+echo &quot;BASE64 = $BASE64&quot;
 
 # Execute the send-command call
 COMMAND_ID=$(aws ssm send-command \
@@ -368,14 +405,14 @@ COMMAND_ID=$(aws ssm send-command \
         commands=&quot;echo &gt;&gt; /tmp/ssm-core-received &amp;&amp; date &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
                   echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
                   echo ${BASE64} | base64 --decode &gt; /tmp/ssm-core-last.sh &amp;&amp; \
-                  echo ${BASE64} | base64 --decode | sh&quot; \
-   --profile &quot;ecr.access&quot; \
+                  echo ${BASE64} | base64 --decode | sh 2&gt;&amp;1&quot; \
+   --profile ecr.access \
    --output text \
    --query &quot;Command.CommandId&quot; \
    --output-s3-bucket-name &quot;kuali-docker-run-stdout&quot; \
    --output-s3-key-prefix &quot;core&quot;)
    
-s3Url=&quot;s3://kuali-docker-run-stdout/core/${COMMAND_ID}/${EC2_INSTANCE_ID}/awsrunShellScript/0.awsrunShellScript/stdout&quot;
+s3Url=&quot;s3://kuali-docker-run-stdout/core/${COMMAND_ID}/${EC2_INSTANCE_ID}/awsrunShellScript/0.aws:runShellScript/stdout&quot;
 days=10
 seconds=&quot;$((60*60*24*${days}))&quot;
 httpUrl=&quot;$(aws --profile=ecr.access s3 presign &quot;${s3Url}&quot; --expires-in=${seconds})&quot;
@@ -383,9 +420,10 @@ echo &quot;Access the docker container creation output on the remote EC2 instanc
 echo &quot; &quot;
 echo &quot;$httpUrl&quot;
 echo &quot; &quot;
-echo &quot;(expires in $days days)&quot;
-   
-set -x</command>
+echo &quot;You may have to wait for about a minute for the link to become available&quot;
+echo &quot;(link expires in $days days)&quot;
+echo &quot; &quot;
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
