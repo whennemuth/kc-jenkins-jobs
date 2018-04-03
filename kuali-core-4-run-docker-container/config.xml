@@ -39,7 +39,7 @@ return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-core-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -87,7 +87,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-core-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>GIT_REPO_URL</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -111,7 +111,7 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-core-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -136,7 +136,7 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-core-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -159,7 +159,7 @@ How do you want to enter the version value?
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-core-4-run-docker-container</projectName>
           <choiceType>PT_RADIO</choiceType>
           <filterable>false</filterable>
         </org.biouno.unochoice.ChoiceParameter>
@@ -195,7 +195,7 @@ else {
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-core-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>VERSION_OPT</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -203,7 +203,9 @@ else {
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>LANDSCAPE</name>
-          <description>What landscape is the target EC2 instance in?</description>
+          <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
+What landscape is the target EC2 instance in?
+&lt;/div&gt;</description>
           <randomName>choice-parameter-7868421881336372</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
@@ -223,7 +225,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-core-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -270,7 +272,7 @@ return sb.toString()
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>Project kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-core-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>LANDSCAPE</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>

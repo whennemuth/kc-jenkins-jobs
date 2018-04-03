@@ -15,6 +15,11 @@ This job pulls the kuali-research-docker repo into the /tmp directory.</descript
     </jenkins.model.BuildDiscarderProperty>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
+        <hudson.model.BooleanParameterDefinition>
+          <name>VERBOSE</name>
+          <description>Log output will be verbose</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>GIT_REPO_URL</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
@@ -104,6 +109,8 @@ return sb.toString()</script>
   local retval=&quot;$(git rev-parse --verify $branchName 2&gt;/dev/null)&quot;
   [ -n &quot;$retval&quot; ] &amp;&amp; true || false
 }
+
+[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
 
 # Fix affects of active choices reactive parameter bug. The variables trail with added comma.
 GIT_BRANCH=$(echo &quot;$GIT_BRANCH&quot; | sed &apos;s/,//g&apos;)
