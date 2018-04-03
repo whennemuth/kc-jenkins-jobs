@@ -377,9 +377,9 @@ for i in $(seq ${#EC2_IDS[@]}); do
 done;
 
 for ((i = 0; i &lt; ${#CMDS[@]}; i++)) ; do
-  CMD=&quot;$(echo &quot;${CMDS[i]}&quot; | sed &apos;s/[[:space:]][[:space:]]*\-p/\n\0/g&apos;)&quot;
-  printf &quot;\n$CMD\n&quot;
-  [ &quot;$DEBUG&quot; == false ] &amp;&amp; eval &quot;$CMD&quot;
+  CMD_PRINTABLE==&quot;$(echo &quot;${CMDS[i]}&quot; | sed &apos;s/[[:space:]][[:space:]]*\-p/\n\0/g&apos;)&quot;
+  printf &quot;\n$CMD_PRINTABLE\n&quot;
+  [ &quot;$DEBUG&quot; == false ] &amp;&amp; eval &quot;${CMDS[i]}&quot;
 done
 
 printf &quot;\n\nBuild Completed!&quot;</command>
