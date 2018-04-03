@@ -295,6 +295,30 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>ROOT_DIR</name>
+          <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
+Pull the docker scripts to this directory.&lt;br&gt;
+No default value.
+&lt;/div&gt;</description>
+          <randomName>choice-parameter-8365550061399237</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;width:400px;&apos;&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-core-2-build-docker-image</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -320,7 +344,6 @@ VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
 
 # Validate the job parameters
-[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
 if [ -z &quot;$VERSION&quot; ] ; then
   echo &quot;ERROR! VERSION parameter cannot be empty&quot;
@@ -329,10 +352,8 @@ elif [ -z &quot;$(echo &quot;$VERSION&quot; | grep -P &quot;^\\d{4}\.\\d{4}\$&qu
   echo &quot;ERROR! VERSION parameter must be of format &apos;YYYY.xxxx&apos; where Y and x are both numeric.&quot;
   exit 1
 fi
-
-ROOT_DIR=&apos;/tmp/krd/core/build.context&apos;
-if [ ! -d $ROOT_DIR ] ; then
-  echo &quot;ERROR! Cannot find docker build context directory: $ROOT_DIR&quot;
+if [ ! -d $ROOT_DIR/core/build.context ] ; then
+  echo &quot;ERROR! Cannot find docker build context directory: $ROOT_DIR/core/build.context&quot;
   exit 1
 fi
 

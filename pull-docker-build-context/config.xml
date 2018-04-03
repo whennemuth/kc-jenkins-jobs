@@ -2,7 +2,7 @@
 <project>
   <actions/>
   <description>Kuali-research-docker is a git repository that contains bash scripts for building docker images from kuali module source code and deploying them as containers in specified environments.&#xd;
-This job pulls the kuali-research-docker repo into the /tmp directory.</description>
+This job pulls the kuali-research-docker repo into a specified directory.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <jenkins.model.BuildDiscarderProperty>
@@ -38,7 +38,7 @@ return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-1-pull-build-scripts</projectName>
+          <projectName>pull-docker-build-context</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -86,23 +86,20 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-1-pull-build-scripts</projectName>
+          <projectName>pull-docker-build-context</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>GIT_REPO_URL</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
-          <name>ROOT_DIR</name>
-          <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
-Pull the docker scripts to this directory.&lt;br&gt;
-Defaults to the workspace directory of this job
-&lt;/div&gt;</description>
-          <randomName>choice-parameter-8364657314338619</randomName>
+          <name>TARGET_DIRECTORY</name>
+          <description>Pull the git repository containing the scripts to this directory.</description>
+          <randomName>choice-parameter-8357271221960033</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;width:400px;&apos;&gt;&quot;</script>
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;/tmp/krd&apos; style=&apos;width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
@@ -110,7 +107,7 @@ Defaults to the workspace directory of this job
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-1-pull-build-scripts</projectName>
+          <projectName>pull-docker-build-context</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -130,22 +127,39 @@ Defaults to the workspace directory of this job
     <hudson.tasks.Shell>
       <command>[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
 
+branchExists() {
+  local branchName=&quot;$1&quot;
+  local retval=&quot;$(git rev-parse --verify $branchName 2&gt;/dev/null)&quot;
+  [ -n &quot;$retval&quot; ] &amp;&amp; true || false
+}
+
 # Fix affects of active choices reactive parameter bug. The variables trail with added comma.
 GIT_BRANCH=$(echo &quot;$GIT_BRANCH&quot; | sed &apos;s/,//g&apos;)
 GIT_REPO_URL=$(echo &quot;$GIT_REPO_URL&quot; | sed &apos;s/,//g&apos;)
-ROOT_DIR=$(echo &quot;$ROOT_DIR&quot; | sed &apos;s/,//g&apos;)
+TARGET_DIRECTORY=$(echo &quot;$TARGET_DIRECTORY&quot; | sed &apos;s/,//g&apos;)
 
-[ -z &quot;$ROOT_DIR&quot; ] &amp;&amp; ROOT_DIR=&quot;$WORKSPACE&quot;
+[ ! -d $TARGET_DIRECTORY ] &amp;&amp; mkdir -p $TARGET_DIRECTORY
+cd $TARGET_DIRECTORY
 
-java -jar \
-  /var/lib/jenkins/jenkins-cli.jar \
-  -s http://localhost:8080/ \
-  build &apos;pull-docker-build-context&apos; \
-  -v -f \
-  -p VERBOSE=${VERBOSE} \
-  -p GIT_REPO_URL=${GIT_REPO_URL} \
-  -p GIT_BRANCH=${GIT_BRANCH} \
-  -p TARGET_DIRECTORY=$ROOT_DIR
+if [ ! -d $TARGET_DIRECTORY/.git ] ; then
+  git init
+  git config user.email &quot;jenkins@bu.edu&quot;
+  git config user.name jenkins
+  git remote add github $GIT_REPO_URL
+fi
+
+eval &quot;ssh-agent -k&quot; || true
+eval `ssh-agent -s`
+ssh-add /var/lib/jenkins/.ssh/bu_github_id_docker_rsa
+git fetch github $GIT_BRANCH
+
+if branchExists &quot;$GIT_BRANCH&quot; ; then
+  git reset --hard FETCH_HEAD
+else 
+  git checkout -b $GIT_BRANCH remotes/github/$GIT_BRANCH
+fi
+
+eval &quot;ssh-agent -k&quot; || true
 </command>
     </hudson.tasks.Shell>
   </builders>
