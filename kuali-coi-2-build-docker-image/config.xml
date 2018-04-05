@@ -372,9 +372,9 @@ echo &quot;================================&quot;
 echo &quot;DOCKER BUILD CONTEXT:&quot;
 echo &quot;================================&quot;
 
-cd $ROOT_DIR &amp;&amp; ls -la
+cd $ROOT_DIR/coi/build.context &amp;&amp; ls -la
 
-source $ROOT_DIR/docker.sh
+source $ROOT_DIR/coi/build.context/docker.sh
 
 build &quot;${parms[@]}&quot;
 

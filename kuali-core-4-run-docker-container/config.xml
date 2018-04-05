@@ -40,31 +40,6 @@ return opendiv + checkbox + desc + closediv</script>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
-          <name>MIGRATIONS</name>
-          <description></description>
-          <randomName>choice-parameter-8442306650820393</randomName>
-          <visibleItemCount>1</visibleItemCount>
-          <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
-              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
-def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;true&apos; checked style=&apos;display:inline;&apos;&gt;&quot;
-def desc = &quot;Run migrations against the database  when the docker container starts up?&quot;
-def closediv = &quot;&lt;/div&gt;&lt;br&gt;&quot;
-return opendiv + checkbox + desc + closediv</script>
-              <sandbox>false</sandbox>
-            </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
-              <script>return &quot;Error creating migrations selection&quot;</script>
-              <sandbox>false</sandbox>
-            </secureFallbackScript>
-          </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
-          <parameters class="linked-hash-map"/>
-          <referencedParameters></referencedParameters>
-          <choiceType>ET_FORMATTED_HTML</choiceType>
-          <omitValueField>false</omitValueField>
-        </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>GIT_REPO_URL</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 The git repository from which the target EC2 instance will pull the docker build context directories and scripts to run the docker commands.
@@ -336,8 +311,8 @@ return sb.toString()
       <command>[ &quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot; == false ] &amp;&amp; set +x
 
 # Fix the trailing comma issue with active choices parameters reactive
+VERBOSE=&quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot;
 DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
-MIGRATIONS=&quot;$(echo $MIGRATIONS | sed &apos;s/,//g&apos;)&quot;
 GIT_REPO_URL=&quot;$(echo $GIT_REPO_URL | sed &apos;s/,//g&apos;)&quot;
 GIT_BRANCH=&quot;$(echo $GIT_BRANCH | sed &apos;s/,//g&apos;)&quot;
 ECR_REGISTRY_URL=&quot;$(echo $ECR_REGISTRY_URL | sed &apos;s/,//g&apos;)&quot;
@@ -357,7 +332,6 @@ AWS_SEC=$(aws configure get aws_secret_access_key --profile ecr.access | base64 
 [ -z &quot;$GIT_BRANCH&quot; ] &amp;&amp; echo &quot;ERROR! GIT_BRANCH cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
-[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$LANDSCAPE&quot; ] &amp;&amp; echo &quot;ERROR! LANDSCAPE cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$AWS_KEY&quot; ] &amp;&amp; echo &quot;ERROR! AWS_ACCESS_KEY_ID could not be determined!&quot; &amp;&amp; exit 1
 [ -z &quot;$AWS_SEC&quot; ] &amp;&amp; echo &quot;ERROR! AWS_SECRET_ACCESS_KEY could not be determined!&quot; &amp;&amp; exit 1
@@ -371,7 +345,6 @@ elif [ -z &quot;$(echo &quot;$VERSION&quot; | grep -P &quot;^\\d{4}\.\\d{4}\$&qu
 fi
 
 [ &quot;$LANDSCAPE&quot; == &apos;prod&apos; ] &amp;&amp; CORE_HOST=&quot;kuali-research.bu.edu&quot; || CORE_HOST=&quot;kuali-research-${LANDSCAPE}.bu.edu&quot;
-[ &quot;$MIGRATIONS&quot; == &apos;true&apos; ] &amp;&amp; MIGRATIONS_TO_RUN=&apos;ALL&apos;
 
 # Create an array of parameters to pass to the runapp function (see below).
 parms=(
@@ -382,7 +355,6 @@ parms=(
   &quot;docker_image_name=$DOCKER_TAG&quot;
   &quot;landscape=$LANDSCAPE&quot;
   &quot;core_host=$CORE_HOST&quot;
-  &quot;migrations_to_run=$MIGRATIONS_TO_RUN&quot;
 )
 
 # Compose the code that is to be passed as a command with the ssm send-command call

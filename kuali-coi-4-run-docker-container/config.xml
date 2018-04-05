@@ -336,6 +336,7 @@ return sb.toString()
       <command>[ &quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot; == false ] &amp;&amp; set +x
 
 # Fix the trailing comma issue with active choices parameters reactive
+VERBOSE=&quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot;
 DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
 MIGRATIONS=&quot;$(echo $MIGRATIONS | sed &apos;s/,//g&apos;)&quot;
 GIT_REPO_URL=&quot;$(echo $GIT_REPO_URL | sed &apos;s/,//g&apos;)&quot;
@@ -357,7 +358,6 @@ AWS_SEC=$(aws configure get aws_secret_access_key --profile ecr.access | base64 
 [ -z &quot;$GIT_BRANCH&quot; ] &amp;&amp; echo &quot;ERROR! GIT_BRANCH cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
-[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$LANDSCAPE&quot; ] &amp;&amp; echo &quot;ERROR! LANDSCAPE cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$AWS_KEY&quot; ] &amp;&amp; echo &quot;ERROR! AWS_ACCESS_KEY_ID could not be determined!&quot; &amp;&amp; exit 1
 [ -z &quot;$AWS_SEC&quot; ] &amp;&amp; echo &quot;ERROR! AWS_SECRET_ACCESS_KEY could not be determined!&quot; &amp;&amp; exit 1

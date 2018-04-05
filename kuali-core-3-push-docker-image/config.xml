@@ -147,7 +147,6 @@ else {
 [ -z &quot;$REGISTRY_REPO_NAME&quot; ] &amp;&amp; echo &quot;ERROR! REGISTRY_REPO_NAME cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
 [ -z &quot;$VERSION&quot; ] &amp;&amp; echo &quot;ERROR! VERSION cannot be empty!&quot; &amp;&amp; exit 1
-[ -z &quot;$EC2_INSTANCE_ID&quot; ] &amp;&amp; echo &quot;ERROR! EC2_INSTANCE_ID cannot be empty!&quot; &amp;&amp; exit 1
 
 # Fix the trailing comma issue with active choices parameters reactive
 ECR_REGISTRY_URL=&quot;$(echo $ECR_REGISTRY_URL | sed &apos;s/,//g&apos;)&quot;
