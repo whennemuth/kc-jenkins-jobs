@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>THIS IS THE STARTING POINT FOR A MANUAL BUILD OF THE CORE APPLICATION&#xd;
+  <description>THIS IS THE STARTING POINT FOR A MANUAL BUILD OF THE COI APPLICATION&#xd;
 </description>
   <keepDependencies>false</keepDependencies>
   <properties>
@@ -34,7 +34,7 @@ return opendiv + checkbox + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -59,7 +59,7 @@ return opendiv + checkbox + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -84,7 +84,7 @@ return opendiv + checkbox + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -93,7 +93,7 @@ return opendiv + checkbox + desc + closediv</script>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>NO_BUILD</name>
           <description></description>
-          <randomName>choice-parameter-8466170267987898</randomName>
+          <randomName>choice-parameter-8466761842197271</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
@@ -109,7 +109,7 @@ return opendiv + checkbox + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -124,7 +124,7 @@ The git repository from which the build will pull source code.
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>def url = &quot;git@github.com:bu-ist/kuali-core-main.git&quot;
+              <script>def url = &quot;git@github.com:bu-ist/kuali-research-coi.git&quot;
 return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos; value=&apos;&quot; +  url + &quot;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
@@ -133,7 +133,7 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -148,7 +148,7 @@ Select how you would like to determine your git commit ID
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>def list = [&apos;Branch&apos;, &apos;Tag:selected&apos;, &apos;Commit ID&apos;]</script>
+              <script>def list = [&apos;Branch:selected&apos;, &apos;Tag&apos;, &apos;Commit ID&apos;]</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
@@ -156,7 +156,7 @@ Select how you would like to determine your git commit ID
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>GIT_REPO_URL</referencedParameters>
           <choiceType>PT_RADIO</choiceType>
@@ -173,7 +173,7 @@ Select how you would like to determine your git commit ID
 def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos;&gt;&quot;)
 def defaultValue = null
 def process = null
-def cmd = &quot;ssh-add /var/lib/jenkins/.ssh/bu_github_id_core_rsa &gt; /dev/null 2&gt;&amp;1; &quot;
+def cmd = &quot;ssh-add /var/lib/jenkins/.ssh/bu_github_id_coi_rsa &gt; /dev/null 2&gt;&amp;1; &quot;
 
 // Create a command to that passed to ssh-agent to run with sh that will acquire the list of branches in the target git repo
 if (&quot;branch&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
@@ -213,7 +213,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>GIT_REPO_URL,GIT_REF_TYPE</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -230,7 +230,7 @@ This is the git commit ID that the build will be based on.
             <secureScript plugin="script-security@1.24">
               <script>def commitId = null
 def process = null
-def cmd = &quot;ssh-add /var/lib/jenkins/.ssh/bu_github_id_core_rsa &gt; /dev/null 2&gt;&amp;1; &quot;
+def cmd = &quot;ssh-add /var/lib/jenkins/.ssh/bu_github_id_coi_rsa &gt; /dev/null 2&gt;&amp;1; &quot;
 
 if(&quot;commit id&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
     return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;
@@ -272,7 +272,7 @@ else {
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>GIT_REPO_URL,GIT_REF_TYPE,GIT_REF</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -311,7 +311,7 @@ else {
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>GIT_REF</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -341,7 +341,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -357,8 +357,8 @@ Is build for a feature branch (not the main line of git development)?
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
               <script>def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
-sb.append(&quot;&lt;option selected=true value=&apos;core&apos;&gt;No (publish to the main repo in the docker registry)&lt;/option&gt;&quot;)
-sb.append(&quot;&lt;option value=&apos;core-feature&apos;&gt;Yes (publish to the feature repo in the docker registry&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option selected=true value=&apos;coi&apos;&gt;No (publish to the main repo in the docker registry)&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;coi-feature&apos;&gt;Yes (publish to the feature repo in the docker registry&lt;/option&gt;&quot;)
 sb.append(&quot;&lt;/select&gt;&quot;)
 return sb.toString()</script>
               <sandbox>false</sandbox>
@@ -368,7 +368,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core</projectName>
+          <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -434,13 +434,13 @@ esac
 for i in $(seq ${#EC2_IDS[@]}); do 
    if [ $i -eq 1 ] &amp;&amp; [ &quot;$NO_BUILD&quot; != true] ; then
      # First iteration, therefore do all build steps     
-     CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-core-1-pull-build-scripts&apos; -v -f \
+     CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-coi-1-pull-build-scripts&apos; -v -f \
        -p GIT_REPO_URL=${GIT_SCRIPT_URL} \
        -p GIT_BRANCH=${GIT_SCRIPT_BRANCH} \
        -p ROOT_DIR=${WORKSPACE}&quot;
        CMDS[${#CMDS[@]}]=$CMD       
      
-     CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-core-2-build-docker-image&apos; -v -f \
+     CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-coi-2-build-docker-image&apos; -v -f \
        -p VERBOSE=${VERBOSE} \
        -p DRYRUN=true \
        -p GIT_PULL=true \
@@ -453,7 +453,7 @@ for i in $(seq ${#EC2_IDS[@]}); do
        -p ROOT_DIR=${WORKSPACE}&quot;
        CMDS[${#CMDS[@]}]=$CMD 
        
-     CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-core-3-push-docker-image&apos; -v -f \
+     CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-coi-3-push-docker-image&apos; -v -f \
        -p VERBOSE=${VERBOSE} \
        -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
        -p VERSION=${VERSION} \
@@ -461,7 +461,7 @@ for i in $(seq ${#EC2_IDS[@]}); do
        CMDS[${#CMDS[@]}]=$CMD       
    fi
    
-   CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-core-4-run-docker-container&apos; -v -f \
+   CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-coi-4-run-docker-container&apos; -v -f \
      -p VERBOSE=${VERBOSE} \
      -p GIT_REPO_URL=${GIT_SCRIPT_URL} \
      -p GIT_BRANCH=${GIT_SCRIPT_BRANCH} \

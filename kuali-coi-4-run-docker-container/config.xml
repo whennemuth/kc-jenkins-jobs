@@ -17,7 +17,7 @@
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>VERBOSE</name>
           <description></description>
-          <randomName>choice-parameter-8442306649548438</randomName>
+          <randomName>choice-parameter-8444660886001896</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
@@ -33,7 +33,7 @@ return opendiv + checkbox + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -42,7 +42,7 @@ return opendiv + checkbox + desc + closediv</script>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>MIGRATIONS</name>
           <description></description>
-          <randomName>choice-parameter-8442306650820393</randomName>
+          <randomName>choice-parameter-8444660887276935</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
@@ -58,7 +58,7 @@ return opendiv + checkbox + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -82,7 +82,7 @@ return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -130,7 +130,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>GIT_REPO_URL</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -154,7 +154,7 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -164,14 +164,14 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;
           <name>REGISTRY_REPO_NAME</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 This is used to identify the name of the docker registry repository that the image is going to be pulled from by the remote EC2 server. 
-The value is &quot;core&quot; by default, but remember that any feature images are found in the registry under a &quot;core-feature&quot; repository name.
+The value is &quot;coi&quot; by default, but remember that any feature images are found in the registry under a &quot;coi-feature&quot; repository name.
 Unlike coeus, the docker image for the sandbox environment is no different from any other environment - it is run-time configurations that implement environment specific distinctions.
 &lt;/div&gt;</description>
           <randomName>choice-parameter-7758862631200119</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;core&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;coi&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
@@ -179,7 +179,7 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -202,15 +202,15 @@ How do you want to enter the version value?
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <choiceType>PT_RADIO</choiceType>
           <filterable>false</filterable>
         </org.biouno.unochoice.ChoiceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>VERSION</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
-This value reflects the git tag applied to the codebase the docker image in the docker registry is based on. 
-The git commit may not be the exact commit that was tagged, but would be the most recent commit since that tag before the next tag is encountered. 
+This value reflects the git tag applied to the codebase the docker image in the docker registry is based on.&lt;br&gt;
+The git commit may not be the exact commit that was tagged, but would be the most recent commit since that tag before the next tag is encountered.&lt;br&gt;
 Combined with ECR_REGISTRY_URL, this value serves to identify the docker image inside the repository at the docker registry as it will have been already tagged accordingly.
 &lt;/div&gt;</description>
           <randomName>choice-parameter-7758862633667747</randomName>
@@ -219,7 +219,7 @@ Combined with ECR_REGISTRY_URL, this value serves to identify the docker image i
             <secureScript plugin="script-security@1.24">
               <script>if(&quot;available&quot;.equalsIgnoreCase(VERSION_OPT)) {
    def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
-   def multiline = &apos;docker images -q --filter=reference=730096353738.dkr.ecr.us-east-1.amazonaws.com/core:* --format {{.Tag}}&apos;.execute()
+   def multiline = &apos;docker images -q --filter=reference=730096353738.dkr.ecr.us-east-1.amazonaws.com/coi:* --format {{.Tag}}&apos;.execute()
    multiline.waitForOrKill(20000)
    def lines = multiline.text.readLines()
    lines.each {
@@ -238,7 +238,7 @@ else {
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>VERSION_OPT</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -268,7 +268,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -315,7 +315,7 @@ return sb.toString()
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-core-4-run-docker-container</projectName>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>LANDSCAPE</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -345,7 +345,7 @@ REGISTRY_REPO_NAME=&quot;$(echo $REGISTRY_REPO_NAME | sed &apos;s/,//g&apos;)&qu
 VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
 EC2_INSTANCE_ID=&quot;$(echo $EC2_INSTANCE_ID | sed &apos;s/,//g&apos;)&quot;
 LANDSCAPE=&quot;$(echo $LANDSCAPE | sed &apos;s/,//g&apos;)&quot;
-ROOT_DIR=&quot;/opt/kuali-research-docker/core/build.context&quot;
+ROOT_DIR=&quot;/opt/kuali-research-docker/coi/build.context&quot;
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
 AWS_REG=$(aws configure get region --profile ecr.access)
 AWS_KEY=$(aws configure get aws_access_key_id --profile ecr.access)
@@ -438,10 +438,10 @@ BASE64=$(\
       set +x &amp;&amp; echo &apos;#################################################################################&apos;; \
       echo &apos;###### 4) Running docker run command...&apos;; \
       echo &apos;#################################################################################&apos; &amp;&amp; set -x; \
-      cd $GIT_ROOT/core/build.context; \
-      source $GIT_ROOT/core/build.context/docker.sh; \
+      cd $GIT_ROOT/coi/build.context; \
+      source $GIT_ROOT/coi/build.context/docker.sh; \
       [ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x; \
-      runapp \&quot;${parms[@]}\&quot; 2&gt;&amp;1 | tee /tmp/last-core-run-cmd&quot; | base64 -w 0 \
+      runapp \&quot;${parms[@]}\&quot; 2&gt;&amp;1 | tee /tmp/last-coi-run-cmd&quot; | base64 -w 0 \
 )
 echo &quot;BASE64 = $BASE64&quot;
 
@@ -451,17 +451,17 @@ COMMAND_ID=$(aws ssm send-command \
    --document-name &quot;AWS-RunShellScript&quot; \
    --comment &quot;Running shell script to pull and run container against a new docker image for ${REGISTRY_REPO_NAME}&quot; \
    --parameters \
-        commands=&quot;echo &gt;&gt; /tmp/ssm-core-received &amp;&amp; date &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
-                  echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
-                  echo ${BASE64} | base64 --decode &gt; /tmp/ssm-core-last.sh &amp;&amp; \
+        commands=&quot;echo &gt;&gt; /tmp/ssm-coi-received &amp;&amp; date &gt;&gt; /tmp/ssm-coi-received &amp;&amp; \
+                  echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-coi-received &amp;&amp; \
+                  echo ${BASE64} | base64 --decode &gt; /tmp/ssm-coi-last.sh &amp;&amp; \
                   echo ${BASE64} | base64 --decode | sh 2&gt;&amp;1&quot; \
    --profile ecr.access \
    --output text \
    --query &quot;Command.CommandId&quot; \
    --output-s3-bucket-name &quot;kuali-docker-run-stdout&quot; \
-   --output-s3-key-prefix &quot;core&quot;)
+   --output-s3-key-prefix &quot;coi&quot;)
    
-s3Url=&quot;s3://kuali-docker-run-stdout/core/${COMMAND_ID}/${EC2_INSTANCE_ID}/awsrunShellScript/0.aws:runShellScript/stdout&quot;
+s3Url=&quot;s3://kuali-docker-run-stdout/coi/${COMMAND_ID}/${EC2_INSTANCE_ID}/awsrunShellScript/0.aws:runShellScript/stdout&quot;
 days=10
 seconds=&quot;$((60*60*24*${days}))&quot;
 httpUrl=&quot;$(aws --profile=ecr.access s3 presign &quot;${s3Url}&quot; --expires-in=${seconds})&quot;
