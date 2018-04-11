@@ -120,7 +120,7 @@ for i in ${m2_items[@]}; do
       echo &quot;found: ${artifact}&quot;;
    else
       echo &quot;MISSING: ${artifact}&quot;;
-      if [ -z &quot;$(echo $jobs_to_run[*]} | grep ${job})&quot; ] ; then
+      if [ -z &quot;$(echo ${jobs_to_run[*]} | grep ${job})&quot; ] ; then
          jobs_to_run+=(${job});
          git_tags+=(&quot;${parentartifactid}-${version}&quot;);
       fi
