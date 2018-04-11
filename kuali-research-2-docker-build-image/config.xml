@@ -137,6 +137,16 @@ fi
 cd kuali-research/build.context
 WAR_FILE=$(ls *.war)
 
+if [ &quot;$(docker images -q bu-ist/centos7-java-tomcat:8.5 | wc -l)&quot; == &quot;0&quot; ] ; then
+   tomcat8=&quot;$ECR_REGISTRY_URL/centos7-java-tomcat:tomcat8.5&quot;
+   if [ &quot;$(docker images -q $tomcat8 | wc -l)&quot; == &quot;0&quot; ] ; then
+      evalstr=&quot;$(aws ecr get-login --profile ecr.access)&quot;
+      evalstr=&quot;$(echo $evalstr | sed &apos;s/ -e none//&apos;)&quot;
+      eval $evalstr
+      docker pull $tomcat8
+   fi
+   docker tag $tomcat8 bu-ist/centos7-java-tomcat:tomcat8.5
+fi
 docker build -t ${DOCKER_TAG} --build-arg SOURCE_WAR=${WAR_FILE} .
 </command>
     </hudson.tasks.Shell>
