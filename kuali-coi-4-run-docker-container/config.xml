@@ -383,6 +383,8 @@ parms=(
   &quot;landscape=$LANDSCAPE&quot;
   &quot;core_host=$CORE_HOST&quot;
   &quot;migrations_to_run=$MIGRATIONS_TO_RUN&quot;
+  &quot;blast_container=true&quot;
+  &quot;blast_image=true&quot;
 )
 
 # Compose the code that is to be passed as a command with the ssm send-command call

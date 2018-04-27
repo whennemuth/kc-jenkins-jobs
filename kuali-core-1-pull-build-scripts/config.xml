@@ -55,7 +55,7 @@ The git branch from which this job will pull the docker build context directorie
             <secureScript plugin="script-security@1.24">
               <script>// Instantiate a string builder to build a dropdown box populated with all the branches in the target git repo
 def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos;&gt;&quot;)
-def defaultBranch = &apos;coi-ui-1802.0001&apos;
+def defaultBranch = &apos;master&apos;
 // Create a command to that passed to ssh-agent to run with sh that will acquire the list of branches in the target git repo
 def cmd = 
    &quot;ssh-add /var/lib/jenkins/.ssh/bu_github_id_docker_rsa &gt; /dev/null 2&gt;&amp;1; &quot; + 

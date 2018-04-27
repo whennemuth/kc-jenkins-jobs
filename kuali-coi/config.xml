@@ -98,7 +98,7 @@ return opendiv + checkbox + desc + closediv</script>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
               <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
-def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;display:inline;&apos;&gt;&quot;
+def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;true&apos; style=&apos;display:inline;&apos;&gt;&quot;
 def desc = &quot;Up-to-date docker image already in registry. Skip ahead to the last step (pull)&quot;
 def closediv = &quot;&lt;/div&gt;&lt;br&gt;&quot;
 return opendiv + checkbox + desc + closediv</script>
@@ -135,7 +135,7 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;
           </script>
           <projectName>kuali-coi</projectName>
           <parameters class="linked-hash-map"/>
-          <referencedParameters></referencedParameters>
+          <referencedParameters>NO_BUILD</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
