@@ -320,6 +320,8 @@ for i in $(seq ${#EC2_IDS[@]}); do
       if [ &quot;${GIT_REF_TYPE}&quot; != &quot;default&quot; ] ; then
          # Anything built from a custom selected git reference will be pushed to the feature docker repo in our registry
          CMD=&quot;${CMD} -p REGISTRY_REPO_NAME=coeus-feature&quot;
+      elif [ &quot;${LANDSCAPE,,}&quot; == &quot;sandbox&quot; ] ; then
+         CMD=&quot;${CMD} -p REGISTRY_REPO_NAME=coeus-sandbox&quot;
       fi
    fi
    
