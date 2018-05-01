@@ -99,7 +99,7 @@ The git branch from which the target EC2 instance will pull the docker build con
             <secureScript plugin="script-security@1.24">
               <script>// Instantiate a string builder to build a dropdown box populated with all the branches in the target git repo
 def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos;&gt;&quot;)
-def defaultBranch = &apos;coi-ui-1802.0001&apos;
+def defaultBranch = &apos;master&apos;
 // Create a command to that passed to ssh-agent to run with sh that will acquire the list of branches in the target git repo
 def cmd = 
    &quot;ssh-add /var/lib/jenkins/.ssh/bu_github_id_docker_rsa &gt; /dev/null 2&gt;&amp;1; &quot; + 
@@ -385,6 +385,7 @@ parms=(
   &quot;migrations_to_run=$MIGRATIONS_TO_RUN&quot;
   &quot;blast_container=true&quot;
   &quot;blast_image=true&quot;
+  &quot;rsync=true&quot;
 )
 
 # Compose the code that is to be passed as a command with the ssm send-command call
@@ -463,7 +464,7 @@ COMMAND_ID=$(aws ssm send-command \
    --output-s3-bucket-name &quot;kuali-docker-run-stdout&quot; \
    --output-s3-key-prefix &quot;coi&quot;)
    
-s3Url=&quot;s3://kuali-docker-run-stdout/coi/${COMMAND_ID}/${EC2_INSTANCE_ID}/awsrunShellScript/0.aws:runShellScript/stdout&quot;
+s3Url=&quot;s3://kuali-docker-run-stdout/coi/${COMMAND_ID}/${EC2_INSTANCE_ID}/awsrunShellScript/0.awsrunShellScript/stdout&quot;
 days=10
 seconds=&quot;$((60*60*24*${days}))&quot;
 httpUrl=&quot;$(aws --profile=ecr.access s3 presign &quot;${s3Url}&quot; --expires-in=${seconds})&quot;
