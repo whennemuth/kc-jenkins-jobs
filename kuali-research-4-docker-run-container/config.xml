@@ -45,6 +45,21 @@ The value is &quot;coeus&quot; by default, but remember that any sandbox images 
 Example: i-099de1c5407493f9b</description>
           <defaultValue>i-0258a5f2a87ba7972</defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ATTACHMENTS_DIR</name>
+          <description>Directory where files uploaded by users are deposited by the webapp</description>
+          <defaultValue>/mnt/efs/kuali/attachments</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>JAVAMELODY_DIR</name>
+          <description>Directory where files saved by javamelody are located.</description>
+          <defaultValue>/mnt/efs/kuali/javamelody</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>PRINTING_DIR</name>
+          <description>Directory where printing job artifacts are stored for download to user.</description>
+          <defaultValue>/mnt/efs/kuali/printing</defaultValue>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -59,6 +74,10 @@ Example: i-099de1c5407493f9b</description>
     <hudson.tasks.Shell>
       <command>DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${POM_VERSION}&quot;
 CONTAINER_NAME=&quot;kuali-research&quot;
+[ -z &quot;$ATTACHMENTS_DIR&quot; ] &amp;&amp; ATTACHMENTS_DIR=&quot;/var/log/kuali/attachments&quot;
+[ -z &quot;$JAVAMELODY_DIR&quot; ] &amp;&amp; JAVAMELODY_DIR=&quot;/var/log/kuali/javamelody&quot;
+[ -z &quot;$PRINTING_DIR&quot; ] &amp;&amp; PRINTING_DIR=&quot;/var/log/kuali/printing&quot;
+
 
 # Have to encode the command being sent to ssm agent because of quote escaping restrictions.
 # (jenkins removes double quotes and escapes single quotes and wraps command args with more single
@@ -85,10 +104,9 @@ BASE64=$(\
          -p 8080:8080 \
          -p 8009:8009 \
          -v /opt/kuali/main/config:/opt/kuali/main/config \
-         -v /var/log/kuali/printing/logs:/var/log/kuali/printing/logs \
-         -v /var/log/kuali/printing/xml:/var/log/kuali/printing/xml \
-         -v /var/log/kuali/javamelody:/var/log/kuali/javamelody \
-         -v /var/log/kuali/attachments:/var/cache/tomcat/temp/dev/attachments \
+         -v $PRINTING_DIR:/opt/kuali/logs/printing \
+         -v $JAVAMELODY_DIR:/var/log/javamelody \
+         -v $ATTACHMENTS_DIR:/opt/tomcat/temp/dev/attachments \
          -v /var/log/tomcat:/var/log/tomcat \
          --restart unless-stopped \
          --name ${CONTAINER_NAME} \

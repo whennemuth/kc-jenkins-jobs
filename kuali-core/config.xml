@@ -471,6 +471,7 @@ echo &quot;NO_BUILD = $NO_BUILD&quot;
      -p REGISTRY_REPO_NAME=${TARGET} \
      -p VERSION=${VERSION} \
      -p LANDSCAPE=${LANDSCAPE} \
+     -p MIGRATIONS=${MIGRATIONS} \
      -p EC2_INSTANCE_ID=${EC2_IDS[i-1]}&quot;
      CMDS[${#CMDS[@]}]=$CMD       
 done;

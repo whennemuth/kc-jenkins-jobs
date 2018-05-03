@@ -404,7 +404,12 @@ BASE64=$(\
       echo &apos;###### 3) Fetching docker build context from git&apos;; \
       echo &apos;#################################################################################&apos; &amp;&amp; set -x; \
       git fetch github ${GIT_BRANCH}; \
+      currentbranch=\&quot;\$(git rev-parse --abbrev-ref HEAD)\&quot;; \
+      if [ \&quot;\$currentbranch\&quot; != \&quot;${GIT_BRANCH}\&quot; ] ; then \
+        git commit -a -m \&quot;Saving work on \$currentbranch before checking out $GIT_BRANCH\&quot;; \
+      fi; \
       if [ -n \&quot;\$(git rev-parse --verify ${GIT_BRANCH} 2&gt;/dev/null)\&quot; ] ; then \
+         [ \&quot;\$currentbranch\&quot; != \&quot;${GIT_BRANCH}\&quot; ] &amp;&amp; git checkout ${GIT_BRANCH}; \
          git reset --hard FETCH_HEAD; \
       else \
          git checkout -b ${GIT_BRANCH} remotes/github/${GIT_BRANCH}; \

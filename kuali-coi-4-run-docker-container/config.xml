@@ -321,6 +321,29 @@ return sb.toString()
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>ATTACHMENTS_DIR</name>
+          <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
+Attachments users upload through the webapp will get deposited here.
+&lt;/div&gt;</description>
+          <randomName>choice-parameter-10872220766195273</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;/mnt/efs/kuali-coi/sb/attachments&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -346,6 +369,7 @@ REGISTRY_REPO_NAME=&quot;$(echo $REGISTRY_REPO_NAME | sed &apos;s/,//g&apos;)&qu
 VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
 EC2_INSTANCE_ID=&quot;$(echo $EC2_INSTANCE_ID | sed &apos;s/,//g&apos;)&quot;
 LANDSCAPE=&quot;$(echo $LANDSCAPE | sed &apos;s/,//g&apos;)&quot;
+ATTACHMENTS_DIR=&quot;$(echo $ATTACHMENTS_DIR | sed &apos;s/,//g&apos;)&quot;
 ROOT_DIR=&quot;/opt/kuali-research-docker/coi/build.context&quot;
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
 AWS_REG=$(aws configure get region --profile ecr.access)
@@ -386,6 +410,7 @@ parms=(
   &quot;blast_container=true&quot;
   &quot;blast_image=true&quot;
   &quot;rsync=true&quot;
+  &quot;nodeapp_attachments_dir=$ATTACHMENTS_DIR&quot;
 )
 
 # Compose the code that is to be passed as a command with the ssm send-command call
@@ -432,7 +457,12 @@ BASE64=$(\
       echo &apos;###### 3) Fetching docker build context from git&apos;; \
       echo &apos;#################################################################################&apos; &amp;&amp; set -x; \
       git fetch github ${GIT_BRANCH}; \
+      currentbranch=\&quot;\$(git rev-parse --abbrev-ref HEAD)\&quot;; \
+      if [ \&quot;\$currentbranch\&quot; != \&quot;${GIT_BRANCH}\&quot; ] ; then \
+        git commit -a -m \&quot;Saving work on \$currentbranch before checking out $GIT_BRANCH\&quot;; \
+      fi; \
       if [ -n \&quot;\$(git rev-parse --verify ${GIT_BRANCH} 2&gt;/dev/null)\&quot; ] ; then \
+         [ \&quot;\$currentbranch\&quot; != \&quot;${GIT_BRANCH}\&quot; ] &amp;&amp; git checkout ${GIT_BRANCH}; \
          git reset --hard FETCH_HEAD; \
       else \
          git checkout -b ${GIT_BRANCH} remotes/github/${GIT_BRANCH}; \
