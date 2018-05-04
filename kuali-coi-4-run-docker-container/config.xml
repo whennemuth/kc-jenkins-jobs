@@ -330,7 +330,29 @@ Attachments users upload through the webapp will get deposited here.
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;/mnt/efs/kuali-coi/sb/attachments&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;/mnt/efs/kuali-coi/attachments&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>ROOT_DIR</name>
+          <description>The root directory where the git repo containing bash scripts and docker contexts is pulled to.&lt;br&gt;
+Need it here for supporting bash functions found in ./bash.lib.sh</description>
+          <randomName>choice-parameter-10976797688468316</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
@@ -358,6 +380,22 @@ Attachments users upload through the webapp will get deposited here.
     <hudson.tasks.Shell>
       <command>[ &quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot; == false ] &amp;&amp; set +x
 
+# Need to get our hands on bash.lib.sh from github.
+if [ -z &quot;$ROOT_DIR&quot; ] || [ ! -f &quot;$ROOT_DIR/bash.lib.sh&quot; ] ; then
+  ROOT_DIR=&quot;$(echo $ROOT_DIR | sed &apos;s/,//g&apos;)&quot;
+  GIT_SCRIPT_URL=git@github.com:bu-ist/kuali-research-docker.git
+  GIT_SCRIPT_BRANCH=master
+  CLI=/var/lib/jenkins/jenkins-cli.jar
+  HOST=http://localhost:8080/
+  java -jar ${CLI} -s ${HOST} build &apos;kuali-coi-1-pull-build-scripts&apos; -v -f \
+    -p GIT_REPO_URL=${GIT_SCRIPT_URL} \
+    -p GIT_BRANCH=${GIT_SCRIPT_BRANCH} \
+    -p ROOT_DIR=${WORKSPACE}
+  [ ! -f &quot;${WORKSPACE}/bash.lib.sh&quot; ] &amp;&amp; echo &quot;ERROR! Cannot get bash.lib.sh from github!&quot; &amp;&amp; exit 1
+  source &quot;${WORKSPACE}/bash.lib.sh&quot;
+fi
+
+
 # Fix the trailing comma issue with active choices parameters reactive
 VERBOSE=&quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot;
 DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
@@ -370,7 +408,6 @@ VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
 EC2_INSTANCE_ID=&quot;$(echo $EC2_INSTANCE_ID | sed &apos;s/,//g&apos;)&quot;
 LANDSCAPE=&quot;$(echo $LANDSCAPE | sed &apos;s/,//g&apos;)&quot;
 ATTACHMENTS_DIR=&quot;$(echo $ATTACHMENTS_DIR | sed &apos;s/,//g&apos;)&quot;
-ROOT_DIR=&quot;/opt/kuali-research-docker/coi/build.context&quot;
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
 AWS_REG=$(aws configure get region --profile ecr.access)
 AWS_KEY=$(aws configure get aws_access_key_id --profile ecr.access)
@@ -396,12 +433,13 @@ fi
 
 [ &quot;$LANDSCAPE&quot; == &apos;prod&apos; ] &amp;&amp; CORE_HOST=&quot;kuali-research.bu.edu&quot; || CORE_HOST=&quot;kuali-research-${LANDSCAPE}.bu.edu&quot;
 [ &quot;$MIGRATIONS&quot; == &apos;true&apos; ] &amp;&amp; MIGRATIONS_TO_RUN=&apos;ALL&apos;
+[ -z &quot;$ATTACHMENTS_DIR&quot; ] &amp;&amp; ATTACHMENTS_DIR=&quot;/mnt/efs/kuali-coi/attachments&quot;
 
 # Create an array of parameters to pass to the runapp function (see below).
 parms=(
   &quot;interactive=false&quot;
   &quot;renew_configs=true&quot;
-  &quot;root_dir=$ROOT_DIR&quot;
+  &quot;root_dir=/opt/kuali-research-docker/coi/build.context&quot;
   &quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)&quot;
   &quot;docker_image_name=$DOCKER_TAG&quot;
   &quot;landscape=$LANDSCAPE&quot;
@@ -493,18 +531,35 @@ COMMAND_ID=$(aws ssm send-command \
    --query &quot;Command.CommandId&quot; \
    --output-s3-bucket-name &quot;kuali-docker-run-stdout&quot; \
    --output-s3-key-prefix &quot;coi&quot;)
-   
-s3Url=&quot;s3://kuali-docker-run-stdout/coi/${COMMAND_ID}/${EC2_INSTANCE_ID}/awsrunShellScript/0.awsrunShellScript/stdout&quot;
-days=10
-seconds=&quot;$((60*60*24*${days}))&quot;
-httpUrl=&quot;$(aws --profile=ecr.access s3 presign &quot;${s3Url}&quot; --expires-in=${seconds})&quot;
-echo &quot;Access the docker container creation output on the remote EC2 instance ($EC2_INSTANCE_ID}) at:&quot;
-echo &quot; &quot;
-echo &quot;$httpUrl&quot;
-echo &quot; &quot;
-echo &quot;You may have to wait for about a minute for the link to become available&quot;
-echo &quot;(link expires in $days days)&quot;
-echo &quot; &quot;
+
+# The file output by ssm send-command won&apos;t be available in s3 immediately, so
+# making repeated attempts to access it in a loop until it is available.
+i=1
+while ((i&lt;10)) ; do
+  s3Url=&quot;$(s3GetCoiSendCommandOutputFileUrl $COMMAND_ID)&quot;
+  [ -n &quot;$s3Url&quot; ] &amp;&amp; echo &quot;Url to presign is: $s3Url&quot; &amp;&amp; break;
+  echo &quot;Url to presign not ready. Trying again in 3 seconds...&quot;
+  ((i+=1))
+  sleep 3
+done
+
+if [ -n &quot;$s3Url&quot; ] ; then
+  # Have the s3 url of the stdout file presigned so a we can access it with a new url that will get around
+  # the private access restriction.
+  days=10
+  seconds=&quot;$((60*60*24*${days}))&quot;
+  httpUrl=&quot;$(aws --profile=ecr.access s3 presign &quot;${s3Url}&quot; --expires-in=${seconds})&quot;
+  echo &quot;Access the docker container creation output on the remote EC2 instance ($EC2_INSTANCE_ID}) at:&quot;
+  echo &quot; &quot;
+  echo &quot;$httpUrl&quot;
+  echo &quot; &quot;
+  echo &quot;You may have to wait for about a minute for the link to become available&quot;
+  echo &quot;(link expires in $days days)&quot;
+  echo &quot; &quot;
+else
+  echo &quot;WARNING! Could not acquire s3 location of ssm send-command output file!&quot;
+  echo &quot;You will have to shell into the ec2 instance and open /tmp/last-coi-run-cmd to determine how it went.&quot;
+fi
 </command>
     </hudson.tasks.Shell>
   </builders>

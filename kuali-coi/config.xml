@@ -470,7 +470,9 @@ for i in $(seq ${#EC2_IDS[@]}); do
      -p VERSION=${VERSION} \
      -p LANDSCAPE=${LANDSCAPE} \
      -p MIGRATIONS=${MIGRATIONS} \
-     -p EC2_INSTANCE_ID=${EC2_IDS[i-1]}&quot;
+     -p EC2_INSTANCE_ID=${EC2_IDS[i-1]}\
+     -p ROOT_DIR=${WORKSPACE}&quot;
+     
      CMDS[${#CMDS[@]}]=$CMD       
 done;
 

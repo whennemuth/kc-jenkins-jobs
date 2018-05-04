@@ -310,6 +310,23 @@ return sb.toString()
     <hudson.tasks.Shell>
       <command>[ &quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot; == false ] &amp;&amp; set +x
 
+# Need to get our hands on bash.lib.sh from github.
+if [ -z &quot;$ROOT_DIR&quot; ] || [ ! -f &quot;$ROOT_DIR/bash.lib.sh&quot; ] ; then
+  ROOT_DIR=&quot;$(echo $ROOT_DIR | sed &apos;s/,//g&apos;)&quot;
+  GIT_SCRIPT_URL=git@github.com:bu-ist/kuali-research-docker.git
+  GIT_SCRIPT_BRANCH=master
+  CLI=/var/lib/jenkins/jenkins-cli.jar
+  HOST=http://localhost:8080/
+  java -jar ${CLI} -s ${HOST} build &apos;kuali-core-1-pull-build-scripts&apos; -v -f \
+    -p GIT_REPO_URL=${GIT_SCRIPT_URL} \
+    -p GIT_BRANCH=${GIT_SCRIPT_BRANCH} \
+    -p ROOT_DIR=${WORKSPACE}
+  [ ! -f &quot;${WORKSPACE}/bash.lib.sh&quot; ] &amp;&amp; echo &quot;ERROR! Cannot get bash.lib.sh from github!&quot; &amp;&amp; exit 1
+  source &quot;${WORKSPACE}/bash.lib.sh&quot;
+  echo &quot;$(s3GetCoiSendCommandOutputFileUrl 21738764-2970-4f99-bb03-8f0a40fb746a)&quot;
+fi
+
+
 # Fix the trailing comma issue with active choices parameters reactive
 VERBOSE=&quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot;
 DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
@@ -441,17 +458,34 @@ COMMAND_ID=$(aws ssm send-command \
    --output-s3-bucket-name &quot;kuali-docker-run-stdout&quot; \
    --output-s3-key-prefix &quot;core&quot;)
    
-s3Url=&quot;s3://kuali-docker-run-stdout/core/${COMMAND_ID}/${EC2_INSTANCE_ID}/awsrunShellScript/0.awsrunShellScript/stdout&quot;
-days=10
-seconds=&quot;$((60*60*24*${days}))&quot;
-httpUrl=&quot;$(aws --profile=ecr.access s3 presign &quot;${s3Url}&quot; --expires-in=${seconds})&quot;
-echo &quot;Access the docker container creation output on the remote EC2 instance ($EC2_INSTANCE_ID}) at:&quot;
-echo &quot; &quot;
-echo &quot;$httpUrl&quot;
-echo &quot; &quot;
-echo &quot;You may have to wait for about a minute for the link to become available&quot;
-echo &quot;(link expires in $days days)&quot;
-echo &quot; &quot;
+# The file output by ssm send-command won&apos;t be available in s3 immediately, so
+# making repeated attempts to access it in a loop until it is available.
+i=1
+while ((i&lt;10)) ; do
+  s3Url=&quot;$(s3GetCoreSendCommandOutputFileUrl $COMMAND_ID)&quot;
+  [ -n &quot;$s3Url&quot; ] &amp;&amp; echo &quot;Url to presign is: $s3Url&quot; &amp;&amp; break;
+  echo &quot;Url to presign not ready. Trying again in 3 seconds...&quot;
+  ((i+=1))
+  sleep 3
+done
+
+if [ -n &quot;$s3Url&quot; ] ; then
+  # Have the s3 url of the stdout file presigned so a we can access it with a new url that will get around
+  # the private access restriction.
+  days=10
+  seconds=&quot;$((60*60*24*${days}))&quot;
+  httpUrl=&quot;$(aws --profile=ecr.access s3 presign &quot;${s3Url}&quot; --expires-in=${seconds})&quot;
+  echo &quot;Access the docker container creation output on the remote EC2 instance ($EC2_INSTANCE_ID}) at:&quot;
+  echo &quot; &quot;
+  echo &quot;$httpUrl&quot;
+  echo &quot; &quot;
+  echo &quot;You may have to wait for about a minute for the link to become available&quot;
+  echo &quot;(link expires in $days days)&quot;
+  echo &quot; &quot;
+else
+  echo &quot;WARNING! Could not acquire s3 location of ssm send-command output file!&quot;
+  echo &quot;You will have to shell into the ec2 instance and open /tmp/last-core-run-cmd to determine how it went.&quot;
+fi
 </command>
     </hudson.tasks.Shell>
   </builders>
