@@ -54,6 +54,11 @@ Example: i-099de1c5407493f9b</description>
 Need it here for supporting bash functions found in ./bash.lib.sh</description>
           <defaultValue></defaultValue>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>VERBOSE</name>
+          <description>If checked console output will be verbose</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -66,7 +71,7 @@ Need it here for supporting bash functions found in ./bash.lib.sh</description>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>set +x
+      <command>[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
 
 # Need to get our hands on bash.lib.sh from github.
 ROOT_DIR=&quot;$(echo $ROOT_DIR | sed &apos;s/,//g&apos;)&quot;
@@ -141,10 +146,12 @@ COMMAND_ID=$(aws ssm send-command \
    --output-s3-bucket-name &quot;kuali-docker-run-stdout&quot; \
    --output-s3-key-prefix &quot;apache&quot;) 
    
+echo &quot;COMMAND_ID=$COMMAND_ID&quot;
+
 # The file output by ssm send-command won&apos;t be available in s3 immediately, so
 # making repeated attempts to access it in a loop until it is available.
 i=1
-while ((i&lt;10)) ; do
+while ((i&lt;30)) ; do
   s3Url=&quot;$(s3GetApacheSendCommandOutputFileUrl $COMMAND_ID)&quot;
   [ -n &quot;$s3Url&quot; ] &amp;&amp; echo &quot;Url to presign is: $s3Url&quot; &amp;&amp; break;
   echo &quot;Url to presign not ready. Trying again in 3 seconds...&quot;

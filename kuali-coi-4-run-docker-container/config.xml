@@ -535,7 +535,7 @@ COMMAND_ID=$(aws ssm send-command \
 # The file output by ssm send-command won&apos;t be available in s3 immediately, so
 # making repeated attempts to access it in a loop until it is available.
 i=1
-while ((i&lt;10)) ; do
+while ((i&lt;30)) ; do
   s3Url=&quot;$(s3GetCoiSendCommandOutputFileUrl $COMMAND_ID)&quot;
   [ -n &quot;$s3Url&quot; ] &amp;&amp; echo &quot;Url to presign is: $s3Url&quot; &amp;&amp; break;
   echo &quot;Url to presign not ready. Trying again in 3 seconds...&quot;
