@@ -296,6 +296,28 @@ return sb.toString()
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>ROOT_DIR</name>
+          <description>The root directory where the git repo containing bash scripts and docker contexts is pulled to.&lt;br&gt;
+Need it here for supporting bash functions found in ./bash.lib.sh</description>
+          <randomName>choice-parameter-11487071783279885</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-core-4-run-docker-container</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -311,8 +333,8 @@ return sb.toString()
       <command>[ &quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot; == false ] &amp;&amp; set +x
 
 # Need to get our hands on bash.lib.sh from github.
+ROOT_DIR=&quot;$(echo $ROOT_DIR | sed &apos;s/,//g&apos;)&quot;
 if [ -z &quot;$ROOT_DIR&quot; ] || [ ! -f &quot;$ROOT_DIR/bash.lib.sh&quot; ] ; then
-  ROOT_DIR=&quot;$(echo $ROOT_DIR | sed &apos;s/,//g&apos;)&quot;
   GIT_SCRIPT_URL=git@github.com:bu-ist/kuali-research-docker.git
   GIT_SCRIPT_BRANCH=master
   CLI=/var/lib/jenkins/jenkins-cli.jar
@@ -323,7 +345,6 @@ if [ -z &quot;$ROOT_DIR&quot; ] || [ ! -f &quot;$ROOT_DIR/bash.lib.sh&quot; ] ; 
     -p ROOT_DIR=${WORKSPACE}
   [ ! -f &quot;${WORKSPACE}/bash.lib.sh&quot; ] &amp;&amp; echo &quot;ERROR! Cannot get bash.lib.sh from github!&quot; &amp;&amp; exit 1
   source &quot;${WORKSPACE}/bash.lib.sh&quot;
-  echo &quot;$(s3GetCoiSendCommandOutputFileUrl 21738764-2970-4f99-bb03-8f0a40fb746a)&quot;
 fi
 
 

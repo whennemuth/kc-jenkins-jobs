@@ -381,8 +381,8 @@ Need it here for supporting bash functions found in ./bash.lib.sh</description>
       <command>[ &quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot; == false ] &amp;&amp; set +x
 
 # Need to get our hands on bash.lib.sh from github.
+ROOT_DIR=&quot;$(echo $ROOT_DIR | sed &apos;s/,//g&apos;)&quot;
 if [ -z &quot;$ROOT_DIR&quot; ] || [ ! -f &quot;$ROOT_DIR/bash.lib.sh&quot; ] ; then
-  ROOT_DIR=&quot;$(echo $ROOT_DIR | sed &apos;s/,//g&apos;)&quot;
   GIT_SCRIPT_URL=git@github.com:bu-ist/kuali-research-docker.git
   GIT_SCRIPT_BRANCH=master
   CLI=/var/lib/jenkins/jenkins-cli.jar
