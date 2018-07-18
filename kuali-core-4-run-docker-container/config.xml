@@ -40,6 +40,31 @@ return opendiv + checkbox + desc + closediv</script>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>BLAST_IMAGE</name>
+          <description></description>
+          <randomName>choice-parameter-13299489826529889</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
+def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;display:inline;&apos;&gt;&quot;
+def desc = &quot;Docker image is not up-to-date at target ec2. Pull fresh image from the registry.&quot;
+def closediv = &quot;&lt;/div&gt;&lt;br&gt;&quot;
+return opendiv + checkbox + desc + closediv</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;Error creating blast_image selection&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-core-4-run-docker-container</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>GIT_REPO_URL</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 The git repository from which the target EC2 instance will pull the docker build context directories and scripts to run the docker commands.
@@ -178,7 +203,7 @@ How do you want to enter the version value?
             </secureFallbackScript>
           </script>
           <projectName>kuali-core-4-run-docker-container</projectName>
-          <choiceType>PT_RADIO</choiceType>
+          <choiceType>PT_SINGLE_SELECT</choiceType>
           <filterable>false</filterable>
         </org.biouno.unochoice.ChoiceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
@@ -297,18 +322,22 @@ return sb.toString()
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
-          <name>ROOT_DIR</name>
+          <name>BLAST_IMAGE</name>
           <description>The root directory where the git repo containing bash scripts and docker contexts is pulled to.&lt;br&gt;
 Need it here for supporting bash functions found in ./bash.lib.sh</description>
           <randomName>choice-parameter-11487071783279885</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
+              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
+def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;display:inline;&apos;&gt;&quot;
+def desc = &quot;Docker image is not up-to-date in docker repository. Pull fresh image from the registry.&quot;
+def closediv = &quot;&lt;/div&gt;&lt;br&gt;&quot;
+return opendiv + checkbox + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
-              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
+              <script>return &quot;Error creating verbose selection&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
@@ -350,7 +379,7 @@ fi
 
 # Fix the trailing comma issue with active choices parameters reactive
 VERBOSE=&quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot;
-DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
+BLAST_IMAGE=&quot;$(echo $BLAST_IMAGE | sed &apos;s/,//g&apos;)&quot;
 GIT_REPO_URL=&quot;$(echo $GIT_REPO_URL | sed &apos;s/,//g&apos;)&quot;
 GIT_BRANCH=&quot;$(echo $GIT_BRANCH | sed &apos;s/,//g&apos;)&quot;
 ECR_REGISTRY_URL=&quot;$(echo $ECR_REGISTRY_URL | sed &apos;s/,//g&apos;)&quot;
@@ -386,16 +415,16 @@ fi
 
 # Create an array of parameters to pass to the runapp function (see below).
 parms=(
-  &quot;interactive=false&quot;
-  &quot;renew_configs=true&quot;
-  &quot;root_dir=$ROOT_DIR&quot;
-  &quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)&quot;
-  &quot;docker_image_name=$DOCKER_TAG&quot;
-  &quot;landscape=$LANDSCAPE&quot;
-  &quot;core_host=$CORE_HOST&quot;
-  &quot;blast_container=true&quot;
-  &quot;blast_image=true&quot;
-  &quot;rsync=true&quot;
+  &quot;\&quot;interactive=false\&quot;&quot;
+  &quot;\&quot;renew_configs=true\&quot;&quot;
+  &quot;\&quot;root_dir=$ROOT_DIR\&quot;&quot;
+  &quot;\&quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)\&quot;&quot;
+  &quot;\&quot;docker_image_name=$DOCKER_TAG\&quot;&quot;
+  &quot;\&quot;landscape=$LANDSCAPE\&quot;&quot;
+  &quot;\&quot;core_host=$CORE_HOST\&quot;&quot;
+  &quot;\&quot;blast_container=true\&quot;&quot;
+  &quot;\&quot;blast_image=$BLAST_IMAGE\&quot;&quot;
+  &quot;\&quot;rsync=true\&quot;&quot;
 )
 
 # Compose the code that is to be passed as a command with the ssm send-command call
@@ -459,7 +488,7 @@ BASE64=$(\
       cd $GIT_ROOT/core/build.context; \
       source $GIT_ROOT/core/build.context/docker.sh; \
       [ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x; \
-      runapp \&quot;${parms[@]}\&quot; 2&gt;&amp;1 | tee /tmp/last-core-run-cmd&quot; | base64 -w 0 \
+      runapp ${parms[@]} 2&gt;&amp;1 | tee /tmp/last-core-run-cmd&quot; | base64 -w 0 \
 )
 echo &quot;BASE64 = $BASE64&quot;
 
@@ -482,7 +511,7 @@ COMMAND_ID=$(aws ssm send-command \
 # The file output by ssm send-command won&apos;t be available in s3 immediately, so
 # making repeated attempts to access it in a loop until it is available.
 i=1
-while ((i&lt;30)) ; do
+while ((i&lt;100)) ; do
   s3Url=&quot;$(s3GetCoreSendCommandOutputFileUrl $COMMAND_ID)&quot;
   [ -n &quot;$s3Url&quot; ] &amp;&amp; echo &quot;Url to presign is: $s3Url&quot; &amp;&amp; break;
   echo &quot;Url to presign not ready. Trying again in 3 seconds...&quot;

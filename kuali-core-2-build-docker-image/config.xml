@@ -334,6 +334,7 @@ No default value.
       <command>[ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x
 
 # Fix the trailing comma issue with active choices parameters reactive
+ROOT_DIR=&quot;$(echo $ROOT_DIR | sed &apos;s/,//g&apos;)&quot;
 ECR_REGISTRY_URL=&quot;$(echo $ECR_REGISTRY_URL | sed &apos;s/,//g&apos;)&quot;
 REGISTRY_REPO_NAME=&quot;$(echo $REGISTRY_REPO_NAME | sed &apos;s/,//g&apos;)&quot;
 GIT_PULL=&quot;$(echo $GIT_PULL | sed &apos;s/,//g&apos;)&quot;

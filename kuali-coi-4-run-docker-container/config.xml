@@ -40,6 +40,31 @@ return opendiv + checkbox + desc + closediv</script>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+          <name>BLAST_IMAGE</name>
+          <description></description>
+          <randomName>choice-parameter-13299916977946376</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.24">
+              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
+def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;display:inline;&apos;&gt;&quot;
+def desc = &quot;Docker image is not up-to-date at target ec2. Pull fresh image from the registry.&quot;
+def closediv = &quot;&lt;/div&gt;&lt;br&gt;&quot;
+return opendiv + checkbox + desc + closediv</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.24">
+              <script>return &quot;Error creating blast_image selection&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-coi-4-run-docker-container</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>MIGRATIONS</name>
           <description></description>
           <randomName>choice-parameter-8444660887276935</randomName>
@@ -398,7 +423,7 @@ fi
 
 # Fix the trailing comma issue with active choices parameters reactive
 VERBOSE=&quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot;
-DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
+BLAST_IMAGE=&quot;$(echo $BLAST_IMAGE | sed &apos;s/,//g&apos;)&quot;
 MIGRATIONS=&quot;$(echo $MIGRATIONS | sed &apos;s/,//g&apos;)&quot;
 GIT_REPO_URL=&quot;$(echo $GIT_REPO_URL | sed &apos;s/,//g&apos;)&quot;
 GIT_BRANCH=&quot;$(echo $GIT_BRANCH | sed &apos;s/,//g&apos;)&quot;
@@ -437,18 +462,18 @@ fi
 
 # Create an array of parameters to pass to the runapp function (see below).
 parms=(
-  &quot;interactive=false&quot;
-  &quot;renew_configs=true&quot;
-  &quot;root_dir=/opt/kuali-research-docker/coi/build.context&quot;
-  &quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)&quot;
-  &quot;docker_image_name=$DOCKER_TAG&quot;
-  &quot;landscape=$LANDSCAPE&quot;
-  &quot;core_host=$CORE_HOST&quot;
-  &quot;migrations_to_run=$MIGRATIONS_TO_RUN&quot;
-  &quot;blast_container=true&quot;
-  &quot;blast_image=true&quot;
-  &quot;rsync=true&quot;
-  &quot;nodeapp_attachments_dir=$ATTACHMENTS_DIR&quot;
+  &quot;\&quot;interactive=false\&quot;&quot;
+  &quot;\&quot;renew_configs=true\&quot;&quot;
+  &quot;\&quot;root_dir=/opt/kuali-research-docker/coi/build.context\&quot;&quot;
+  &quot;\&quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)\&quot;&quot;
+  &quot;\&quot;docker_image_name=$DOCKER_TAG\&quot;&quot;
+  &quot;\&quot;landscape=$LANDSCAPE\&quot;&quot;
+  &quot;\&quot;core_host=$CORE_HOST\&quot;&quot;
+  &quot;\&quot;migrations_to_run=$MIGRATIONS_TO_RUN\&quot;&quot;
+  &quot;\&quot;blast_container=true\&quot;&quot;
+  &quot;\&quot;blast_image=$BLAST_IMAGE\&quot;&quot;
+  &quot;\&quot;rsync=true\&quot;&quot;
+  &quot;\&quot;nodeapp_attachments_dir=$ATTACHMENTS_DIR\&quot;&quot;
 )
 
 # Compose the code that is to be passed as a command with the ssm send-command call
@@ -512,7 +537,7 @@ BASE64=$(\
       cd $GIT_ROOT/coi/build.context; \
       source $GIT_ROOT/coi/build.context/docker.sh; \
       [ &quot;$VERBOSE&quot; == false ] &amp;&amp; set +x; \
-      runapp \&quot;${parms[@]}\&quot; 2&gt;&amp;1 | tee /tmp/last-coi-run-cmd&quot; | base64 -w 0 \
+      runapp ${parms[@]} 2&gt;&amp;1 | tee /tmp/last-coi-run-cmd&quot; | base64 -w 0 \
 )
 echo &quot;BASE64 = $BASE64&quot;
 
@@ -535,7 +560,7 @@ COMMAND_ID=$(aws ssm send-command \
 # The file output by ssm send-command won&apos;t be available in s3 immediately, so
 # making repeated attempts to access it in a loop until it is available.
 i=1
-while ((i&lt;30)) ; do
+while ((i&lt;100)) ; do
   s3Url=&quot;$(s3GetCoiSendCommandOutputFileUrl $COMMAND_ID)&quot;
   [ -n &quot;$s3Url&quot; ] &amp;&amp; echo &quot;Url to presign is: $s3Url&quot; &amp;&amp; break;
   echo &quot;Url to presign not ready. Trying again in 3 seconds...&quot;

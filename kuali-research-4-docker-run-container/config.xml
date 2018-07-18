@@ -48,17 +48,17 @@ Example: i-099de1c5407493f9b</description>
         <hudson.model.StringParameterDefinition>
           <name>ATTACHMENTS_DIR</name>
           <description>Directory where files uploaded by users are deposited by the webapp</description>
-          <defaultValue>/mnt/efs/kuali/attachments</defaultValue>
+          <defaultValue>/var/log/kuali/attachments</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>JAVAMELODY_DIR</name>
           <description>Directory where files saved by javamelody are located.</description>
-          <defaultValue>/mnt/efs/kuali/javamelody</defaultValue>
+          <defaultValue>/var/log/kuali/javamelody</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>PRINTING_DIR</name>
           <description>Directory where printing job artifacts are stored for download to user.</description>
-          <defaultValue>/mnt/efs/kuali/printing</defaultValue>
+          <defaultValue>/var/log/kuali/printing</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -74,6 +74,9 @@ Example: i-099de1c5407493f9b</description>
     <hudson.tasks.Shell>
       <command>DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${POM_VERSION}&quot;
 CONTAINER_NAME=&quot;kuali-research&quot;
+# /mnt/efs/kuali/attachments
+# /mnt/efs/kuali/javamelody
+# /mnt/efs/kuali/printing
 [ -z &quot;$ATTACHMENTS_DIR&quot; ] &amp;&amp; ATTACHMENTS_DIR=&quot;/var/log/kuali/attachments&quot;
 [ -z &quot;$JAVAMELODY_DIR&quot; ] &amp;&amp; JAVAMELODY_DIR=&quot;/var/log/kuali/javamelody&quot;
 [ -z &quot;$PRINTING_DIR&quot; ] &amp;&amp; PRINTING_DIR=&quot;/var/log/kuali/printing&quot;
@@ -104,10 +107,10 @@ BASE64=$(\
          -p 8080:8080 \
          -p 8009:8009 \
          -v /opt/kuali/main/config:/opt/kuali/main/config \
-         -v $PRINTING_DIR:/opt/kuali/logs/printing \
+         -v $PRINTING_DIR:/opt/kuali/logs/printing/logs \
          -v $JAVAMELODY_DIR:/var/log/javamelody \
          -v $ATTACHMENTS_DIR:/opt/tomcat/temp/dev/attachments \
-         -v /var/log/tomcat:/var/log/tomcat \
+         -v /var/log/tomcat:/opt/tomcat/logs \
          --restart unless-stopped \
          --name ${CONTAINER_NAME} \
          ${DOCKER_TAG} &gt; /tmp/last-coeus-run-cmd 2&gt;&amp;1&quot; | base64 -w 0 \

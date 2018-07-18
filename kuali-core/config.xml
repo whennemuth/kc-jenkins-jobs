@@ -66,31 +66,6 @@ return opendiv + checkbox + desc + closediv</script>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
-          <name>MIGRATIONS</name>
-          <description></description>
-          <randomName>choice-parameter-8441679462069250</randomName>
-          <visibleItemCount>1</visibleItemCount>
-          <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
-              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
-def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;true&apos; checked style=&apos;display:inline;&apos;&gt;&quot;
-def desc = &quot;Run migrations against the database  when the docker container starts up?&quot;
-def closediv = &quot;&lt;/div&gt;&quot;
-return opendiv + checkbox + desc + closediv</script>
-              <sandbox>false</sandbox>
-            </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
-              <script>return &quot;Error creating migrations selection&quot;</script>
-              <sandbox>false</sandbox>
-            </secureFallbackScript>
-          </script>
-          <projectName>kuali-core</projectName>
-          <parameters class="linked-hash-map"/>
-          <referencedParameters></referencedParameters>
-          <choiceType>ET_FORMATTED_HTML</choiceType>
-          <omitValueField>false</omitValueField>
-        </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
           <name>NO_BUILD</name>
           <description></description>
           <randomName>choice-parameter-8466170267987898</randomName>
@@ -98,7 +73,7 @@ return opendiv + checkbox + desc + closediv</script>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
               <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
-def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;display:inline;&apos;&gt;&quot;
+def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;true&apos; checked style=&apos;display:inline;&apos;&gt;&quot;
 def desc = &quot;Up-to-date docker image already in registry. Skip ahead to the last step (pull)&quot;
 def closediv = &quot;&lt;/div&gt;&lt;br&gt;&quot;
 return opendiv + checkbox + desc + closediv</script>
@@ -399,7 +374,6 @@ CMDS=()
 
 # Fix the trailing comma issue with active choices parameters reactive
 DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
-MIGRATIONS=&quot;$(echo $MIGRATIONS | sed &apos;s/,//g&apos;)&quot;
 NO_BUILD=&quot;$(echo $NO_BUILD | sed &apos;s/,//g&apos;)&quot;
 GIT_REPO_URL=&quot;$(echo $GIT_REPO_URL | sed &apos;s/,//g&apos;)&quot;
 GIT_REF=&quot;$(echo $GIT_REF | sed &apos;s/,//g&apos;)&quot;
@@ -431,9 +405,9 @@ case &quot;$LANDSCAPE&quot; in
       EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;);;
 esac
 
+[ &quot;$NO_BUILD&quot; == true ] &amp;&amp; blast_image=&quot;false&quot; || blast_image=&quot;true&quot;
+
 for i in $(seq ${#EC2_IDS[@]}); do 
-echo &quot;i = $i&quot;
-echo &quot;NO_BUILD = $NO_BUILD&quot;
    if [ $i -eq 1 ] &amp;&amp; [ &quot;$NO_BUILD&quot; != true ] ; then
      # First iteration, therefore do all build steps     
      CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-core-1-pull-build-scripts&apos; -v -f \
@@ -471,7 +445,7 @@ echo &quot;NO_BUILD = $NO_BUILD&quot;
      -p REGISTRY_REPO_NAME=${TARGET} \
      -p VERSION=${VERSION} \
      -p LANDSCAPE=${LANDSCAPE} \
-     -p MIGRATIONS=${MIGRATIONS} \
+     -p BLAST_IMAGE=${blast_image} \
      -p EC2_INSTANCE_ID=${EC2_IDS[i-1]}&quot;
      CMDS[${#CMDS[@]}]=$CMD       
 done;
