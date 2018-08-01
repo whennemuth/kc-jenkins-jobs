@@ -374,6 +374,9 @@ if [ -z &quot;$ROOT_DIR&quot; ] || [ ! -f &quot;$ROOT_DIR/bash.lib.sh&quot; ] ; 
     -p ROOT_DIR=${WORKSPACE}
   [ ! -f &quot;${WORKSPACE}/bash.lib.sh&quot; ] &amp;&amp; echo &quot;ERROR! Cannot get bash.lib.sh from github!&quot; &amp;&amp; exit 1
   source &quot;${WORKSPACE}/bash.lib.sh&quot;
+else
+  # Content was already pulled by another job that is calling this job, so we need to source the script from the other jobs workspace.
+  source &quot;$ROOT_DIR/bash.lib.sh&quot;
 fi
 
 
