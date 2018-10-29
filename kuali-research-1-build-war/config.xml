@@ -280,13 +280,18 @@ if [ &quot;$DEPLOY&quot; == true ] ; then
 
    CLI=/var/lib/jenkins/jenkins-cli.jar
    HOST=http://localhost:8080/
-   WAR_FILE=$(ls -1 ${WORKSPACE}/coeus-webapp/target | grep -P &quot;^.*war$&quot;)
+   WARFILE_DIR=${WORKSPACE}/coeus-webapp/target
+   WAR_FILE=$(ls -1 $WARFILE_DIR | grep -P &quot;^.*war$&quot;)
    WAR_URL=http://localhost:8080/job/${JOB_BASE_NAME}/ws/coeus-webapp/target/${WAR_FILE}
    BACKUP_DIR=/var/lib/jenkins/backup/kuali-research/war
    
    # Confirm the war file has been found
    if [ -z &quot;${WARFILE}&quot; ]; then
       echo &quot;Found war file: ${WAR_FILE}&quot;;
+      # Insert a copy of the log4j-appserver jar file into the WEB-INF/lib directory of the war file.
+      java -jar ${CLI} -s ${HOST} build &apos;kc-pack-log4j-appserver-jar&apos; -v -f \
+         -p POM=${WORKSPACE}/pom.xml \
+         -p WARFILE_DIR=${WARFILE_DIR}
    else
       echo &quot;CANNOT FIND WAR FILE!!!&quot;;
       echo &quot;EXITING BUILD.&quot;;

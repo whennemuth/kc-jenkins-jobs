@@ -25,9 +25,9 @@
           <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com</defaultValue>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>DOCKER_TAG_VERSION</name>
+          <name>TOMCAT_VERSION</name>
           <description>The value the image being built is to tagged with for identification within the local and registry repositories.</description>
-          <defaultValue>latest</defaultValue>
+          <defaultValue>8.5.34</defaultValue>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -45,20 +45,22 @@
 # NOTE: JENKINS_URL is the full URL of Jenkins, like http://server:port/jenkins/ 
 #       Only available if Jenkins URL is set in system configuration
 ECR_REPO_URL=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}&quot;
-DOCKER_TAG=&quot;${ECR_REPO_URL}:${DOCKER_TAG_VERSION}&quot;
+DOCKER_TAG=&quot;${ECR_REPO_URL}:tomcat${TOMCAT_VERSION}&quot;
 
 # 4) Login to the registry
 # NOTE: info on how to store credentials can be found at: 
 #       http://docs.aws.amazon.com/cli/latest/topic/config-vars.html
 #       requires ~/.aws/config
-evalstr=&quot;$(aws ecr get-login --profile ecr.access)&quot;
-
+# evalstr=&quot;$(aws ecr get-login --profile ecr.access)&quot;
+         
 # NOTE: The ecr get-login command of the aws cli returns a docker command that includes a removed switch.
 # The -e (email) switch will be rejected by the newer version of docker that we have installed on our aws
 # ec2 instances to accomodate cloud watch logging from our containers. Therefore I am removing the offending
 # &quot;-e none&quot; portion of the command with the stream editor.
-evalstr=&quot;$(echo $evalstr | sed &apos;s/ -e none//&apos;)&quot;
-eval $evalstr
+# evalstr=&quot;$(echo $evalstr | sed &apos;s/ -e none//&apos;)&quot;
+# eval $evalstr
+
+$(aws ecr get-login --no-include-email --region us-east-1)
 
 # 5) Push the newly created image to the registry
 docker push ${DOCKER_TAG}

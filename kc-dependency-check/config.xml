@@ -150,8 +150,8 @@ echo &quot;                      FINISHED M2 DEPENDENCY CHECK&quot;
 echo &quot;----------------------------------------------------------------------------&quot;
 echo &quot; &quot;
 
-
 set -x
+
 </command>
     </hudson.tasks.Shell>
   </builders>
