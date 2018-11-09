@@ -106,6 +106,7 @@ BASE64=$(\
          -d \
          -p 8080:8080 \
          -p 8009:8009 \
+         -e EC2_HOSTNAME=\$(echo \$HOSTNAME) \
          -v /opt/kuali/main/config:/opt/kuali/main/config \
          -v $PRINTING_DIR:/opt/kuali/logs/printing/logs \
          -v $JAVAMELODY_DIR:/var/log/javamelody \

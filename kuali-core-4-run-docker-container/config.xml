@@ -7,7 +7,7 @@
     <jenkins.model.BuildDiscarderProperty>
       <strategy class="hudson.tasks.LogRotator">
         <daysToKeep>-1</daysToKeep>
-        <numToKeep>5</numToKeep>
+        <numToKeep>15</numToKeep>
         <artifactDaysToKeep>-1</artifactDaysToKeep>
         <artifactNumToKeep>-1</artifactNumToKeep>
       </strategy>
@@ -322,22 +322,18 @@ return sb.toString()
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
-          <name>BLAST_IMAGE</name>
+          <name>ROOT_DIR</name>
           <description>The root directory where the git repo containing bash scripts and docker contexts is pulled to.&lt;br&gt;
 Need it here for supporting bash functions found in ./bash.lib.sh</description>
           <randomName>choice-parameter-11487071783279885</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.24">
-              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
-def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;display:inline;&apos;&gt;&quot;
-def desc = &quot;Docker image is not up-to-date in docker repository. Pull fresh image from the registry.&quot;
-def closediv = &quot;&lt;/div&gt;&lt;br&gt;&quot;
-return opendiv + checkbox + desc + closediv</script>
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.24">
-              <script>return &quot;Error creating verbose selection&quot;</script>
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
@@ -390,7 +386,6 @@ REGISTRY_REPO_NAME=&quot;$(echo $REGISTRY_REPO_NAME | sed &apos;s/,//g&apos;)&qu
 VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
 EC2_INSTANCE_ID=&quot;$(echo $EC2_INSTANCE_ID | sed &apos;s/,//g&apos;)&quot;
 LANDSCAPE=&quot;$(echo $LANDSCAPE | sed &apos;s/,//g&apos;)&quot;
-ROOT_DIR=&quot;/opt/kuali-research-docker/core/build.context&quot;
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
 AWS_REG=$(aws configure get region --profile ecr.access)
 AWS_KEY=$(aws configure get aws_access_key_id --profile ecr.access)
@@ -420,7 +415,7 @@ fi
 parms=(
   &quot;\&quot;interactive=false\&quot;&quot;
   &quot;\&quot;renew_configs=true\&quot;&quot;
-  &quot;\&quot;root_dir=$ROOT_DIR\&quot;&quot;
+  &quot;\&quot;root_dir=/opt/kuali-research-docker/core/build.context\&quot;&quot;
   &quot;\&quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)\&quot;&quot;
   &quot;\&quot;docker_image_name=$DOCKER_TAG\&quot;&quot;
   &quot;\&quot;landscape=$LANDSCAPE\&quot;&quot;

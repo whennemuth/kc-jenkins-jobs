@@ -280,22 +280,28 @@ for i in $(seq ${#EC2_IDS[@]}); do
    if ( [ $i -eq 1 ] &amp;&amp; [ &quot;$BRANCH&quot; != &quot;&quot; ] ); then
       # A) STANDARD FULL BUILD AND DEPLOY (maven &amp; docker)
       #    (NOTE: several parameters are ommitted to invoke their default values.)
-      if [ &quot;${GIT_REF_TYPE}&quot; != &quot;default&quot; ] ; then      
+      if [ &quot;${GIT_REF_TYPE}&quot; != &quot;default&quot; ] ; then    
+         branch=&quot;feature&quot;
+		 [ &quot;$LANDSCAPE&quot; == &quot;sandbox&quot; ] &amp;&amp; branch=&quot;master&quot;
          CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-1-build-war&apos; -v -f \
-            -p BRANCH=feature \
+            -p BRANCH=${branch} \
             -p GIT_REFSPEC=${GIT_REFSPEC} \
             -p GIT_BRANCHES_TO_BUILD=${GIT_BRANCHES_TO_BUILD} \
             -p EC2_INSTANCE_ID=${EC2_ID}&quot;      
       else
+         branch=&quot;$BRANCH&quot;
+		 [ &quot;$LANDSCAPE&quot; == &quot;sandbox&quot; ] &amp;&amp; branch=&quot;master&quot;
          CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-1-build-war&apos; -v -f \
-            -p BRANCH=${BRANCH} \
+            -p BRANCH=${branch} \
             -p EC2_INSTANCE_ID=${EC2_ID}&quot;      
       fi
    elif ( [ $i -eq 1 ] &amp;&amp; [ &quot;${GIT_REF_TYPE}&quot; != &quot;default&quot; ] ); then
       # B) CUSTOM FULL BUILD AND DEPLOY (maven &amp; docker)
       #    (NOTE: The resulting docker images will be pushed and pulled against the feature docker repo in our registry
+      branch=&quot;feature&quot;
+      [ &quot;$LANDSCAPE&quot; == &quot;sandbox&quot; ] &amp;&amp; branch=&quot;master&quot;
       CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-1-build-war&apos; -v -f \
-         -p BRANCH=feature \
+         -p BRANCH=${branch} \
          -p GIT_REFSPEC=${GIT_REFSPEC} \
          -p GIT_BRANCHES_TO_BUILD=${GIT_BRANCHES_TO_BUILD} \
          -p EC2_INSTANCE_ID=${EC2_ID}&quot;         
@@ -317,12 +323,12 @@ for i in $(seq ${#EC2_IDS[@]}); do
          -p EC2_INSTANCE_ID=${EC2_ID} \
          -p POM_VERSION=${POM_VERSION}&quot;
          
-      if [ &quot;${GIT_REF_TYPE}&quot; != &quot;default&quot; ] ; then
-         # Anything built from a custom selected git reference will be pushed to the feature docker repo in our registry
-         CMD=&quot;${CMD} -p REGISTRY_REPO_NAME=coeus-feature&quot;
-      elif [ &quot;${LANDSCAPE,,}&quot; == &quot;sandbox&quot; ] ; then
+      if [ &quot;${LANDSCAPE,,}&quot; == &quot;sandbox&quot; ] ; then
          CMD=&quot;${CMD} -p REGISTRY_REPO_NAME=coeus-sandbox&quot;
-      fi
+      elif [ &quot;${GIT_REF_TYPE}&quot; != &quot;default&quot; ] ; then
+         # Anything built from a custom selected git reference will be pushed to the feature docker repo in our registry
+         CMD=&quot;${CMD} -p REGISTRY_REPO_NAME=coeus-feature&quot;      
+      fi 
    fi
    
    if [ -n &quot;${POM_ARTIFACTID_OVERRIDE}&quot; ] ; then 
