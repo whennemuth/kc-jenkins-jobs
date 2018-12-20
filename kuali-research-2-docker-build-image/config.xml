@@ -79,7 +79,9 @@ if [ -z &quot;$(docker images -q ${TOMCAT_LOCAL_IMAGE})&quot; ]; then
    if [ -z &quot;$(docker images -q ${TOMCAT_REGISTRY_IMAGE})&quot; ]; then 
       echo &quot;CANNOT FIND DOCKER IMAGE: ${TOMCAT_REGISTRY_IMAGE}&quot;; 
       echo &quot;Pulling ${TOMCAT_REGISTRY_IMAGE} from registry...&quot;
-      eval $(aws ecr get-login --profile ecr.access)
+      evalstr=&quot;$(aws ecr get-login --profile ecr.access)&quot;
+      evalstr=&quot;$(echo $evalstr | sed &apos;s/ -e none//&apos;)&quot;
+      eval $evalstr
       docker pull ${TOMCAT_REGISTRY_IMAGE}
    fi
    echo &quot;Tagging ${TOMCAT_REGISTRY_IMAGE}&quot;

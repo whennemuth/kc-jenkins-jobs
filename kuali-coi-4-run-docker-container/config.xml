@@ -475,7 +475,6 @@ parms=(
   &quot;\&quot;migrations_to_run=$MIGRATIONS_TO_RUN\&quot;&quot;
   &quot;\&quot;blast_container=true\&quot;&quot;
   &quot;\&quot;blast_image=$BLAST_IMAGE\&quot;&quot;
-  &quot;\&quot;rsync=true\&quot;&quot;
   &quot;\&quot;nodeapp_attachments_dir=$ATTACHMENTS_DIR\&quot;&quot;
 )
 

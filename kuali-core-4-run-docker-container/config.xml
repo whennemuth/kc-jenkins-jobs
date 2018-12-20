@@ -422,7 +422,6 @@ parms=(
   &quot;\&quot;core_host=$CORE_HOST\&quot;&quot;
   &quot;\&quot;blast_container=true\&quot;&quot;
   &quot;\&quot;blast_image=$BLAST_IMAGE\&quot;&quot;
-  &quot;\&quot;rsync=true\&quot;&quot;
 )
 
 # Compose the code that is to be passed as a command with the ssm send-command call
@@ -498,7 +497,7 @@ COMMAND_ID=$(aws ssm send-command \
    --parameters \
         commands=&quot;echo &gt;&gt; /tmp/ssm-core-received &amp;&amp; date &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
                   echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
-                  echo ${BASE64} | base64 --decode &gt; /tmp/ssm-core-last.sh &amp;&amp; \
+                  echo ${BASE64} | base64 --decode | sed -E \&apos;s/(\\x20{2,})/\\n\\1/g\&apos; &gt; /tmp/ssm-core-last.sh &amp;&amp; \
                   echo ${BASE64} | base64 --decode | sh 2&gt;&amp;1&quot; \
    --profile ecr.access \
    --output text \

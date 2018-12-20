@@ -106,7 +106,7 @@ BASE64=$(\
             | sed -r -n &apos;s/[[:blank:]]+/ /gp&apos; \
             | cut -d &apos; &apos; -f 3) &amp;&amp; \
       if [ -n \&quot;\${EXISTING_IMAGE_ID}\&quot; ]; then \
-         docker rmi \${EXISTING_IMAGE_ID}; \
+         docker rmi -f \${EXISTING_IMAGE_ID}; \
       fi &amp;&amp; \
       \
       evalstr=\&quot;\$(aws ecr get-login --profile ecr.access)\&quot; &amp;&amp; \

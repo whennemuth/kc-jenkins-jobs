@@ -359,7 +359,7 @@ fi
 
 parms=(
   &quot;interactive=false&quot;
-  &quot;root_dir=$ROOT_DIR&quot;
+  &quot;root_dir=$ROOT_DIR/coi/build.context&quot;
   &quot;git_repull=$GIT_PULL&quot;
   &quot;git_branch=$GIT_REF&quot;
   &quot;git_refspec=$GIT_COMMIT_ID&quot;
