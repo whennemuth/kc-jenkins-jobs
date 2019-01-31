@@ -98,7 +98,7 @@ BASE64=$(\
          docker rmi -f \${EXISTING_IMAGE_ID}; \
       fi &amp;&amp; \
       \
-      evalstr=\$(aws ecr get-login --profile ecr.access) &amp;&amp; \
+      evalstr=\$(aws ecr get-login) &amp;&amp; \
       evalstr=\$(echo \$evalstr | sed &apos;s/ -e none//&apos;) &amp;&amp; \
       echo \$evalstr &gt; /tmp/last-ecr-login &amp;&amp; \
       eval \$evalstr &amp;&amp; \
@@ -133,7 +133,6 @@ run_command_id=$(aws ssm send-command \
                   echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-received &amp;&amp; \
                   echo ${BASE64} | base64 --decode &gt; /tmp/ssm-last.sh &amp;&amp; \
                   echo ${BASE64} | base64 --decode | sh&quot; \
-   --profile &quot;ecr.access&quot; \
    --output text \
    --query &quot;Command.CommandId&quot;) 
    
@@ -143,7 +142,7 @@ run_command_id=$(aws ssm send-command \
 #   -i /var/lib/jenkins/.ssh/bu_kuali_id_jenkins_rsa \
 #   &quot;set -x &amp;&amp; docker ps &amp;&amp; &quot; \
 #   &quot;docker rm -f ${CONTAINER_NAME} || echo &apos;No container to remove.&apos; &amp;&amp; &quot; \
-#   &quot;eval $(aws ecr get-login --profile ecr.access) &amp;&amp; &quot; \
+#   &quot;eval $(aws ecr get-login) &amp;&amp; &quot; \
 #   &quot;docker run&quot; \
 #    -d&quot; \
 #    -p 8080:8080&quot; \

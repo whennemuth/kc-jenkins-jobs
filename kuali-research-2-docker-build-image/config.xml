@@ -57,19 +57,28 @@ The value is &quot;coeus&quot; by default, but remember that any sandbox images 
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># 1) Remove any dangling items
-if [ -n &quot;$(docker images --filter dangling=true -q)&quot; ] ; then 
-   docker rmi -f $(docker images --filter dangling=true -q); 
-   echo &quot;Removed dangling image(s)&quot;;
-else
-   echo &quot;No dangling images to remove&quot;;
-fi
-if [ -n &quot;$(docker volume ls -qf dangling=true)&quot; ] ; then 
-   docker volume rm $(docker volume ls -qf dangling=true); 
-   echo &quot;Removed dangling volume(s)&quot;;
-else 
-   echo &quot;No dangling volumes to remove&quot;;
-fi
+      <command># 1a) Remove any dangling items
+#if [ -n &quot;$(docker images --filter dangling=true -q)&quot; ] ; then 
+#   docker rmi -f $(docker images --filter dangling=true -q); 
+#   echo &quot;Removed dangling image(s)&quot;;
+#else
+#   echo &quot;No dangling images to remove&quot;;
+#fi
+#if [ -n &quot;$(docker volume ls -qf dangling=true)&quot; ] ; then 
+#   docker volume rm $(docker volume ls -qf dangling=true); 
+#   echo &quot;Removed dangling volume(s)&quot;;
+#else 
+#   echo &quot;No dangling volumes to remove&quot;;
+#fi
+
+# 1b) Being more agressive with the cleanup.
+# WARNING! This will remove:
+#        - all stopped containers
+#        - all networks not used by at least one container
+#        - all images without at least one container associated to them
+#        - all build cache
+echo &quot;Pruning the entire docker system...&quot;
+docker system prune -a -f
 
 # 2) If the base tomcat image is not in the local repo, get it from the registry
 TOMCAT_REGISTRY_IMAGE=&quot;${ECR_REGISTRY_URL}/centos7-java-tomcat:latest&quot;
@@ -79,7 +88,7 @@ if [ -z &quot;$(docker images -q ${TOMCAT_LOCAL_IMAGE})&quot; ]; then
    if [ -z &quot;$(docker images -q ${TOMCAT_REGISTRY_IMAGE})&quot; ]; then 
       echo &quot;CANNOT FIND DOCKER IMAGE: ${TOMCAT_REGISTRY_IMAGE}&quot;; 
       echo &quot;Pulling ${TOMCAT_REGISTRY_IMAGE} from registry...&quot;
-      evalstr=&quot;$(aws ecr get-login --profile ecr.access)&quot;
+      evalstr=&quot;$(aws ecr get-login)&quot;
       evalstr=&quot;$(echo $evalstr | sed &apos;s/ -e none//&apos;)&quot;
       eval $evalstr
       docker pull ${TOMCAT_REGISTRY_IMAGE}
@@ -142,7 +151,7 @@ WAR_FILE=$(ls *.war)
 if [ &quot;$(docker images -q bu-ist/centos7-java-tomcat:8.5 | wc -l)&quot; == &quot;0&quot; ] ; then
    tomcat8=&quot;$ECR_REGISTRY_URL/centos7-java-tomcat:tomcat8.5&quot;
    if [ &quot;$(docker images -q $tomcat8 | wc -l)&quot; == &quot;0&quot; ] ; then
-      evalstr=&quot;$(aws ecr get-login --profile ecr.access)&quot;
+      evalstr=&quot;$(aws ecr get-login)&quot;
       evalstr=&quot;$(echo $evalstr | sed &apos;s/ -e none//&apos;)&quot;
       eval $evalstr
       docker pull $tomcat8

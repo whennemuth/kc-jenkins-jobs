@@ -28,8 +28,6 @@ EC2_INSTANCE_ID=i-0258a5f2a87ba7972
 POM_ARTIFACT_ID=hello-world
 POM_VERSION=0.0.1-SNAPSHOT
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${POM_ARTIFACTID}:${POM_VERSION}&quot;
-PROFILE=ecr.access
-
 BASE64=$(\
   echo &quot;docker images 2&gt;&amp;1 | \
   tee /tmp/warren-test&quot; | base64 -w 0 \
@@ -39,7 +37,6 @@ COMMAND_ID=$(aws ssm send-command \
    --document-name &quot;AWS-RunShellScript&quot; \
    --comment &quot;Running shell script to pull and run container against a new docker image for hello-world&quot; \
    --parameters commands=&quot;echo ${BASE64} | base64 --decode | sh&quot; \
-   --profile ecr.access \
    --output text \
    --query &quot;Command.CommandId&quot; \
    --output-s3-bucket-name &quot;warren-testing&quot; \
