@@ -244,13 +244,24 @@ Combined with ECR_REGISTRY_URL, this value serves to identify the docker image i
             <secureScript plugin="script-security@1.24">
               <script>if(&quot;available&quot;.equalsIgnoreCase(VERSION_OPT)) {
    def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
-   def multiline = &apos;docker images -q --filter=reference=730096353738.dkr.ecr.us-east-1.amazonaws.com/coi:* --format {{.Tag}}&apos;.execute()
-   multiline.waitForOrKill(20000)
-   def lines = multiline.text.readLines()
-   lines.each {
+   def cmd = 
+      &quot;aws ecr describe-images&quot; +
+      &quot;  --registry-id 730096353738&quot; +
+      &quot;  --repository-name coi&quot; +
+      &quot;  | grep -P &apos;\\d{4}\\.\\d{4}&apos;&quot; +
+      &quot;  | sed &apos;s/[[:space:]]//g&apos;&quot; + 
+      &quot;  | sed &apos;s/\&quot;//g&apos;&quot;
+
+   // Create an array for the ProcessBuilder and run the process.
+   // Cannot use execute command because of use of subprocess with sh.
+   def cmdarr = [ &quot;ssh-agent&quot;, &quot;sh&quot;, &quot;-c&quot;, cmd ]
+   def process = new ProcessBuilder(cmdarr).start()
+
+   // Iterate over the input stream produced by having run the process (should be git ls-remote standard output)
+   process.inputStream.eachLine {
       sb.append(&quot;&lt;option value=&apos;${it}&apos;&gt;${it}&lt;/option&gt;&quot;)
    }
-   sb.append(&quot;&lt;/select&gt;&quot;)
+   process.waitFor();
    return sb.toString()
 }
 else {
