@@ -98,6 +98,8 @@ CONTAINER_NAME=&quot;apache-shibboleth&quot;
 BASE64=$(\
    echo \
       &quot;set +x &amp;&amp; \
+      export AWS_DEFAULT_REGION=us-east-1; \
+      export AWS_DEFAULT_OUTPUT=json; \
       if [ -n \&quot;\$(docker ps -a --filter name=${CONTAINER_NAME} -q)\&quot; ]; then \
          docker rm -f ${CONTAINER_NAME}; \
       fi &amp;&amp; \
