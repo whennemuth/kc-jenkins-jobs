@@ -98,6 +98,8 @@ BASE64=$(\
          docker rmi -f \${EXISTING_IMAGE_ID}; \
       fi &amp;&amp; \
       \
+      export AWS_DEFAULT_REGION=us-east-1; \
+      export AWS_DEFAULT_OUTPUT=json; \
       evalstr=\$(aws ecr get-login) &amp;&amp; \
       evalstr=\$(echo \$evalstr | sed &apos;s/ -e none//&apos;) &amp;&amp; \
       echo \$evalstr &gt; /tmp/last-ecr-login &amp;&amp; \
