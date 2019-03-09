@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
   <description></description>
@@ -14,13 +14,13 @@
     </jenkins.model.BuildDiscarderProperty>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>SELECTIONS</name>
           <description></description>
           <randomName>choice-parameter-3648888793256717</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>File ui = new File(&apos;/var/lib/jenkins/jobs/all-updates/ui.htm&apos;)
 if(ui.isFile()) {
    return ui.text
@@ -28,7 +28,7 @@ if(ui.isFile()) {
 return &apos;&lt;span color=red&gt;ERROR! cannot find html for this parameter at: &apos; + ui.getAbsolutePath() + &apos;&lt;/span&gt;&apos;</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;ERROR!!!&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -43,6 +43,7 @@ return &apos;&lt;span color=red&gt;ERROR! cannot find html for this parameter at
           <name>ECR_REGISTRY_URL</name>
           <description>The url to the AWS registry where is located the docker repository for the docker image built here.</description>
           <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>DEBUG</name>
@@ -57,12 +58,14 @@ return &apos;&lt;span color=red&gt;ERROR! cannot find html for this parameter at
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>set +x
 
+source /var/lib/jenkins/cli-credentials.sh
 CLI=${JENKINS_HOME}/jenkins-cli.jar
 HOST=http://localhost:8080/
 BACKUP_DIR=${JENKINS_HOME}/backup/kuali-research/war

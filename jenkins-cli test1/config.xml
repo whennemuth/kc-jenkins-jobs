@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
   <description></description>
@@ -18,16 +18,41 @@
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command># java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ login --username admin --password letmein
-java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080 list-jobs
-# java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build hello-world-2-docker-build-image -v -f \
-java -jar /var/lib/jenkins/jenkins-cli.jar -s http://localhost:8080/ build &apos;jenkins-cli test2&apos; -v -f \
+      <command>source /var/lib/jenkins/cli-credentials.sh
+java -jar /var/lib/jenkins/jenkins-cli.jar \
+-s http://localhost:8080/ \
+build \
+&apos;jenkins-cli test2&apos; -v -f \
 -p PARM1=hello \
--p PARM2=goodbye</command>
+-p PARM2=goodbye
+
+exit
+
+java -jar /var/lib/jenkins/jenkins-cli.jar \
+-s http://localhost:8080/ \
+-auth ${JENKINS_USER_ID}:${JENKINS_API_TOKEN} \
+build \
+&apos;jenkins-cli test2&apos; -v -f \
+-p PARM1=hello \
+-p PARM2=goodbye
+
+exit
+
+# Does not seem to work (missing header value)
+java -jar /var/lib/jenkins/jenkins-cli.jar \
+-s http://localhost:8080/ \
+-ssh -user jenkins -i ~/.ssh/id_rsa \
+build \
+&apos;jenkins-cli test2&apos; -v -f \
+-p PARM1=hello \
+-p PARM2=goodbye
+
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

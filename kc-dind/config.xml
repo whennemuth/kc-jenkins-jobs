@@ -1,5 +1,5 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<maven2-moduleset plugin="maven-plugin@2.13">
+<?xml version='1.1' encoding='UTF-8'?>
+<maven2-moduleset plugin="maven-plugin@3.2">
   <actions/>
   <description>This build:&#xd;
    1) Creates the application war file from the HEAD reference of the git master branch.&#xd;
@@ -43,6 +43,7 @@ Then this job would build kuali-research from ref &quot;a2d8a71&quot;
 To simply specify the HEAD ref of the master branch use:
      refs/heads/master</description>
           <defaultValue>*/tags/release/*</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>REFSPEC</name>
@@ -56,11 +57,12 @@ Tag the codebase accordingly. For example:
      git tag release/coeus-1603.49 a2d8a71
      etc.</description>
           <defaultValue>+refs/tags/release/*:refs/remotes/origin/tags/release/*</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.4">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.9.3">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -81,8 +83,9 @@ Tag the codebase accordingly. For example:
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
   <triggers>
-    <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.19.1">
+    <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.29.4">
       <spec></spec>
     </com.cloudbees.jenkins.GitHubPushTrigger>
   </triggers>
@@ -207,6 +210,7 @@ echo &quot; &quot;
 if [ ${#jobs_to_run[@]} -eq 0 ] ; then
    echo &quot;All dependencies accounted for&quot;;
 else
+   source /var/lib/jenkins/cli-credentials.sh
    echo &quot;DEPENDENCIES MISSING. Must build the following: ${jobs_to_run[*]}&quot;;
    echo &quot; &quot;
    for ((i=0; i&lt;${#jobs_to_run[*]}; i++));

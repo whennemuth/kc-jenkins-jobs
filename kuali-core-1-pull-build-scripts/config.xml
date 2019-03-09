@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
   <description>Kuali-research-docker is a git repository that contains bash scripts for building docker images from kuali module source code and deploying them as containers in specified environments.&#xd;
@@ -20,7 +20,7 @@ This job pulls the kuali-research-docker repo into the /tmp directory.</descript
           <description>Log output will be verbose</description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>GIT_REPO_URL</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 The git repository from which this job will pull the docker build context directories and scripts to run the docker commands.
@@ -28,12 +28,12 @@ The git repository from which this job will pull the docker build context direct
           <randomName>choice-parameter-7414145968157592</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>def url = &quot;git@github.com:bu-ist/kuali-research-docker.git&quot;
 return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos; value=&apos;&quot; +  url + &quot;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -44,7 +44,7 @@ return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>GIT_BRANCH</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 The git branch from which this job will pull the docker build context directories and scripts to run the docker commands.
@@ -52,7 +52,7 @@ The git branch from which this job will pull the docker build context directorie
           <randomName>choice-parameter-7330918921590289</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>// Instantiate a string builder to build a dropdown box populated with all the branches in the target git repo
 def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos;&gt;&quot;)
 def defaultBranch = &apos;master&apos;
@@ -81,7 +81,7 @@ sb.append(&quot;&lt;/select&gt;&quot;)
 return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -92,7 +92,7 @@ return sb.toString()</script>
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>ROOT_DIR</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 Pull the docker scripts to this directory.&lt;br&gt;
@@ -101,11 +101,11 @@ Defaults to the workspace directory of this job
           <randomName>choice-parameter-8364657314338619</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -124,6 +124,7 @@ Defaults to the workspace directory of this job
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
@@ -137,6 +138,7 @@ ROOT_DIR=$(echo &quot;$ROOT_DIR&quot; | sed &apos;s/,//g&apos;)
 
 [ -z &quot;$ROOT_DIR&quot; ] &amp;&amp; ROOT_DIR=&quot;$WORKSPACE&quot;
 
+source /var/lib/jenkins/cli-credentials.sh
 java -jar \
   /var/lib/jenkins/jenkins-cli.jar \
   -s http://localhost:8080/ \

@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
   <description>Testing polling of git for build triggering</description>
@@ -34,11 +34,13 @@
           <description>The branch in the github repository to be pulled for the maven build.
 (Change the default value to build against a custom branch). </description>
           <defaultValue>${GITFLOW_BRANCH}</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>GIT_REPO_URL</name>
           <description>The git repository from which the build will pull source code.</description>
           <defaultValue>https://github.com/bu-ist/kuali-research</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>GIT_REFSPEC</name>
@@ -48,16 +50,18 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
 
 +refs/tags/[tag pattern]:refs/remotes/origin/tags/[tag pattern]</description>
           <defaultValue>+refs/heads/${BRANCH}:refs/remotes/origin/${BRANCH}</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>GIT_BRANCHES_TO_BUILD</name>
           <description>Specify the branches if you&apos;d like to track a specific branch in a repository. If left blank, all branches will be examined for changes and built.</description>
           <defaultValue>refs/heads/${BRANCH}</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
-  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.5.3">
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.9.3">
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
@@ -78,6 +82,7 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
@@ -87,6 +92,7 @@ To narrow down to a specific tag or tags (will use the latest matching pattern u
 CLI=/var/lib/jenkins/jenkins-cli.jar
 HOST=http://localhost:8080/
 
+source /var/lib/jenkins/cli-credentials.sh
 java -jar ${CLI} -s ${HOST} build &apos;kuali-research&apos; -v -f \
       -p LANDSCAPE=ci
 

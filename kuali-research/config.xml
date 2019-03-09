@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
   <description>THIS IS THE STARTING POINT FOR A MANUAL BUILD OF THE KUALI-RESEARCH APPLICATION&#xd;
@@ -35,6 +35,7 @@ All the rules above are handled by a dynamically validated job parameter UI scre
 
 </description>
           <defaultValue>https://github.com/bu-ist/kuali-research</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.ChoiceParameterDefinition>
           <name>LANDSCAPE</name>
@@ -70,7 +71,7 @@ It is assumed that you are attempting to build against a feature branch, tag or 
 </description>
           <defaultValue>true</defaultValue>
         </hudson.model.BooleanParameterDefinition>
-        <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@2.1">
           <name>GIT_REF_TYPE</name>
           <description>Select how you would like to determine your git commit ID
 &lt;br&gt;
@@ -78,11 +79,11 @@ It is assumed that you are attempting to build against a feature branch, tag or 
           <randomName>choice-parameter-11109103687020</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>def list = [&apos;Default:selected&apos;, &apos;Branch&apos;, &apos;Tag&apos;, &apos;Commit ID&apos;]</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>def list = [error]</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -90,14 +91,15 @@ It is assumed that you are attempting to build against a feature branch, tag or 
           <projectName>kuali-research</projectName>
           <choiceType>PT_RADIO</choiceType>
           <filterable>false</filterable>
+          <filterLength>1</filterLength>
         </org.biouno.unochoice.ChoiceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>GIT_REF</name>
           <description></description>
           <randomName>choice-parameter-52128031899195</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>def list = null
 if (&quot;branch&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
    def multiline = (&apos;git -c core.askpass=true ls-remote -h &apos; + GIT_REPO_URL).execute() | &apos;grep -i -P -o ^[^\\s]+\\s+refs/heads/\\K(.*)\$&apos;.execute()
@@ -129,7 +131,7 @@ else {
 </script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:310px;&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -140,15 +142,15 @@ else {
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>GIT_COMMIT_ID</name>
           <description>This is the git commit ID that the build will be based on.
-&lt;br&gt;
-&lt;br&gt;</description>
+
+</description>
           <randomName>choice-parameter-11109106720814</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>def process = null
 def commitId = null
 if (&quot;branch&quot;.equalsIgnoreCase(GIT_REF_TYPE)) {
@@ -197,7 +199,7 @@ else {
 }</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; disabled=true style=&apos;font-family:monospace; width:310px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -213,6 +215,7 @@ else {
           <description>This is the individual or group email that all job result notifications will be sent to by default.
 This parameter can be overridden in the job configuration on a more granular level.</description>
           <defaultValue>kcrmproj@bu.edu</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -222,6 +225,7 @@ This parameter can be overridden in the job configuration on a more granular lev
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
@@ -275,6 +279,8 @@ else
    GIT_BRANCHES_TO_BUILD=&quot;${GIT_COMMIT_ID}&quot;         
 fi
 
+
+source /var/lib/jenkins/cli-credentials.sh
 for i in $(seq ${#EC2_IDS[@]}); do 
    EC2_ID=${EC2_IDS[i-1]}
    if ( [ $i -eq 1 ] &amp;&amp; [ &quot;$BRANCH&quot; != &quot;&quot; ] ); then
@@ -343,7 +349,7 @@ set -x</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.47">
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.65">
       <recipientList></recipientList>
       <configuredTriggers>
         <hudson.plugins.emailext.plugins.trigger.SuccessTrigger>
@@ -420,13 +426,12 @@ $PROJECT_DEFAULT_CONTENT</body>
 if(&quot;ci&quot;.equalsIgnoreCase(landscape) || &quot;sandbox&quot;.equalsIgnoreCase(landscape)) {
     logger.println(&quot;Cancelling notification email. &quot; + landscape + &quot; landscape not configured for email notifications&quot;)
     cancel = true
-}
-
-</presendScript>
+}</presendScript>
       <postsendScript>$DEFAULT_POSTSEND_SCRIPT</postsendScript>
       <attachBuildLog>false</attachBuildLog>
       <compressBuildLog>false</compressBuildLog>
       <replyTo></replyTo>
+      <from></from>
       <saveOutput>false</saveOutput>
       <disabled>false</disabled>
     </hudson.plugins.emailext.ExtendedEmailPublisher>
