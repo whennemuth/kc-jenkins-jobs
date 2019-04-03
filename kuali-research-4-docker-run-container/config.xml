@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
   <description>This job shells into a specified target EC2 instance and executes docker commands.&#xd;
@@ -23,6 +23,7 @@
           <description>Indicates the location of the elastic container registry (ECR) where the docker image to be pulled resides.
 Combined with the POM_VERSION, this value also serves to identify the docker image in the registry.</description>
           <defaultValue>730096353738.dkr.ecr.us-east-1.amazonaws.com</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>POM_VERSION</name>
@@ -30,6 +31,7 @@ Combined with the POM_VERSION, this value also serves to identify the docker ima
 Combined with ECR_URL, this value serves to identify the docker image in the registry.
 Look in the pom file of what was built to determine what this should be.</description>
           <defaultValue></defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>REGISTRY_REPO_NAME</name>
@@ -38,27 +40,32 @@ Look in the pom file of what was built to determine what this should be.
 This is used to identify the name of the docker registry repository that this image is going to be pulled from.
 The value is &quot;coeus&quot; by default, but remember that any sandbox images should go to a registry repository called &quot;coeus-sandbox&quot;</description>
           <defaultValue>coeus</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>EC2_INSTANCE_ID</name>
           <description>The id of the EC2 instance that will be running the container based on the docker image wrapping the newly built war file.
 Example: i-099de1c5407493f9b</description>
           <defaultValue>i-0258a5f2a87ba7972</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>ATTACHMENTS_DIR</name>
           <description>Directory where files uploaded by users are deposited by the webapp</description>
           <defaultValue>/var/log/kuali/attachments</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>JAVAMELODY_DIR</name>
           <description>Directory where files saved by javamelody are located.</description>
           <defaultValue>/var/log/kuali/javamelody</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>PRINTING_DIR</name>
           <description>Directory where printing job artifacts are stored for download to user.</description>
           <defaultValue>/var/log/kuali/printing</defaultValue>
+          <trim>false</trim>
         </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -68,6 +75,7 @@ Example: i-099de1c5407493f9b</description>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
@@ -109,6 +117,7 @@ BASE64=$(\
          -p 8080:8080 \
          -p 8009:8009 \
          -e EC2_HOSTNAME=\$(echo \$HOSTNAME) \
+         -h \$(echo \$HOSTNAME) \
          -v /opt/kuali/main/config:/opt/kuali/main/config \
          -v $PRINTING_DIR:/opt/kuali/logs/printing/logs \
          -v $JAVAMELODY_DIR:/var/log/javamelody \
