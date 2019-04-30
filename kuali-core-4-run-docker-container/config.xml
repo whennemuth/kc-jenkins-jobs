@@ -526,10 +526,10 @@ done
 if [ -n &quot;$s3Url&quot; ] ; then
   # Have the s3 url of the stdout file presigned so a we can access it with a new url that will get around
   # the private access restriction.
-  days=10
+  days=7
   seconds=&quot;$((60*60*24*${days}))&quot;
   httpUrl=&quot;$(aws s3 presign &quot;${s3Url}&quot; --expires-in=${seconds})&quot;
-  echo &quot;Access the docker container creation output on the remote EC2 instance ($EC2_INSTANCE_ID}) at:&quot;
+  echo &quot;Access the docker container creation output on the remote EC2 instance (${EC2_INSTANCE_ID}) at:&quot;
   echo &quot; &quot;
   echo &quot;$httpUrl&quot;
   echo &quot; &quot;

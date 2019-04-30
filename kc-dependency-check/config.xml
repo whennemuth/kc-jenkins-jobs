@@ -31,7 +31,7 @@ This build must succeed in order for the main kuali-research build to proceed.</
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <jdk>(System)</jdk>
+  <jdk>jdk-11</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
@@ -73,16 +73,16 @@ echo &quot;.m2 repository: ${repo}&quot;
 # file extension, group, version, artifactid, parent_artifactid, job
 m2_items=(
    &quot;jar,co/kuali/schemaspy,${schemaspy_version},schemaspy,schemaspy,schemaspy&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-archetype-quickstart,rice,kc-rice&quot;
+   # &quot;jar,org/kuali/rice,${rice_version},rice-archetype-quickstart,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-core-api,rice,kc-rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-db-config,rice,kc-rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-deploy,rice,kc-rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-development-tools,rice,kc-rice&quot;
+   # &quot;jar,org/kuali/rice,${rice_version},rice-db-config,rice,kc-rice&quot;
+   # &quot;jar,org/kuali/rice,${rice_version},rice-deploy,rice,kc-rice&quot;
+   # &quot;jar,org/kuali/rice,${rice_version},rice-development-tools,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-impex-client-bootstrap,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-impex-master,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-impex-server-bootstrap,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-impl,rice,kc-rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-it-config,rice,kc-rice&quot;
+   # &quot;jar,org/kuali/rice,${rice_version},rice-it-config,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-ken-api,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-kew-api,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-kim-api,rice,kc-rice&quot;
@@ -92,10 +92,10 @@ m2_items=(
    &quot;jar,org/kuali/rice,${rice_version},rice-ksb-api,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-legacy-web,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-location-api,rice,kc-rice&quot;
-   &quot;war,org/kuali/rice,${rice_version},rice-serviceregistry,rice,kc-rice&quot;
+   # &quot;war,org/kuali/rice,${rice_version},rice-serviceregistry,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-sql,rice,kc-rice&quot;
    &quot;war,org/kuali/rice,${rice_version},rice-standalone,rice,kc-rice&quot;
-   &quot;jar,org/kuali/rice,${rice_version},rice-tools-test,rice,kc-rice&quot;
+   # &quot;jar,org/kuali/rice,${rice_version},rice-tools-test,rice,kc-rice&quot;
    &quot;war,org/kuali/rice,${rice_version},rice-web,rice,kc-rice&quot;
    &quot;jar,org/kuali/rice,${rice_version},rice-xml,rice,kc-rice&quot;
    &quot;jar,org/kuali/coeus,${api_version},coeus-api-all,coeus-api,kc-api&quot;

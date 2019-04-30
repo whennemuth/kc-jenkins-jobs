@@ -59,8 +59,8 @@ The image to be built is based on a centos7-java-tomcat image that is tagged wit
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.54">
               <script>def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
-sb.append(&quot;&lt;option value=&apos;11&apos;&gt;11&lt;/option&gt;&quot;)
-sb.append(&quot;&lt;option selected=true value=&apos;8&apos;&gt;8&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option selected=true value=&apos;11&apos;&gt;11&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;8&apos;&gt;8&lt;/option&gt;&quot;)
 sb.append(&quot;&lt;option value=&apos;7&apos;&gt;7&lt;/option&gt;&quot;)
 sb.append(&quot;&lt;/select&gt;&quot;)
 return sb.toString()</script>
@@ -125,7 +125,7 @@ JAVA_VERSION=&quot;$(echo $JAVA_VERSION | sed &apos;s/,//g&apos;)&quot;
 # Bug correction: An active choices plugin element will not set its corresponding environment variable if the 
 # default value is being invoked through calling this job using the jenkins-cli build function with the corresponding parameter omitted.
 # NOTE: If you run this job manually, the default value will be reflected in the environment variable.
-[ -z $JAVA_VERSION ] &amp;&amp; JAVA_VERSION=8
+[ -z $JAVA_VERSION ] &amp;&amp; JAVA_VERSION=11
 BASE_IMAGE_TAG=&quot;java${JAVA_VERSION}-tomcat${TOMCAT_VERSION}&quot;
 TOMCAT_REGISTRY_IMAGE=&quot;${ECR_REGISTRY_URL}/centos7-java-tomcat:${BASE_IMAGE_TAG}&quot;
 TOMCAT_LOCAL_IMAGE=&quot;bu-ist/centos7-java-tomcat:${BASE_IMAGE_TAG}&quot;

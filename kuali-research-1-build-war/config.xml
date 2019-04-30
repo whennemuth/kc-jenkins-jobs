@@ -195,7 +195,7 @@ Possible options:
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
-  <jdk>(System)</jdk>
+  <jdk>jdk-11</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <rootModule>

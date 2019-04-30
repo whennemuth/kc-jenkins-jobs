@@ -368,6 +368,7 @@ parms=(
   &quot;git_refspec=$GIT_COMMIT_ID&quot;
   &quot;dryrun=$([ &quot;$DRYRUN&quot; == true ] &amp;&amp; echo &apos;true&apos; || echo &apos;false&apos;)&quot;
   &quot;docker_image_name=$DOCKER_TAG&quot;
+  &quot;keep_dangling=true&quot;
 )
 
 echo &quot;&quot;
