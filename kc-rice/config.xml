@@ -50,7 +50,7 @@ rice version id we are interested in and the maven build can use the SHA of that
 NOTE: An assumption is made that BU customizations are minor enough to preclude the possibility that we will run
 into a merge conflict when git attempts the rebase.
 </description>
-          <defaultValue>true</defaultValue>
+          <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>REBASE_ON_BRANCH</name>

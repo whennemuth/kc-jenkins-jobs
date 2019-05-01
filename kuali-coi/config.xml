@@ -433,8 +433,6 @@ case &quot;$LANDSCAPE&quot; in
       EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;);;
 esac
 
-[ &quot;$NO_BUILD&quot; == true ] &amp;&amp; blast_image=&quot;false&quot; || blast_image=&quot;true&quot;
-
 source /var/lib/jenkins/cli-credentials.sh
 for i in $(seq ${#EC2_IDS[@]}); do 
    if [ $i -eq 1 ] &amp;&amp; [ &quot;$NO_BUILD&quot; != true ] ; then
@@ -474,7 +472,7 @@ for i in $(seq ${#EC2_IDS[@]}); do
      -p REGISTRY_REPO_NAME=${TARGET} \
      -p VERSION=${VERSION} \
      -p LANDSCAPE=${LANDSCAPE} \
-     -p BLAST_IMAGE=${blast_image} \
+     -p BLAST_IMAGE=true \
      -p MIGRATIONS=${MIGRATIONS} \
      -p EC2_INSTANCE_ID=${EC2_IDS[i-1]}\
      -p ROOT_DIR=${WORKSPACE}&quot;
