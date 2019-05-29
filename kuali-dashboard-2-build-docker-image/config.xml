@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
   <description>Build the docker image for research-portal</description>
@@ -30,7 +30,7 @@
 This step can be skipped by unchecking this box if the content of the build workspace contains the right source code from the last build attempt.</description>
           <defaultValue>true</defaultValue>
         </hudson.model.BooleanParameterDefinition>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>GIT_REPO_URL</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 The git repository from which the build will pull source code.
@@ -38,7 +38,7 @@ The git repository from which the build will pull source code.
           <randomName>choice-parameter-36269167683570083</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>if(!GIT_PULL) {
   return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos; disabled=true&gt;&quot;
 }
@@ -47,7 +47,7 @@ def url = &quot;git@github.com:bu-ist/kuali-research-portal.git&quot;
 return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos; value=&apos;&quot; +  url + &quot;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -58,7 +58,7 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; style=&apos;
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.CascadeChoiceParameter plugin="uno-choice@2.1">
           <name>GIT_REF_TYPE</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 Select how you would like to determine your git commit ID
@@ -66,7 +66,7 @@ Select how you would like to determine your git commit ID
           <randomName>choice-parameter-36269167685068613</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>if(!GIT_PULL) {
    def list = [&apos;N/A:selected&apos;]
 }
@@ -75,7 +75,7 @@ else {
 }</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>def list = [error]</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -85,14 +85,15 @@ else {
           <referencedParameters>GIT_PULL</referencedParameters>
           <choiceType>PT_RADIO</choiceType>
           <filterable>false</filterable>
+          <filterLength>1</filterLength>
         </org.biouno.unochoice.CascadeChoiceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>GIT_REF</name>
           <description></description>
           <randomName>choice-parameter-36269167686522778</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>if(!GIT_PULL) {
   return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; style=&apos;width:400px; font-family:monospace;&apos; disabled=true&gt;&quot;
 }
@@ -137,7 +138,7 @@ return sb.toString()
 </script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px; font-family:monospace;&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -148,7 +149,7 @@ return sb.toString()
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>GIT_COMMIT_ID</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 This is the git commit ID that the build will be based on.
@@ -156,7 +157,7 @@ This is the git commit ID that the build will be based on.
           <randomName>choice-parameter-36269167687974680</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>def commitId = null
 def process = null
 def cmd = &quot;ssh-add /var/lib/jenkins/.ssh/bu_github_id_research_portal_rsa &gt; /dev/null 2&gt;&amp;1; &quot;
@@ -196,7 +197,7 @@ else {
 }</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; disabled=true style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -207,7 +208,7 @@ else {
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>VERSION</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;This value reflects the git tag applied to the codebase the docker image will be based on.
 The git commit may not be the exact commit that was tagged, but would be the most recent commit since that tag before the next tag is encountered.
@@ -218,7 +219,7 @@ VERSION follows the convention of YYMM.xxxx
           <randomName>choice-parameter-36269167689456259</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>if(&quot;${GIT_REF}&quot;.matches(&quot;^\\d{4}\\.\\d{4}\$&quot;)) {
    return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;${GIT_REF}&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;
 }
@@ -233,7 +234,7 @@ else {
 }</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -244,7 +245,7 @@ else {
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>ECR_REGISTRY_URL</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 This value reflects the git tag applied to the codebase the docker The url of the elastic container registry (ECR) where the newly created image is to be pushed to from this server and pulled from by the target docker host for the new image
@@ -252,12 +253,12 @@ This value reflects the git tag applied to the codebase the docker The url of th
           <randomName>choice-parameter-36269167690895198</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>def ref = &apos;730096353738.dkr.ecr.us-east-1.amazonaws.com&apos;
 return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&quot; + ref + &quot;&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -268,7 +269,7 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>REGISTRY_REPO_NAME</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 This is used to identify the name of the docker registry repository that this image is going to be pushed to. 
@@ -278,11 +279,11 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
           <randomName>choice-parameter-36269167692348171</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;portal&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;font-family:monospace; width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -293,7 +294,7 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>ROOT_DIR</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 Pull the docker scripts to this directory.&lt;br&gt;
@@ -302,11 +303,11 @@ No default value.
           <randomName>choice-parameter-36269167693804548</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&apos; style=&apos;width:400px;&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -325,6 +326,7 @@ No default value.
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
@@ -341,6 +343,16 @@ GIT_COMMIT_ID=&quot;$(echo $GIT_COMMIT_ID | sed &apos;s/,//g&apos;)&quot;
 DRYRUN=&quot;$(echo $DRYRUN | sed &apos;s/,//g&apos;)&quot;
 VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
+
+echo &quot;Removing portal images tagged for the registry over 6 months ago...&quot;
+docker rmi $(
+  docker images | \
+    grep 730096353738 | \
+    awk &apos;(($4 &gt;= 6 &amp;&amp; $5 == &quot;months&quot;) || ($5 == &quot;years&quot;)) &amp;&amp; ($1 ~ /^.*\/portal(\-feature)?$/) {
+      print $3
+    }&apos;\
+) 2&gt; /dev/null &amp;&amp; \
+docker rmi $(docker images -a --filter dangling=true -q) 2&gt; dev/null
 
 # Validate the job parameters
 [ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1

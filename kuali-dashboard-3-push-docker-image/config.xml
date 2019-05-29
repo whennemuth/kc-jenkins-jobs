@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
   <description>This job uploads a specified docker image for research-portal from the local repository to a specified docker registry</description>
@@ -21,7 +21,7 @@
 </description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>ECR_REGISTRY_URL</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 Indicates the location of the elastic container registry (ECR) where the docker image is to be pushed to.
@@ -29,12 +29,12 @@ Indicates the location of the elastic container registry (ECR) where the docker 
           <randomName>choice-parameter-7754835500414235</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>def reg = &apos;730096353738.dkr.ecr.us-east-1.amazonaws.com&apos;
 return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;&quot; + reg + &quot;&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -45,7 +45,7 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>REGISTRY_REPO_NAME</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 This is used to identify the name of the docker registry repository that this image is going to be pushed to. 
@@ -55,11 +55,11 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
           <randomName>choice-parameter-7758862631200119</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;portal&apos; style=&apos;width:400px;font-family:monospace&apos;&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -70,7 +70,7 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.ChoiceParameter plugin="uno-choice@2.1">
           <name>VERSION_OPT</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 How do you want to enter the version value?
@@ -78,11 +78,11 @@ How do you want to enter the version value?
           <randomName>choice-parameter-7758862632456718</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>def list = [ &apos;Available:selected&apos;, &apos;Custom&apos; ]</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>def list = [ &apos;ERROR&apos; ]</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -90,8 +90,9 @@ How do you want to enter the version value?
           <projectName>kuali-dashboard-3-push-docker-image</projectName>
           <choiceType>PT_RADIO</choiceType>
           <filterable>false</filterable>
+          <filterLength>1</filterLength>
         </org.biouno.unochoice.ChoiceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@1.5.2">
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>VERSION</name>
           <description>&lt;div style=&quot;font-size:14px;font-family:verdana; width:600px; padding:5px; padding-bottom:20px;&quot;&gt;
 This value reflects the git tag applied to the codebase the docker image was based on. 
@@ -101,7 +102,7 @@ Combined with ECR_REGISTRY_URL, this value serves to identify the docker image a
           <randomName>choice-parameter-7758862633667747</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.24">
+            <secureScript plugin="script-security@1.54">
               <script>if(&quot;available&quot;.equalsIgnoreCase(VERSION_OPT)) {
    def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
    def multiline = &apos;docker images -q --filter=reference=730096353738.dkr.ecr.us-east-1.amazonaws.com/portal:* --format {{.Tag}}&apos;.execute()
@@ -118,7 +119,7 @@ else {
 }</script>
               <sandbox>false</sandbox>
             </secureScript>
-            <secureFallbackScript plugin="script-security@1.24">
+            <secureFallbackScript plugin="script-security@1.54">
               <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
@@ -137,6 +138,7 @@ else {
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>

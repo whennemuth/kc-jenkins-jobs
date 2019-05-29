@@ -117,8 +117,17 @@ The image to be built is based on a centos7-java-tomcat image that is tagged wit
 #        - all networks not used by at least one container
 #        - all images without at least one container associated to them
 #        - all build cache
-echo &quot;Pruning the entire docker system...&quot;
-docker system prune -a -f
+# echo &quot;Pruning the entire docker system...&quot;
+# docker system prune -a -f
+echo &quot;Removing coeus images tagged for the registry over 6 months ago...&quot;
+docker rmi $(
+  docker images | \
+    grep 730096353738 | \
+    awk &apos;(($4 &gt;= 6 &amp;&amp; $5 == &quot;months&quot;) || ($5 == &quot;years&quot;)) &amp;&amp; ($1 ~ /^.*\/coeus(\-feature)?$/) {
+      print $3
+    }&apos;\
+) 2&gt; /dev/null &amp;&amp; \
+docker rmi $(docker images -a --filter dangling=true -q) 2&gt; dev/null
 
 # 2) If the base tomcat image is not in the local repo, get it from the registry
 JAVA_VERSION=&quot;$(echo $JAVA_VERSION | sed &apos;s/,//g&apos;)&quot;
@@ -208,6 +217,9 @@ docker build -t ${DOCKER_TAG} \
   --build-arg SOURCE_WAR=${WAR_FILE} \
   --build-arg JAVA_VERSION=${JAVA_VERSION} \
   --build-arg TOMCAT_VERSION=${TOMCAT_VERSION} .
+
+echo &quot;Removing dangling images...&quot;
+docker rmi $(docker images -a --filter dangling=true -q) 2&gt; dev/null
 </command>
     </hudson.tasks.Shell>
   </builders>

@@ -346,6 +346,16 @@ DRYRUN=&quot;$(echo $DRYRUN | sed &apos;s/,//g&apos;)&quot;
 VERSION=&quot;$(echo $VERSION | sed &apos;s/,//g&apos;)&quot;
 DOCKER_TAG=&quot;${ECR_REGISTRY_URL}/${REGISTRY_REPO_NAME}:${VERSION}&quot;
 
+echo &quot;Removing core images tagged for the registry over 6 months ago...&quot;
+docker rmi $(
+  docker images | \
+    grep 730096353738 | \
+    awk &apos;(($4 &gt;= 6 &amp;&amp; $5 == &quot;months&quot;) || ($5 == &quot;years&quot;)) &amp;&amp; ($1 ~ /^.*\/core(\-feature)?$/) {
+      print $3
+    }&apos;\
+) 2&gt; /dev/null &amp;&amp; \
+docker rmi $(docker images -a --filter dangling=true -q) 2&gt; dev/null
+
 # Validate the job parameters
 [ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
 if [ -z &quot;$VERSION&quot; ] ; then
