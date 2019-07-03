@@ -127,7 +127,7 @@ docker rmi $(
       print $3
     }&apos;\
 ) 2&gt; /dev/null &amp;&amp; \
-docker rmi $(docker images -a --filter dangling=true -q) 2&gt; dev/null
+docker rmi $(docker images -a --filter dangling=true -q) 2&gt; /dev/null || true
 
 # 2) If the base tomcat image is not in the local repo, get it from the registry
 JAVA_VERSION=&quot;$(echo $JAVA_VERSION | sed &apos;s/,//g&apos;)&quot;
@@ -219,8 +219,7 @@ docker build -t ${DOCKER_TAG} \
   --build-arg TOMCAT_VERSION=${TOMCAT_VERSION} .
 
 echo &quot;Removing dangling images...&quot;
-docker rmi $(docker images -a --filter dangling=true -q) 2&gt; dev/null
-</command>
+docker rmi $(docker images -a --filter dangling=true -q) 2&gt; /dev/null || true</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

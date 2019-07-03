@@ -354,7 +354,7 @@ docker rmi $(
       print $3
     }&apos;\
 ) 2&gt; /dev/null &amp;&amp; \
-docker rmi $(docker images -a --filter dangling=true -q) 2&gt; dev/null
+docker rmi $(docker images -a --filter dangling=true -q) 2&gt; dev/null || true
 
 # Validate the job parameters
 [ -z &quot;$ECR_REGISTRY_URL&quot; ] &amp;&amp; echo &quot;ERROR! ECR_REGISTRY_URL cannot be empty!&quot; &amp;&amp; exit 1
