@@ -141,7 +141,7 @@ return sb.toString()</script>
 CLI=/var/lib/jenkins/jenkins-cli.jar
 HOST=http://localhost:8080/
 DOCKER_PUSH_LOG_FILE=/var/lib/jenkins/jobs/kuali-core-3-push-docker-image/lastSuccessful/log
-EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;);;
+EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;);
 
 source /var/lib/jenkins/cli-credentials.sh
 
@@ -162,7 +162,7 @@ for i in $(seq ${#EC2_IDS[@]}); do
 	java -jar ${CLI} \
       -s ${HOST} build &apos;kuali-core-4-run-docker-container&apos; -v -f \
       -p EC2_INSTANCE_ID=${EC2_ID} \
-      -p POM_VERSION=${POM_VERSION}
+      -p VERSION=${POM_VERSION}
   
 	eval $CMD
 
