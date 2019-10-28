@@ -179,6 +179,7 @@ for i in $(seq ${#EC2_IDS[@]}); do
     CMD_PRINTABLE=&quot;$(echo &quot;$CMD&quot; | sed &apos;s/[[:space:]][[:space:]]*\-p/\n\0/g&apos;)&quot;
     printf &quot;\n$CMD_PRINTABLE\n&quot;
     
+    # echo &quot;$CMD&quot;
     eval &quot;$CMD&quot;  
     
 done

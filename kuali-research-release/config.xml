@@ -133,10 +133,14 @@ CLI=/var/lib/jenkins/jenkins-cli.jar
 HOST=http://localhost:8080/
 DOCKER_PUSH_LOG_FILE=/var/lib/jenkins/jobs/kuali-research-3-docker-push-image/lastSuccessful/log
 EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;);
+ECR_REGISTRY_URL=730096353738.dkr.ecr.us-east-1.amazonaws.com
+GIT_SCRIPT_URL=git@github.com:bu-ist/kuali-research-docker.git
+GIT_SCRIPT_BRANCH=bu-master
 
 source /var/lib/jenkins/cli-credentials.sh
 
-POM_VERSION=$(cat ${DOCKER_PUSH_LOG_FILE} | grep -P &apos;digest&apos; | cut -d &apos;:&apos; -f 1 | tr -d &apos;[[:space:]]&apos;);
+LANDSCAPE=&quot;$(echo $LANDSCAPE | sed &apos;s/,//g&apos;)&quot;
+VERSION=$(cat ${DOCKER_PUSH_LOG_FILE} | grep -P &apos;digest&apos; | cut -d &apos;:&apos; -f 1 | tr -d &apos;[[:space:]]&apos;);
 
 case &quot;$LANDSCAPE&quot; in
    &quot;qa&quot;)
@@ -150,12 +154,22 @@ esac
 for i in $(seq ${#EC2_IDS[@]}); do 
 	EC2_ID=${EC2_IDS[i-1]}
 
+    CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-research-4-docker-run-container&apos; -v -f \
+      -p ECR_REGISTRY_URL=${ECR_REGISTRY_URL} \
+      -p EC2_INSTANCE_ID=${EC2_ID} \
+      -p POM_VERSION=${VERSION} \
+      -p REGISTRY_REPO_NAME=coeus&quot;
+
 	java -jar ${CLI} \
       -s ${HOST} build &apos;kuali-research-4-docker-run-container&apos; -v -f \
       -p EC2_INSTANCE_ID=${EC2_ID} \
       -p POM_VERSION=${POM_VERSION}
-  
-	eval $CMD
+
+    CMD_PRINTABLE=&quot;$(echo &quot;$CMD&quot; | sed &apos;s/[[:space:]][[:space:]]*\-p/\n\0/g&apos;)&quot;
+    printf &quot;\n$CMD_PRINTABLE\n&quot;
+
+	echo &quot;$CMD&quot;
+	# eval &quot;$CMD&quot;
 
 done
 

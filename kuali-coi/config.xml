@@ -66,31 +66,6 @@ return opendiv + checkbox + desc + closediv</script>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
-          <name>MIGRATIONS</name>
-          <description></description>
-          <randomName>choice-parameter-8441679462069250</randomName>
-          <visibleItemCount>1</visibleItemCount>
-          <script class="org.biouno.unochoice.model.GroovyScript">
-            <secureScript plugin="script-security@1.54">
-              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
-def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;true&apos; checked style=&apos;display:inline;&apos;&gt;&quot;
-def desc = &quot;Run migrations against the database  when the docker container starts up?&quot;
-def closediv = &quot;&lt;/div&gt;&quot;
-return opendiv + checkbox + desc + closediv</script>
-              <sandbox>false</sandbox>
-            </secureScript>
-            <secureFallbackScript plugin="script-security@1.54">
-              <script>return &quot;Error creating migrations selection&quot;</script>
-              <sandbox>false</sandbox>
-            </secureFallbackScript>
-          </script>
-          <projectName>kuali-coi</projectName>
-          <parameters class="linked-hash-map"/>
-          <referencedParameters></referencedParameters>
-          <choiceType>ET_FORMATTED_HTML</choiceType>
-          <omitValueField>false</omitValueField>
-        </org.biouno.unochoice.DynamicReferenceParameter>
-        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>NO_BUILD</name>
           <description></description>
           <randomName>choice-parameter-8466761842197271</randomName>
@@ -401,7 +376,6 @@ CMDS=()
 
 # Fix the trailing comma issue with active choices parameters reactive
 DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
-MIGRATIONS=&quot;$(echo $MIGRATIONS | sed &apos;s/,//g&apos;)&quot;
 NO_BUILD=&quot;$(echo $NO_BUILD | sed &apos;s/,//g&apos;)&quot;
 GIT_REPO_URL=&quot;$(echo $GIT_REPO_URL | sed &apos;s/,//g&apos;)&quot;
 GIT_REF=&quot;$(echo $GIT_REF | sed &apos;s/,//g&apos;)&quot;
@@ -473,7 +447,6 @@ for i in $(seq ${#EC2_IDS[@]}); do
      -p VERSION=${VERSION} \
      -p LANDSCAPE=${LANDSCAPE} \
      -p BLAST_IMAGE=true \
-     -p MIGRATIONS=${MIGRATIONS} \
      -p EC2_INSTANCE_ID=${EC2_IDS[i-1]}\
      -p ROOT_DIR=${WORKSPACE}&quot;
      

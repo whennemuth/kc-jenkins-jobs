@@ -245,6 +245,9 @@ EC2_IDS=()
 if ( [ -n &quot;${GIT_REF}&quot; ] &amp;&amp; [ &quot;${GIT_REF}&quot; != &quot;,&quot; ] ); then
    GIT_REF=$(echo ${GIT_REF} | grep -i -o -P &apos;^.*[^,](?=,?$)&apos;)
 fi
+if ( [ -n &quot;${GIT_COMMIT_ID}&quot; ] &amp;&amp; [ &quot;${GIT_COMMIT_IDIT_REF}&quot; != &quot;,&quot; ] ); then
+   GIT_COMMIT_ID=$(echo ${GIT_COMMIT_ID} | grep -i -o -P &apos;^.*[^,](?=,?$)&apos;)
+fi
 # By convention, we are calling the repository name within the registry the same as the artifactid of the pom file 
 # that the repository keeps images for. However if we want to break this rule and cause downstream jobs to push 
 # and pull from the registry referencing a different repository name, then set this value accordingly.

@@ -108,9 +108,12 @@ return sb.toString()</script>
     <hudson.tasks.Shell>
       <command>set +x
 
+echo &quot;NOT READY YET!!!&quot;
+exit 1
+
 CLI=/var/lib/jenkins/jenkins-cli.jar
 HOST=http://localhost:8080/
-EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;);;
+EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;)
 
 source /var/lib/jenkins/cli-credentials.sh
 
