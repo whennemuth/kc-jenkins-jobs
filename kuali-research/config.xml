@@ -232,6 +232,7 @@ This parameter can be overridden in the job configuration on a more granular lev
     <hudson.tasks.Shell>
       <command>set +x
 
+echo &quot;hello 1&quot;
 CLI=/var/lib/jenkins/jenkins-cli.jar
 HOST=http://localhost:8080/
 DOCKER_PUSH_LOG_FILE=/var/lib/jenkins/jobs/kuali-research-3-docker-push-image/lastSuccessful/log
@@ -240,12 +241,13 @@ GIT_REF_TYPE=$(echo $GIT_REF_TYPE | tr &apos;[:upper:]&apos; &apos;[:lower:]&apo
 BRANCH=&quot;&quot;
 CANCEL_JOB=&quot;&quot;
 EC2_IDS=()
+
 # BUGFIX: The Active Choices Reactive Parameter Rendering feature is adding 
 # a comma to the end of the GIT_REF listbox value, so strip off the comma
 if ( [ -n &quot;${GIT_REF}&quot; ] &amp;&amp; [ &quot;${GIT_REF}&quot; != &quot;,&quot; ] ); then
    GIT_REF=$(echo ${GIT_REF} | grep -i -o -P &apos;^.*[^,](?=,?$)&apos;)
 fi
-if ( [ -n &quot;${GIT_COMMIT_ID}&quot; ] &amp;&amp; [ &quot;${GIT_COMMIT_IDIT_REF}&quot; != &quot;,&quot; ] ); then
+if ( [ -n &quot;${GIT_COMMIT_ID}&quot; ] &amp;&amp; [ &quot;${GIT_COMMIT_ID}&quot; != &quot;,&quot; ] ); then
    GIT_COMMIT_ID=$(echo ${GIT_COMMIT_ID} | grep -i -o -P &apos;^.*[^,](?=,?$)&apos;)
 fi
 # By convention, we are calling the repository name within the registry the same as the artifactid of the pom file 

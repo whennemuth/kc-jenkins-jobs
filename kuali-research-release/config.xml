@@ -160,16 +160,11 @@ for i in $(seq ${#EC2_IDS[@]}); do
       -p POM_VERSION=${VERSION} \
       -p REGISTRY_REPO_NAME=coeus&quot;
 
-	java -jar ${CLI} \
-      -s ${HOST} build &apos;kuali-research-4-docker-run-container&apos; -v -f \
-      -p EC2_INSTANCE_ID=${EC2_ID} \
-      -p POM_VERSION=${POM_VERSION}
-
     CMD_PRINTABLE=&quot;$(echo &quot;$CMD&quot; | sed &apos;s/[[:space:]][[:space:]]*\-p/\n\0/g&apos;)&quot;
     printf &quot;\n$CMD_PRINTABLE\n&quot;
 
-	echo &quot;$CMD&quot;
-	# eval &quot;$CMD&quot;
+	# echo &quot;$CMD&quot;
+	eval &quot;$CMD&quot;
 
 done
 
