@@ -1,0 +1,166 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>THIS IS THE STARTING POINT FOR A MANUAL BUILD OF THE RESEARCH PDF APPLICATION&#xd;
+</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
+          <name>DEBUG</name>
+          <description></description>
+          <randomName>choice-parameter-8441679458654903</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.54">
+              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
+def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;true&apos; checked style=&apos;display:inline;&apos;&gt;&quot;
+def desc = &quot;Prints out would be calls to other jobs, but do not go through with them.&quot;
+def closediv = &quot;&lt;/div&gt;&quot;
+return opendiv + checkbox + desc + closediv</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.54">
+              <script>return &quot;Error creating debug selection&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-pdf</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
+          <name>VERBOSE</name>
+          <description></description>
+          <randomName>choice-parameter-8441679459948153</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.54">
+              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
+def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;false&apos; style=&apos;display:inline;&apos;&gt;&quot;
+def desc = &quot;If checked log output will be verbose.&quot;
+def closediv = &quot;&lt;/div&gt;&quot;
+return opendiv + checkbox + desc + closediv</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.54">
+              <script>return &quot;Error creating verbose selection&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-pdf</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
+          <name>LANDSCAPE</name>
+          <description>What landscape is the target EC2 instance in?</description>
+          <randomName>choice-parameter-8282566762271781</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.54">
+              <script>def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
+sb.append(&quot;&lt;option selected=true value=&apos;sb&apos;&gt;sb&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;ci&apos;&gt;ci&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;qa&apos;&gt;qa&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;stg&apos;&gt;stg&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;option value=&apos;prod&apos;&gt;prod&lt;/option&gt;&quot;)
+sb.append(&quot;&lt;/select&gt;&quot;)
+return sb.toString()</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.54">
+              <script>return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px;font-family:monospace&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-pdf</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <jdk>(System)</jdk>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>[ &quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot; == false ] &amp;&amp; set +x
+
+# Static and private variables
+CLI=/var/lib/jenkins/jenkins-cli.jar
+HOST=http://localhost:8080/
+EC2_IDS=()
+CMDS=()
+
+# Fix the trailing comma issue with active choices parameters reactive
+DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
+LANDSCAPE=&quot;$(echo $LANDSCAPE | sed &apos;s/,//g&apos;)&quot;
+TARGET=&quot;$(echo $TARGET | sed &apos;s/,//g&apos;)&quot;
+
+source /var/lib/jenkins/cli-credentials.sh
+case &quot;$LANDSCAPE&quot; in
+   &quot;sb&quot;)
+      EC2_IDS=(&quot;i-099de1c5407493f9b&quot; &quot;i-0c2d2ef87e98f2088&quot;);;
+   &quot;ci&quot;)
+      BRANCH=&quot;bu-master&quot;
+      EC2_IDS=(&quot;i-0258a5f2a87ba7972&quot; &quot;i-0511b83a249cd9fb1&quot;);;      
+   &quot;qa&quot;)
+      EC2_IDS=(&quot;i-011ccd29dec6c6d10&quot;);;
+   &quot;stg&quot;)
+      EC2_IDS=(&quot;i-090d188ea237c8bcf&quot; &quot;i-0cb479180574b4ba2&quot;);;
+   &quot;prod&quot;)
+      EC2_IDS=(&quot;i-0534c4e38e6a24009&quot; &quot;i-07d7b5f3e629e89ae&quot;);;
+esac
+
+for i in $(seq ${#EC2_IDS[@]}); do    
+   CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-pdf-run-docker-container&apos; -v -f \
+     -p VERBOSE=${VERBOSE} \
+     -p BLAST_IMAGE=true \
+     -p GIT_BRANCH=master \
+     -p GIT_REPO_URL=git@github.com:bu-ist/kuali-research-docker.git \
+     -p LANDSCAPE=${LANDSCAPE} \
+     -p EC2_INSTANCE_ID=${EC2_IDS[i-1]}&quot;
+     CMDS[${#CMDS[@]}]=$CMD       
+done;
+
+for ((i = 0; i &lt; ${#CMDS[@]}; i++)) ; do
+  CMD_PRINTABLE=&quot;$(echo &quot;${CMDS[i]}&quot; | sed &apos;s/[[:space:]][[:space:]]*\-p/\n\0/g&apos;)&quot;
+  printf &quot;\n$CMD_PRINTABLE\n&quot;
+  [ &quot;$DEBUG&quot; == false ] &amp;&amp; eval &quot;${CMDS[i]}&quot;
+done
+
+printf &quot;\n\nBuild Completed!&quot;</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup@0.37">
+      <deleteDirs>false</deleteDirs>
+      <cleanupParameter></cleanupParameter>
+      <externalDelete></externalDelete>
+      <disableDeferredWipeout>false</disableDeferredWipeout>
+    </hudson.plugins.ws__cleanup.PreBuildCleanup>
+  </buildWrappers>
+</project>
