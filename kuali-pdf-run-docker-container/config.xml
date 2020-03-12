@@ -375,21 +375,21 @@ COMMAND_ID=$(aws ssm send-command \
    --document-name &quot;AWS-RunShellScript&quot; \
    --comment &quot;Running shell script to pull and run container against a new docker image for ${REGISTRY_REPO_NAME}&quot; \
    --parameters \
-        commands=&quot;echo &gt;&gt; /tmp/ssm-core-received &amp;&amp; date &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
-                  echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-core-received &amp;&amp; \
-                  echo ${BASE64} | base64 --decode &gt; /tmp/ssm-core-last.sh &amp;&amp; \
+        commands=&quot;echo &gt;&gt; /tmp/ssm-pdf-received &amp;&amp; date &gt;&gt; /tmp/ssm-pdf-received &amp;&amp; \
+                  echo ${BASE64} | base64 --decode &gt;&gt; /tmp/ssm-pdf-received &amp;&amp; \
+                  echo ${BASE64} | base64 --decode &gt; /tmp/ssm-pdf-last.sh &amp;&amp; \
                   echo ${BASE64} | base64 --decode | sh 2&gt;&amp;1&quot; \
    --output text \
    --query &quot;Command.CommandId&quot; \
    --output-s3-bucket-name &quot;kuali-docker-run-stdout&quot; \
-   --output-s3-key-prefix &quot;core&quot;)
+   --output-s3-key-prefix &quot;pdf&quot;)
    
 # The file output by ssm send-command won&apos;t be available in s3 immediately, so
 # making repeated attempts to access it in a loop until it is available.
 echo &quot;COMMAND_ID=$COMMAND_ID&quot;
 i=1
 while ((i&lt;100)) ; do
-  s3Url=&quot;$(s3GetCoreSendCommandOutputFileUrl $COMMAND_ID)&quot;
+  s3Url=&quot;$(s3GetPdfSendCommandOutputFileUrl $COMMAND_ID)&quot;
   [ -n &quot;$s3Url&quot; ] &amp;&amp; echo &quot;Url to presign is: $s3Url&quot; &amp;&amp; break;
   echo &quot;Url to presign not ready. Trying again in 3 seconds...&quot;
   ((i+=1))
@@ -411,7 +411,7 @@ if [ -n &quot;$s3Url&quot; ] ; then
   echo &quot; &quot;
 else
   echo &quot;WARNING! Could not acquire s3 location of ssm send-command output file!&quot;
-  echo &quot;You will have to shell into the ec2 instance and open /tmp/last-core-run-cmd to determine how it went.&quot;
+  echo &quot;You will have to shell into the ec2 instance and open /tmp/last-pdf-run-cmd to determine how it went.&quot;
 fi
 </command>
     </hudson.tasks.Shell>
