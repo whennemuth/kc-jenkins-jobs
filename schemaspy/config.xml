@@ -29,7 +29,7 @@ Example: schemaspy-1511.0001</description>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
         <url>https://github.com/kualiCo/schemaspy</url>
-        <credentialsId>7df02254-0753-4ddc-af08-df701fc29862</credentialsId>
+        <credentialsId>credentials.kualico.github</credentialsId>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>

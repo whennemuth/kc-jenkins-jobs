@@ -67,19 +67,23 @@ return opendiv + checkbox + desc + closediv</script>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
           <name>LANDSCAPE</name>
-          <description>What landscape is the target EC2 instance in?</description>
+          <description></description>
           <randomName>choice-parameter-8282566762271781</randomName>
           <visibleItemCount>1</visibleItemCount>
           <script class="org.biouno.unochoice.model.GroovyScript">
             <secureScript plugin="script-security@1.54">
-              <script>def sb = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
-sb.append(&quot;&lt;option selected=true value=&apos;sb&apos;&gt;sb&lt;/option&gt;&quot;)
-sb.append(&quot;&lt;option value=&apos;ci&apos;&gt;ci&lt;/option&gt;&quot;)
-sb.append(&quot;&lt;option value=&apos;qa&apos;&gt;qa&lt;/option&gt;&quot;)
-sb.append(&quot;&lt;option value=&apos;stg&apos;&gt;stg&lt;/option&gt;&quot;)
-sb.append(&quot;&lt;option value=&apos;prod&apos;&gt;prod&lt;/option&gt;&quot;)
-sb.append(&quot;&lt;/select&gt;&quot;)
-return sb.toString()</script>
+              <script>def picklist = new StringBuilder(&quot;&lt;select name=&apos;value&apos; style=&apos;width:50px;font-family:monospace;&apos;&gt;&quot;)
+picklist.append(&quot;&lt;option selected=true value=&apos;sb&apos;&gt;sb&lt;/option&gt;&quot;)
+picklist.append(&quot;&lt;option value=&apos;ci&apos;&gt;ci&lt;/option&gt;&quot;)
+picklist.append(&quot;&lt;option value=&apos;qa&apos;&gt;qa&lt;/option&gt;&quot;)
+picklist.append(&quot;&lt;option value=&apos;stg&apos;&gt;stg&lt;/option&gt;&quot;)
+picklist.append(&quot;&lt;option value=&apos;prod&apos;&gt;prod&lt;/option&gt;&quot;)
+picklist.append(&quot;&lt;/select&gt;&quot;)
+
+def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
+def desc = &quot;&amp;nbsp;&amp;nbsp;What landscape is the target EC2 instance(s) in?&quot;
+def closediv = &quot;&lt;/div&gt;&quot;
+return opendiv + picklist.toString() + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureScript>
             <secureFallbackScript plugin="script-security@1.54">
@@ -90,6 +94,124 @@ return sb.toString()</script>
           <projectName>kuali-pdf</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
+          <name>UPDATE_IMAGE</name>
+          <description></description>
+          <randomName>choice-parameter-70828423227469429</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.54">
+              <script>def opendiv = &quot;&lt;div style=&apos;font-size:14px;font-family:verdana; width:600px; align:left;&apos;&gt;&quot;
+def checkbox = &quot;&lt;input type=&apos;checkbox&apos; name=&apos;value&apos; value=&apos;false&apos; style=&apos;display:inline;&apos;&gt;&quot;
+def desc = &quot;Put a new kualico research-pdf docker image into our ECR repository&quot;
+def closediv = &quot;&lt;/div&gt;&quot;
+return opendiv + checkbox + desc + closediv</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.54">
+              <script>return &quot;Error creating update_image selection&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-pdf</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters></referencedParameters>
+          <choiceType>ET_FORMATTED_HTML</choiceType>
+          <omitValueField>false</omitValueField>
+        </org.biouno.unochoice.DynamicReferenceParameter>
+        <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
+          <name>DOCKER_IMAGES</name>
+          <description></description>
+          <randomName>choice-parameter-70667680918360775</randomName>
+          <visibleItemCount>1</visibleItemCount>
+          <script class="org.biouno.unochoice.model.GroovyScript">
+            <secureScript plugin="script-security@1.54">
+              <script>import jenkins.*
+import jenkins.model.* 
+import hudson.*
+import hudson.model.*
+def jenkinsCredentials = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
+        com.cloudbees.plugins.credentials.Credentials.class,
+        Jenkins.instance,
+        null,
+        null
+);
+
+def sb = new StringBuilder()
+if(UPDATE_IMAGE.length() &gt; 1) {
+        sb.append(&quot;&lt;table cellpadding=5&gt;&lt;tr&gt;&lt;th&gt;BU ecr images&lt;/th&gt;&lt;th&gt;Kualico images&lt;/th&gt;&lt;/tr&gt;&quot;)
+}
+else {
+        sb.append(&quot;&lt;table cellpadding=5&gt;&lt;tr&gt;&lt;th&gt;BU ecr images&lt;/th&gt;&lt;/tr&gt;&quot;)
+}
+sb.append(&quot;&lt;tr&gt;&lt;td&gt;&quot;)
+
+// Create the picklist for ECR images
+sb.append(&quot;&lt;select name=&apos;value&apos; style=&apos;width:150px;font-family:monospace;&apos;&gt;&quot;)
+def ecrCmd = &quot;aws ecr list-images --registry-id 730096353738 --repository-name research-pdf | jq &apos;.imageIds[].imageTag&apos; | sed &apos;s/\&quot;//g&apos;&quot;
+def ecrCmdArr = [ &quot;sh&quot;, &quot;-c&quot;, ecrCmd ]
+def ecrCmdProcess = new ProcessBuilder(ecrCmdArr).start()
+ecrCmdProcess.inputStream.eachLine {
+   // IMPORTANT: Make sure the value attribute is padded at the end with a space
+   sb.append(&quot;&lt;option value=&apos;${it} &apos;&gt;${it}&lt;/option&gt;&quot;)
+}
+ecrCmdProcess.waitFor()
+sb.append(&quot;&lt;/select&gt;&quot;)
+
+// If indicated, create the picklist for kuali registry images
+if(UPDATE_IMAGE.length() &gt; 1) {
+        sb.append(&quot;&lt;td&gt;&quot;)
+
+        // Get the github personal access token
+        def token = &quot;unknown&quot;
+        for (creds in jenkinsCredentials) {
+            if ( &quot;credentials.bu.github.token&quot;.equals(creds.id)) {
+                token = creds.secret
+                break;
+            }
+        }
+
+        // Get the raw content of the dockerhub.sh file using the token and execute it. Output will be a list of docker images.
+        def cmd = 
+              &quot;curl&quot; +
+              &quot;  -H &apos;Authorization: token ${token}&apos;&quot; +
+              &quot;  -L https://api.github.com/repos/bu-ist/kuali-research-docker/contents/dockerhub.sh&quot; +
+              &quot;  | jq &apos;.content&apos;&quot; +
+              &quot;  | sed &apos;s/\\\\n//g&apos;&quot; + 
+              &quot;  | sed &apos;s/\&quot;//g&apos;&quot; + 
+              &quot;  | base64 --decode | bash -s &apos;wrh1&apos; &apos;PWD@dockerhub*888&apos; &apos;research-pdf&apos; &apos;kuali&apos;&quot;
+        
+        def cmdarr = [ &quot;sh&quot;, &quot;-c&quot;, cmd ]
+        def process = new ProcessBuilder(cmdarr).start()
+        process.waitFor();
+        
+        // Output the list of docker images to a listbox
+        sb.append(&quot;&lt;select name=&apos;value&apos; style=&apos;width:400px;font-family:monospace;&apos;&gt;&quot;)
+        process.inputStream.eachLine {
+            if( ! &quot;${it}&quot;.endsWith(&quot;:latest&quot;)) {
+                sb.append(&quot;&lt;option value=&apos;&quot;).append(&quot;${it}&quot;).append(&quot;&apos;&gt;&quot;).append(&quot;${it}&quot;).append(&quot;&lt;/option&gt;&quot;)
+            }
+        }
+        process.waitFor();
+        sb.append(&quot;&lt;/select&gt;&quot;)
+        sb.append(&quot;&lt;/td&gt;&quot;)
+}
+
+sb.append(&quot;&lt;/tr&gt;&lt;/table&gt;&quot;)
+return sb.toString()</script>
+              <sandbox>false</sandbox>
+            </secureScript>
+            <secureFallbackScript plugin="script-security@1.54">
+              <script>return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos; value=&apos;error&apos; style=&apos;width:400px; font-family:monospace;&apos; disabled=true&gt;&quot;</script>
+              <sandbox>false</sandbox>
+            </secureFallbackScript>
+          </script>
+          <projectName>kuali-pdf</projectName>
+          <parameters class="linked-hash-map"/>
+          <referencedParameters>UPDATE_IMAGE</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
@@ -117,7 +239,22 @@ CMDS=()
 # Fix the trailing comma issue with active choices parameters reactive
 DEBUG=&quot;$(echo $DEBUG | sed &apos;s/,//g&apos;)&quot;
 LANDSCAPE=&quot;$(echo $LANDSCAPE | sed &apos;s/,//g&apos;)&quot;
-TARGET=&quot;$(echo $TARGET | sed &apos;s/,//g&apos;)&quot;
+DOCKER_IMAGES=&quot;$(echo $DOCKER_IMAGES | sed &apos;s/,//g&apos;)&quot;
+# The two &quot;parts&quot; were separated with a space character
+parts=($DOCKER_IMAGES)
+BU_VERSION=${parts[0]}
+KUALICO_IMAGE=${parts[1]}
+
+
+if [ -n &quot;$KUALICO_IMAGE&quot; ] ; then
+   echo &quot;BU_VERSION = $BU_VERSION&quot;
+   echo &quot;KUALICO_IMAGE = $KUALICO_IMAGE&quot;
+   echo &quot;RESUME NEXT: Call kuali-pdf-1-update-docker-image&quot;
+else
+   echo &quot;BU_VERSION = $BU_VERSION&quot;
+   echo &quot;No docker image update&quot;
+fi
+exit 0
 
 source /var/lib/jenkins/cli-credentials.sh
 case &quot;$LANDSCAPE&quot; in
@@ -135,7 +272,7 @@ case &quot;$LANDSCAPE&quot; in
 esac
 
 for i in $(seq ${#EC2_IDS[@]}); do    
-   CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-pdf-run-docker-container&apos; -v -f \
+   CMD=&quot;java -jar ${CLI} -s ${HOST} build &apos;kuali-pdf-2-run-docker-container&apos; -v -f \
      -p VERBOSE=${VERBOSE} \
      -p BLAST_IMAGE=true \
      -p GIT_BRANCH=master \

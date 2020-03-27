@@ -202,7 +202,7 @@ Possible options:
     <groupId>org.kuali.coeus</groupId>
     <artifactId>coeus</artifactId>
   </rootModule>
-  <goals>clean compile install -Dgrm.off=true -Dmaven.test.skip=true -Dbuild.version=&apos;${UPCOMING_POM_VERSION}/git:branch=${GIT_BRANCH},ref=${GIT_COMMIT}&apos;</goals>
+  <goals>clean compile install -Dgrm.off=true -Dmaven.test.skip=true -Dbuild.version=&apos;${UPCOMING_POM_VERSION}&apos; -Dbuild.bu.git.ref=&apos;git:branch=${GIT_BRANCH},ref=${GIT_COMMIT}&apos;</goals>
   <aggregatorStyleBuild>true</aggregatorStyleBuild>
   <incrementalBuild>false</incrementalBuild>
   <ignoreUpstremChanges>true</ignoreUpstremChanges>
