@@ -33,7 +33,7 @@ return opendiv + checkbox + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -58,7 +58,7 @@ return opendiv + checkbox + desc + closediv</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -81,7 +81,7 @@ return &quot;&lt;input type=&apos;text&apos; readonly=true name=&apos;value&apos
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -127,7 +127,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>GIT_REPO_URL</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -155,7 +155,7 @@ return sb.toString()</script>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -200,7 +200,7 @@ return sb.toString()
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>LANDSCAPE</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -222,7 +222,7 @@ Need it here for supporting bash functions found in ./bash.lib.sh</description>
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -244,7 +244,7 @@ return &quot;&lt;input type=&apos;text&apos; name=&apos;value&apos; value=&apos;
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -267,7 +267,7 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters></referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>
@@ -288,7 +288,7 @@ Unlike coeus, the docker image for the sandbox environment is no different from 
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <choiceType>PT_SINGLE_SELECT</choiceType>
           <filterable>false</filterable>
           <filterLength>1</filterLength>
@@ -334,7 +334,7 @@ else {
               <sandbox>false</sandbox>
             </secureFallbackScript>
           </script>
-          <projectName>kuali-pdf-run-docker-container</projectName>
+          <projectName>kuali-pdf-2-run-docker-container</projectName>
           <parameters class="linked-hash-map"/>
           <referencedParameters>VERSION_OPT</referencedParameters>
           <choiceType>ET_FORMATTED_HTML</choiceType>

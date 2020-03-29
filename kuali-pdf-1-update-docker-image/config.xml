@@ -80,7 +80,7 @@ return sb.toString()</script>
           <omitValueField>false</omitValueField>
         </org.biouno.unochoice.DynamicReferenceParameter>
         <org.biouno.unochoice.DynamicReferenceParameter plugin="uno-choice@2.1">
-          <name>KUALI_IMAGE</name>
+          <name>KUALICO_IMAGE</name>
           <description></description>
           <randomName>choice-parameter-70836855878651228</randomName>
           <visibleItemCount>1</visibleItemCount>
@@ -172,14 +172,11 @@ return sb.toString()</script>
       <command>[ &quot;$(echo $VERBOSE | sed &apos;s/,//g&apos;)&quot; == false ] &amp;&amp; set +x
 
 ECR_REGISTRY=&quot;730096353738.dkr.ecr.us-east-1.amazonaws.com&quot;
-KUALI_IMAGE=&quot;$(echo $KUALI_IMAGE | sed &apos;s/,//g&apos;)&quot;
-KUALI_VERSION=&quot;$(echo $KUALI_IMAGE | cut -d&apos;:&apos; -f2)&quot;
-
-echo &quot;BU_VERSION = $BU_VERSION&quot;
-echo &quot;KUALI_IMAGE = $KUALI_IMAGE&quot;
+KUALICO_IMAGE=&quot;$(echo $KUALICO_IMAGE | sed &apos;s/,//g&apos;)&quot;
+KUALI_VERSION=&quot;$(echo $KUALICO_IMAGE | cut -d&apos;:&apos; -f2)&quot;
 
 # 1) Validate entries. Make sure the dockerhub image to pull has not already been pushed to the ecr.
-printf &quot;\nVALIDATING: Checking whether research-pdf/$BU_VERSION already exists in the ecr:\n&quot;
+printf &quot;\nVALIDATING: Checking whether research-pdf/$KUALI_VERSION already exists in the ecr:\n&quot;
 found=&quot;&quot;
 for bu_version in $(aws ecr list-images --registry-id 730096353738 --repository-name research-pdf | jq &apos;.imageIds[].imageTag&apos; | sed &apos;s/&quot;//g&apos;) ; do
   printf &quot;Found ${bu_version}&quot;
@@ -202,13 +199,15 @@ if [ -n &quot;$found&quot; ] ; then
 fi
 
 # 2) Authenticate and then retrieve the specified image from dockerhub
-printf &quot;\nPULLING $KUALI_IMAGE from dockerhub.com\n&quot;
+printf &quot;\nPULLING $KUALICO_IMAGE from dockerhub.com\n&quot;
 echo &quot;$DOCKERHUB_PASSWORD&quot; | docker login --username $DOCKERHUB_USERNAME --password-stdin
-docker pull $KUALI_IMAGE
+docker pull $KUALICO_IMAGE
+
+exit 0
 
 # 3) Tag the downloaded image so it is uploadable to the ecr
 printf &quot;\nTAGGING: Creating tag: $ECR_REGISTRY/research-pdf:$KUALI_VERSION:\n&quot;
-docker tag ${KUALI_IMAGE} ${ECR_REGISTRY}/research-pdf:${KUALI_VERSION}
+docker tag ${KUALICO_IMAGE} ${ECR_REGISTRY}/research-pdf:${KUALI_VERSION}
 
 # 4) Log into the ecr and push the image to it.
 printf &quot;\nPUSHING: Logging into ecr and pushing $ECR_REGISTRY/research-pdf:${KUALI_VERSION} to it:\n&quot;
